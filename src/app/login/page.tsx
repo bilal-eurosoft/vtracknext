@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-// import colors from '../../../tailwind.config'
 import logo from "../../../public/Images/logo.png";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
@@ -57,7 +56,7 @@ export default function LoginPage() {
                 <input
                   id="userName"
                   required
-                  placeholder="Please Enter userName"
+                  placeholder="account_code@username"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#00B56C] sm:text-sm sm:leading-6 px-3 outline-none"
                   name="userName"
                   value={formData.userName}
@@ -72,7 +71,7 @@ export default function LoginPage() {
                   id="password"
                   required
                   type="password"
-                  placeholder="Please Enter Password"
+                  placeholder="●●●●●●●●●●"
                   className="block w-full rounded-md border-0  py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#00B56C] sm:text-sm sm:leading-6 outline-none  px-3"
                   name="password"
                   value={formData.password}

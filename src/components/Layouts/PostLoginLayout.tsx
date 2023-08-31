@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import logo from "@/../public/Images/logo.png";
 import Image from "next/image";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,9 +13,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
   const { data: session } = useSession();
 
-  console.log("session", session);
+  if (!session) {
+    router.push("/login");
+  }
 
   return (
     <html lang="en">
@@ -216,6 +221,13 @@ export default function RootLayout({
                       />
                     </a>
                   </div>
+                  <button
+                    onClick={() => {
+                      signOut();
+                    }}
+                  >
+                    Logout
+                  </button>
                 </div>
               </nav>
               {children}
