@@ -1,4 +1,11 @@
+'use client'
+import { useState } from "react"
 export default function LiveTracking() {
+  const obj=[
+    {
+      name:'ABU-878'
+    }
+  ]
   return <div>
 
     <div className="flex flex-row">
@@ -6,7 +13,7 @@ export default function LiveTracking() {
 
         <div className="flex flex-row px-4 py-3 bg-[#00B56C] h-12">
           <div className="basic-10">
-            <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  <circle cx="11" cy="11" r="8" />  <line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+            <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"  strokeLinejoin="round">  <circle cx="11" cy="11" r="8" />  <line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
           </div>
 
           <div className="basis-40">
@@ -30,7 +37,7 @@ export default function LiveTracking() {
             <div className="flex flex-row">
 
               <div className="basic-10">
-                <svg className="h-6 w-3 text-green-500 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  <circle cx="12" cy="12" r="10" /></svg>
+                <svg className="h-6 w-3 text-green-500 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"  strokeLinejoin="round">  <circle cx="12" cy="12" r="10" /></svg>
               </div>
 
               <div className="basic-10">
@@ -38,7 +45,7 @@ export default function LiveTracking() {
               </div>
 
               <div className="basic-10">
-                <svg className="h-6 w-3 text-yellow-500 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  <circle cx="12" cy="12" r="10" /></svg>
+                <svg className="h-6 w-3 text-yellow-500 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"  strokeLinejoin="round">  <circle cx="12" cy="12" r="10" /></svg>
               </div>
 
               <div className="basic-10">
@@ -46,7 +53,7 @@ export default function LiveTracking() {
               </div>
 
               <div className="basic-10">
-                <svg className="h-6 w-3 text-red-500 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  <circle cx="12" cy="12" r="10" /></svg>
+                <svg className="h-6 w-3 text-red-500 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">  <circle cx="12" cy="12" r="10" /></svg>
               </div>
 
               <div className="basic-10">
@@ -76,18 +83,18 @@ export default function LiveTracking() {
                 <p className="text-black">0 Kpk  &nbsp;&nbsp;</p>
               </div>
 
-
               <div className="basic-15">
-                <svg className="h-6 w-3 text-red-500 " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  <circle cx="12" cy="12" r="10" /></svg><br></br><br></br>
+                <svg className="h-6 w-3 text-red-500 " viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"  >  <circle cx="12" cy="12" r="10" /></svg><br></br><br></br>
               </div>
-
 
             </div>
           </div>
         </div>
+
         <div className="bg-white -mt-5 px-4 pb-7 border-b-2 border-[#00B56C]">
           <p className="text-gray-400 text-sm ">August 24 2023 01:33:51pm</p>
         </div>
+        
       </div>
       <div className="basis-full ">
 
