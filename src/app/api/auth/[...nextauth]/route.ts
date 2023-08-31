@@ -20,9 +20,7 @@ export const authOptions: AuthOptions = {
       },
       //@ts-ignore
       async authorize(credentials, req) {
-        console.log('credentials', credentials)
         if (typeof credentials !== 'undefined') {
-          //   const res = await authenticate(credentials.email, credentials.password)
           let data = JSON.stringify({
             userName: credentials?.userName,
             password: credentials?.password,
@@ -38,18 +36,14 @@ export const authOptions: AuthOptions = {
             httpsAgent: agent,
             data: data,
           }
-          let res = null
           try {
             const response = await axios.request(config)
             if (response?.data?.accessToken) {
-              console.log('Access Token exists:', response?.data.accessToken)
               return response.data
             } else {
-              console.log('Access Token is missing')
               return null
             }
           } catch (error) {
-            console.log(error, 'credential error')
             return null
           }
         } else {
@@ -64,9 +58,8 @@ export const authOptions: AuthOptions = {
     async session({ session, token, user }) {
       return { ...token, accessToken: token.accessToken }
     },
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user }) {
       if (typeof user !== 'undefined') {
-        // user has just signed in so the user object is populated
         return (user as unknown) as JWT
       }
       return token
