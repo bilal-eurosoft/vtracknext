@@ -219,8 +219,8 @@ export default function RootLayout({
                     </a>
                   </div>
 
-                  <Popover>
-                    <PopoverHandler>
+                  <Popover >
+                    <PopoverHandler >
                       <img className=" cursor-pointer w-10 h-10 rounded-full" src="https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg" alt="Rounded avatar" />
 
                     </PopoverHandler>
