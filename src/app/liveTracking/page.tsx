@@ -3,6 +3,9 @@
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { VehicleData } from "@/types/vehicle";
+import { getVehicleDataByClientId } from "@/utils/API_CALLS";
+import { useSession } from "next-auth/react";
+import { socket } from "@/utils/socket";
 
 const DynamicCarMap = dynamic(
   () => import("../../components/Layouts/LiveMapLayout"),
@@ -11,53 +14,112 @@ const DynamicCarMap = dynamic(
   }
 );
 
-async function fetchCarData() {
-  try {
-    const response = await fetch("https://live.vtracksolutions.com/graphql", {
-      headers: {
-        accept: "*/*",
-        "accept-language": "en-US,en;q=0.9",
-        "content-type": "application/json",
-        "sec-ch-ua":
-          '"Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-site",
-        Referer: "https://vtracksolutions.com/",
-        "Referrer-Policy": "strict-origin-when-cross-origin",
-      },
-      body: '{"query":"\\n          query {\\n            Currentlocation(id:\\"626ab783687a74efc44b28fc\\"){\\n            id,\\n            Value\\n          }\\n        }"}',
-      method: "POST",
-    });
-    if (!response.ok) {
-      throw new Error("Failed to fetch data from the API");
-    }
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.log("Error fetching data");
-    return [];
-  }
-}
-
 const LiveTracking = () => {
+  const { data: session } = useSession();
   const [carData, setCarData] = useState([]);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isFirstTimeFetchedFromGraphQL, setIsFirstTimeFetchedFromGraphQL] =
+    useState(false);
+  const [lastDataReceivedTimestamp, setLastDataReceivedTimestamp] = useState(
+    new Date()
+  );
+
+  // This useEffect is responsible for checking internet connection in the browser.
+  useEffect(() => {
+    function onlineHandler() {
+      setIsOnline(true);
+    }
+
+    function offlineHandler() {
+      setIsOnline(false);
+    }
+
+    window.addEventListener("online", onlineHandler);
+    window.addEventListener("offline", offlineHandler);
+
+    return () => {
+      window.removeEventListener("online", onlineHandler);
+      window.removeEventListener("offline", offlineHandler);
+    };
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await fetchCarData();
-      let currentData;
-      if (data?.data?.Currentlocation?.Value) {
-        currentData = JSON.parse(data?.data?.Currentlocation?.Value)?.cacheList;
-        console.log("currentData", currentData, typeof currentData);
-        setCarData(currentData);
+      if (session?.clientId) {
+        const data = await getVehicleDataByClientId(session?.clientId);
+        let currentData;
+        if (data?.data?.Currentlocation?.Value) {
+          currentData = JSON.parse(
+            data?.data?.Currentlocation?.Value
+          )?.cacheList;
+          // call a filter function here to filter by IMEI and latest time stamp
+          setCarData(currentData);
+          setIsFirstTimeFetchedFromGraphQL(true);
+        }
       }
     }
     fetchData();
-  }, []);
+  }, [session?.clientId]);
+
+  // This useEffect is responsible for fetching data from the GraphQL Server.
+  // Runs if:
+  // Data is not being recieved in last 60 seconds from socket.
+
+  const fetchTimeoutGraphQL = 60 * 1000; //60 seconds
+  useEffect(() => {
+    const dataFetchHandler = () => {
+      // Does not run for the first time when page is loaded
+      if (isFirstTimeFetchedFromGraphQL) {
+        const now = new Date();
+        const elapsedTimeInSeconds = Math.floor(
+          (now.getTime() - lastDataReceivedTimestamp.getTime()) / 1000
+        );
+        if (elapsedTimeInSeconds <= fetchTimeoutGraphQL) {
+          if (session?.clientId) {
+            getVehicleDataByClientId(session?.clientId);
+          }
+        }
+      }
+    };
+    const interval = setInterval(dataFetchHandler, fetchTimeoutGraphQL); // Runs every fetchTimeoutGraphQL seconds
+
+    return () => {
+      clearInterval(interval); // Clean up the interval on component unmount
+    };
+  }, [
+    isFirstTimeFetchedFromGraphQL,
+    session?.clientId,
+    lastDataReceivedTimestamp,
+    fetchTimeoutGraphQL,
+  ]);
+
+  // This useEffect is responsible for getting the data from socket and updating it into the state.
+  useEffect(() => {
+    if (isOnline && session?.clientId) {
+      try {
+        socket.io.opts.query = { clientId: session?.clientId };
+        socket.connect();
+        socket.on("message", (data) => {
+          if (data === null || data === undefined) {
+            return;
+          }
+          // call a filter function here to filter by IMEI and latest time stamp
+          setCarData(data?.cacheList);
+          setLastDataReceivedTimestamp(new Date());
+        });
+      } catch (err) {
+        console.log("Socket Error", err);
+      }
+    }
+
+    if (!isOnline) {
+      socket.disconnect();
+    }
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [isOnline, session?.clientId]);
 
   return (
     <>
@@ -157,7 +219,6 @@ const LiveTracking = () => {
             </div>
           </div>
           {carData.map((item: VehicleData) => {
-            console.log("item", item);
             return (
               <div
                 key={item?.IMEI}
