@@ -1,44 +1,14 @@
-'use client'
+"use client";
 
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import { Icon } from 'leaflet';
-import carpng from '../../../public/Images/703693_gps_512x512.png'
-import { StaticImageData } from 'next/image';
+import React from "react";
+import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import { Icon } from "leaflet";
+import carpng from "../../../public/Images/703693_gps_512x512.png";
+import { StaticImageData } from "next/image";
+import { CarMapList } from "@/types/vehicle";
 
-interface GPSData {
-  longitude: number;
-  latitude: number;
-  Altitude: number;
-  Angle: number;
-  satellites: number;
-  speed: number;
-}
-
-interface OSMData {
-  display_name: string;
-  place_rank: number;
-}
-
-interface CarData {
-  IMEI: string;
-  gps: GPSData;
-  OSM: OSMData;
-  timestamp: string;
-  vehicleMake: string;
-  vehicleModel: string;
-  vehicleNo: string;
-}
-
-interface CarMapProps {
-  carData: CarData[];
-}
-
-
-
-const CarMap: React.FC<CarMapProps> = ({ carData }) => {
-    console.log(carData,"layout page")
+const CarMap: React.FC<CarMapList> = ({ carData }) => {
   const positions: [number, number][] = carData?.map((data) => [
     data.gps.latitude,
     data.gps.longitude,
@@ -65,7 +35,11 @@ const CarMap: React.FC<CarMapProps> = ({ carData }) => {
 
   return (
     <>
-      <MapContainer center={center} zoom={zoom} style={{ width: '100%', height: '800px' }}>
+      <MapContainer
+        center={center}
+        zoom={zoom}
+        style={{ width: "100%", height: "800px" }}
+      >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'
@@ -93,5 +67,4 @@ const CarMap: React.FC<CarMapProps> = ({ carData }) => {
   );
 };
 
-export default CarMap; 
- 
+export default CarMap;
