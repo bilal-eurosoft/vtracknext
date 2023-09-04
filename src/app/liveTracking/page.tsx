@@ -4,7 +4,10 @@ import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import uniqueDataByIMEIAndLatestTimestamp from "@/utils/uniqueDataByIMEIAndLatestTimeStamp";
 import { VehicleData } from "@/types/vehicle";
-import { getVehicleDataByClientId } from "@/utils/API_CALLS";
+import {
+  getClientSettingByToken,
+  getVehicleDataByClientId,
+} from "@/utils/API_CALLS";
 import { useSession } from "next-auth/react";
 import { socket } from "@/utils/socket";
 
@@ -15,17 +18,19 @@ const DynamicCarMap = dynamic(
   }
 );
 
-
-
-
 const LiveTracking = () => {
   const { data: session } = useSession();
   const [carData, setCarData] = useState<VehicleData[]>([]);
+  const [clientSettings, setClientSettings] = useState<ClientSettings[]>([]);
+
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isFirstTimeFetchedFromGraphQL, setIsFirstTimeFetchedFromGraphQL] =
     useState(false);
   const [lastDataReceivedTimestamp, setLastDataReceivedTimestamp] = useState(
     new Date()
+  );
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleData | null>(
+    null
   );
 
   // This useEffect is responsible for checking internet connection in the browser.
@@ -48,22 +53,28 @@ const LiveTracking = () => {
   }, []);
 
   useEffect(() => {
-    async function fetchData() {
+    (async function () {
       if (session?.clientId) {
-        const data = await getVehicleDataByClientId(session?.clientId);
-        let currentData;
-        if (data?.data?.Currentlocation?.Value) {
-          currentData = JSON.parse(
-            data?.data?.Currentlocation?.Value
+        const clientVehicleData = await getVehicleDataByClientId(
+          session?.clientId
+        );
+        if (clientVehicleData?.data?.Currentlocation?.Value) {
+          let parsedData = JSON.parse(
+            clientVehicleData?.data?.Currentlocation?.Value
           )?.cacheList;
           // call a filter function here to filter by IMEI and latest time stamp
-          setCarData(currentData);
+          setCarData(parsedData);
           setIsFirstTimeFetchedFromGraphQL(true);
         }
+        const clientSettingData = await getClientSettingByToken(
+          session?.accessToken
+        );
+        if (clientSettingData) {
+          setClientSettings(clientSettingData);
+        }
       }
-    }
-    fetchData();
-  }, [session?.clientId]);
+    })();
+  }, [session]);
 
   // This useEffect is responsible for fetching data from the GraphQL Server.
   // Runs if:
@@ -103,14 +114,19 @@ const LiveTracking = () => {
       try {
         socket.io.opts.query = { clientId: session?.clientId };
         socket.connect();
-        socket.on("message", (data: { cacheList: VehicleData[]; } | null | undefined) => {
-          if (data === null || data === undefined) {
-            return;
+        socket.on(
+          "message",
+          (data: { cacheList: VehicleData[] } | null | undefined) => {
+            if (data === null || data === undefined) {
+              return;
+            }
+            const uniqueData = uniqueDataByIMEIAndLatestTimestamp(
+              data?.cacheList
+            );
+            setCarData(uniqueData);
+            setLastDataReceivedTimestamp(new Date());
           }
-          const uniqueData = uniqueDataByIMEIAndLatestTimestamp(data?.cacheList);
-          setCarData(uniqueData);
-          setLastDataReceivedTimestamp(new Date());
-        });
+        );
       } catch (err) {
         console.log("Socket Error", err);
       }
@@ -124,6 +140,10 @@ const LiveTracking = () => {
       socket.disconnect();
     };
   }, [isOnline, session?.clientId]);
+
+  useEffect(() => {
+    console.log("selectedVehicle", selectedVehicle?.gps);
+  }, [selectedVehicle]);
 
   return (
     <>
@@ -158,7 +178,9 @@ const LiveTracking = () => {
               </div>
             </div>
             <div className="lg:col-span-1 col-span-1">
-              <h1 className="text-center text-white ">Show({carData.length}) Vehicles</h1>
+              <h1 className="text-center text-white ">
+                Show({carData.length}) Vehicles
+              </h1>
             </div>
           </div>
 
@@ -169,7 +191,6 @@ const LiveTracking = () => {
 
             <div className="lg:col-span-1">
               <div className="grid grid-cols-10">
-
                 <div className="lg:col-span-1">
                   <svg
                     className="h-6 w-3 text-green-500 mr-2"
@@ -227,7 +248,10 @@ const LiveTracking = () => {
             return (
               <div
                 key={item?.IMEI}
-                className="grid lg:grid-cols-3 grid-cols-3 text-center py-5 mt-2 bg-white border-b-2 border-[#00B56C]"
+                className="grid lg:grid-cols-3 grid-cols-3 text-center py-5 mt-2 bg-white border-b-2 border-[#00B56C] cursor-pointer"
+                onClick={() => {
+                  setSelectedVehicle(item);
+                }}
               >
                 <div className="lg:col-span-1 col-span-1">
                   <p>
@@ -238,20 +262,26 @@ const LiveTracking = () => {
                 <div className="lg:col-span-1 col-span-1">
                   {item.gps.speed === 0 && item.ignition === 0 ? (
                     <>
-                      <button className="text-white bg-red-500 p-1 -mt-1">Parked</button>
-
-
+                      <button className="text-white bg-red-500 p-1 -mt-1">
+                        Parked
+                      </button>
                     </>
                   ) : item.gps.speed > 0 && item.ignition === 1 ? (
-                    <button className="text-white bg-green-500 p-1 -mt-1">Moving</button>
+                    <button className="text-white bg-green-500 p-1 -mt-1">
+                      Moving
+                    </button>
                   ) : (
-                    <button className="text-white bg-yellow-500 p-1 -mt-1">Pause</button>
+                    <button className="text-white bg-yellow-500 p-1 -mt-1">
+                      Pause
+                    </button>
                   )}
                 </div>
 
                 <div className="lg:col-span-1 col-span-1">
                   <div className="grid grid-cols-4">
-                    <div className="lg:col-span-2 col-span-2">{item.gps.speed}</div>
+                    <div className="lg:col-span-2 col-span-2">
+                      {item.gps.speed}
+                    </div>
                     {item.gps.speed === 0 && item.ignition === 0 ? (
                       <div className="lg:col-span-1">
                         <svg
@@ -280,31 +310,35 @@ const LiveTracking = () => {
                           <circle cx="12" cy="12" r="10" />
                         </svg>
                       </div>
-                    ) : <div className="lg:col-span-1">
-                      <svg
-                        className="h-6 w-3 text-yellow-500 mr-2"
-                        viewBox="0 0 24 24"
-                        fill="yellow"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinejoin="round"
-                      >
-                        {" "}
-                        <circle cx="12" cy="12" r="10" />
-                      </svg>
-                    </div>
-                    }
-
+                    ) : (
+                      <div className="lg:col-span-1">
+                        <svg
+                          className="h-6 w-3 text-yellow-500 mr-2"
+                          viewBox="0 0 24 24"
+                          fill="yellow"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinejoin="round"
+                        >
+                          {" "}
+                          <circle cx="12" cy="12" r="10" />
+                        </svg>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <p className="w-72 mt-10  text-start  px-4 text-gray-500">{item.timestamp}</p>
+                <p className="w-72 mt-10  text-start  px-4 text-gray-500">
+                  {item.timestamp}
+                </p>
               </div>
             );
           })}
         </div>
 
         <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ">
-          {carData.length !== 0 && <DynamicCarMap carData={carData} />}
+          {carData.length !== 0 && (
+            <DynamicCarMap carData={carData} clientSettings={clientSettings} />
+          )}
         </div>
       </div>
     </>
@@ -312,5 +346,3 @@ const LiveTracking = () => {
 };
 
 export default LiveTracking;
-
-

@@ -2,70 +2,86 @@
 import React from "react";
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { CarMapList } from "@/types/vehicle";
-import   RedCar  from "../../../public/redcar.svg";
-import   GreenCar  from "../../../public/greencar.svg";
-import   YellowCar  from "../../../public/yellowcar.svg";
+import { VehicleData } from "@/types/vehicle";
+import RedCar from "../../../public/redcar.svg";
+import GreenCar from "../../../public/greencar.svg";
+import YellowCar from "../../../public/yellowcar.svg";
 
 import L from "leaflet";
 
-const CarMap: React.FC<CarMapList> = ({ carData }) => {
+const CarMap = ({
+  carData,
+  clientSettings,
+}: {
+  carData: VehicleData[];
+  clientSettings: ClientSettings[];
+}) => {
   const positions: [number, number][] = carData?.map((data) => [
     data.gps.latitude,
     data.gps.longitude,
   ]);
 
+  const angles = carData?.map((data) => data.gps.Angle);
+  const speeds = carData?.map((data) => data.gps.speed);
+  const ignitions = carData?.map((data) => data.ignition);
 
-const angles = carData?.map((data) => data.gps.Angle);
-const speeds = carData?.map((data) => data.gps.speed);
-const ignitions = carData?.map((data) => data.ignition);
+  const getIconForStatus = (speed: number, ignition: number) => {
+    if (speed === 0 && ignition === 0) {
+      return RedCar; // Replace redSvg with your red SVG icon URL
+    } else if (speed > 0 && ignition === 1) {
+      return GreenCar; // Replace greenSvg with your green SVG icon URL
+    } else {
+      return YellowCar; // Replace yellowSvg with your yellow SVG icon URL
+    }
+  };
 
-const getIconForStatus = (speed: number, ignition: number) => {
-  if (speed === 0 && ignition === 0) {
-    return RedCar; // Replace redSvg with your red SVG icon URL
-  } else if (speed > 0 && ignition === 1) {
-    return GreenCar; // Replace greenSvg with your green SVG icon URL
-  } else {
-    return YellowCar; // Replace yellowSvg with your yellow SVG icon URL
-  }
-};
+  const icon = (speed: number, ignition: number, angle: number) => {
+    const IconComponent = getIconForStatus(speed, ignition);
+    const rotation = angle; // Set the rotation angle here
 
-const icon = (speed: number, ignition: number, angle: number) => {
-  const IconComponent = getIconForStatus(speed, ignition);
-  const rotation = angle ; // Set the rotation angle here
+    const customIcon = L.divIcon({
+      html: `<div style="transform: rotate(${rotation}deg);"><img src="${IconComponent.src}" style="transform: rotate(270deg)"} /></div>`,
 
-  const customIcon = L.divIcon({
-    html: `<div style="transform: rotate(${rotation}deg);"><img src="${IconComponent.src}" style="transform: rotate(270deg)"} /></div>`,
-    
-    iconSize: [40, 40], // Adjust the size of the icon as needed
-    className: "custom-icon", // Add any custom CSS classes here
-  });
+      iconSize: [40, 40], // Adjust the size of the icon as needed
+      className: "custom-icon", // Add any custom CSS classes here
+    });
 
-  return customIcon;
-};
-
+    return customIcon;
+  };
 
   const pos: string[] = carData?.map((datas) => datas?.vehicleNo);
 
-  // Calculate the center of the positions
-  const center: [number, number] = positions.reduce(
-    (acc, [lat, lon]) => [acc[0] + lat, acc[1] + lon],
-    [0, 0]
-  );
-  center[0] /= positions.length;
-  center[1] /= positions.length;
+  const clientMapSettings = clientSettings?.filter(
+    (el) => el?.PropertDesc === "Map"
+  )[0]?.PropertyValue;
+
+  const clientZoomSettings = clientSettings?.filter(
+    (el) => el?.PropertDesc === "Zoom"
+  )[0]?.PropertyValue;
+
+  if (!clientMapSettings) {
+    return <>Map Loading...</>;
+  }
+  let mapCoordinates: [number, number] = [0, 0];
+
+  const mapSettingsSplit = clientMapSettings.split(",");
+
+  if (mapSettingsSplit.length > 0) {
+    mapCoordinates = [
+      parseFloat(mapSettingsSplit[0].split(":")[1]),
+      parseFloat(mapSettingsSplit[1].split(":")[1].replace("}", "")),
+    ];
+  }
 
   // Set zoom level
-  const zoom = 12; // Adjust the zoom level as needed
-
+  const zoom = clientZoomSettings ? parseInt(clientZoomSettings) : 11; // Adjust the zoom level as needed
 
   return (
     <>
-    
       <MapContainer
-        center={center}
+        center={mapCoordinates}
         zoom={zoom}
-       className="w-full h-screen"
+        className="w-full h-screen"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -73,10 +89,15 @@ const icon = (speed: number, ignition: number, angle: number) => {
         />
 
         {positions.map((position, index) => (
-
-
-          <Marker key={index} position={position}  icon={icon(speeds[index] || 0, ignitions[index] || 0, angles[index] || 0)}>
-        
+          <Marker
+            key={index}
+            position={position}
+            icon={icon(
+              speeds[index] || 0,
+              ignitions[index] || 0,
+              angles[index] || 0
+            )}
+          >
             <Popup>
               <div>
                 <h2>
@@ -91,7 +112,6 @@ const icon = (speed: number, ignition: number, angle: number) => {
               {pos[index]}
             </Tooltip>
           </Marker>
-
         ))}
       </MapContainer>
     </>
@@ -99,4 +119,3 @@ const icon = (speed: number, ignition: number, angle: number) => {
 };
 
 export default CarMap;
-
