@@ -4,7 +4,15 @@ import logo from "@/../public/Images/logo.png";
 import Image from "next/image";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
+
 import { useRouter } from "next/navigation";
+import {
+  Popover,
+  PopoverHandler,
+  PopoverContent,
+  Button,
+} from "@material-tailwind/react";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,8 +33,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div>
-          <div className="flex flex-row">
-            <div className="basis-20 py-3 bg-[#29303b] h-screen">
+          <div className="flex flex-row ">
+            <div className="basis-20 py-6 bg-[#29303b] h-screen hidden md:block">
+              <br></br><br></br>
               <Link href="/liveTracking">
                 <button
                   type="button"
@@ -37,7 +46,7 @@ export default function RootLayout({
                   title="Live Tracking"
                 >
                   <svg
-                    className="w-20 h-14 py-3  border-y-2 mt-12  text-[white]  text-white-10 dark:text-white"
+                    className="w-20 h-14 py-3  border-y-2   text-[white]  text-white-10 dark:text-white"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -209,25 +218,23 @@ export default function RootLayout({
                       </select>
                     </a>
                   </div>
-                  <div>
-                    <a
-                      href="#"
-                      className="inline-block text-sm px-4 py-2 leading-none lg:mt-0"
-                    >
-                      <img
-                        className="inline-block h-10 -my-4 w-10 rounded-full ring-2 ring-white"
-                        src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        alt=""
-                      />
-                    </a>
-                  </div>
-                  <button
-                    onClick={() => {
-                      signOut();
-                    }}
-                  >
-                    Logout
-                  </button>
+
+                  <Popover>
+                    <PopoverHandler>
+                      <img className=" cursor-pointer w-10 h-10 rounded-full" src="https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg" alt="Rounded avatar" />
+
+                    </PopoverHandler>
+                    <PopoverContent className="text-center h-52 w-80 ">
+                      <img className="ms-auto mr-auto mt-5 mb-5 w-10 h-10 rounded-full" src="https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg" alt="Rounded avatar" />
+                      <h1 className="text-3xl mb-3">Bilal Hussain</h1><hr></hr>
+
+                      <button className="text-white bg-green-500 p-1 px-5 py-2 mt-3" onClick={() => {
+                        signOut();
+                      }}>Sign Out</button>
+
+                    </PopoverContent>
+                  </Popover>
+
                 </div>
               </nav>
               {children}
