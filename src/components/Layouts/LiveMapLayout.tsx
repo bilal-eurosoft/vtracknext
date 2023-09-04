@@ -1,18 +1,49 @@
 "use client";
-
 import React from "react";
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { Icon } from "leaflet";
-import carpng from "../../../public/Images/703693_gps_512x512.png";
-import { StaticImageData } from "next/image";
 import { CarMapList } from "@/types/vehicle";
+import   RedCar  from "../../../public/redcar.svg";
+import   GreenCar  from "../../../public/greencar.svg";
+import   YellowCar  from "../../../public/yellowcar.svg";
+
+import L from "leaflet";
 
 const CarMap: React.FC<CarMapList> = ({ carData }) => {
   const positions: [number, number][] = carData?.map((data) => [
     data.gps.latitude,
     data.gps.longitude,
   ]);
+
+
+const angles = carData?.map((data) => data.gps.Angle);
+const speeds = carData?.map((data) => data.gps.speed);
+const ignitions = carData?.map((data) => data.ignition);
+
+const getIconForStatus = (speed: number, ignition: number) => {
+  if (speed === 0 && ignition === 0) {
+    return RedCar; // Replace redSvg with your red SVG icon URL
+  } else if (speed > 0 && ignition === 1) {
+    return GreenCar; // Replace greenSvg with your green SVG icon URL
+  } else {
+    return YellowCar; // Replace yellowSvg with your yellow SVG icon URL
+  }
+};
+
+const icon = (speed: number, ignition: number, angle: number) => {
+  const IconComponent = getIconForStatus(speed, ignition);
+  const rotation = angle ; // Set the rotation angle here
+
+  const customIcon = L.divIcon({
+    html: `<div style="transform: rotate(${rotation}deg);"><img src="${IconComponent.src}" style="transform: rotate(270deg)"} /></div>`,
+    
+    iconSize: [40, 40], // Adjust the size of the icon as needed
+    className: "custom-icon", // Add any custom CSS classes here
+  });
+
+  return customIcon;
+};
+
 
   const pos: string[] = carData?.map((datas) => datas?.vehicleNo);
 
@@ -27,18 +58,14 @@ const CarMap: React.FC<CarMapList> = ({ carData }) => {
   // Set zoom level
   const zoom = 12; // Adjust the zoom level as needed
 
-  // Custom icon
-  const customIcon = new Icon({
-    iconUrl: (carpng as StaticImageData).src,
-    iconSize: [38, 38], // Adjust the size as needed
-  });
 
   return (
     <>
+    
       <MapContainer
         center={center}
         zoom={zoom}
-        style={{ width: "100%", height: "800px" }}
+       className="w-full h-screen"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -46,7 +73,10 @@ const CarMap: React.FC<CarMapList> = ({ carData }) => {
         />
 
         {positions.map((position, index) => (
-          <Marker key={index} position={position} icon={customIcon}>
+
+
+          <Marker key={index} position={position}  icon={icon(speeds[index] || 0, ignitions[index] || 0, angles[index] || 0)}>
+        
             <Popup>
               <div>
                 <h2>
@@ -61,6 +91,7 @@ const CarMap: React.FC<CarMapList> = ({ carData }) => {
               {pos[index]}
             </Tooltip>
           </Marker>
+
         ))}
       </MapContainer>
     </>
@@ -68,3 +99,4 @@ const CarMap: React.FC<CarMapList> = ({ carData }) => {
 };
 
 export default CarMap;
+

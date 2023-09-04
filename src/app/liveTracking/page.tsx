@@ -1,7 +1,8 @@
 "use client";
-
+// livetrack.tsx
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import uniqueDataByIMEIAndLatestTimestamp from "@/utils/uniqueDataByIMEIAndLatestTimeStamp";
 import { VehicleData } from "@/types/vehicle";
 import { getVehicleDataByClientId } from "@/utils/API_CALLS";
 import { useSession } from "next-auth/react";
@@ -14,9 +15,12 @@ const DynamicCarMap = dynamic(
   }
 );
 
+
+
+
 const LiveTracking = () => {
   const { data: session } = useSession();
-  const [carData, setCarData] = useState([]);
+  const [carData, setCarData] = useState<VehicleData[]>([]);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isFirstTimeFetchedFromGraphQL, setIsFirstTimeFetchedFromGraphQL] =
     useState(false);
@@ -99,12 +103,12 @@ const LiveTracking = () => {
       try {
         socket.io.opts.query = { clientId: session?.clientId };
         socket.connect();
-        socket.on("message", (data) => {
+        socket.on("message", (data: { cacheList: VehicleData[]; } | null | undefined) => {
           if (data === null || data === undefined) {
             return;
           }
-          // call a filter function here to filter by IMEI and latest time stamp
-          setCarData(data?.cacheList);
+          const uniqueData = uniqueDataByIMEIAndLatestTimestamp(data?.cacheList);
+          setCarData(uniqueData);
           setLastDataReceivedTimestamp(new Date());
         });
       } catch (err) {
@@ -124,7 +128,7 @@ const LiveTracking = () => {
   return (
     <>
       <div className="grid lg:grid-cols-5  sm:grid-cols-5 md:grid-cols-5 grid-cols-1">
-        <div className="lg:col-span-1 md:col-span-2 sm:col-span-4   col-span-4 bg-gray-200">
+        <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4 bg-gray-200 h-screen overflow-y-scroll">
           <div className="grid grid-cols-2 bg-[#00B56C] py-3">
             <div className="lg:col-span-1">
               <div className="grid grid-cols-6">
@@ -154,7 +158,7 @@ const LiveTracking = () => {
               </div>
             </div>
             <div className="lg:col-span-1 col-span-1">
-              <h1 className="text-center text-white ms-8">Show(1) Vehicles</h1>
+              <h1 className="text-center text-white ">Show({carData.length}) Vehicles</h1>
             </div>
           </div>
 
@@ -165,6 +169,7 @@ const LiveTracking = () => {
 
             <div className="lg:col-span-1">
               <div className="grid grid-cols-10">
+
                 <div className="lg:col-span-1">
                   <svg
                     className="h-6 w-3 text-green-500 mr-2"
@@ -226,25 +231,60 @@ const LiveTracking = () => {
               >
                 <div className="lg:col-span-1 col-span-1">
                   <p>
-                    <b className="text-[#CF000F] ">{"abu-878"}</b>
+                    <b className="text-[#CF000F] ">{item?.vehicleNo}</b>
                   </p>
                 </div>
 
                 <div className="lg:col-span-1 col-span-1">
-                  <button className="text-white bg-green-500 p-1 -mt-1">
-                    Parked
-                  </button>
+                  {item.gps.speed === 0 && item.ignition === 0 ? (
+                    <>
+                      <button className="text-white bg-red-500 p-1 -mt-1">Parked</button>
+
+
+                    </>
+                  ) : item.gps.speed > 0 && item.ignition === 1 ? (
+                    <button className="text-white bg-green-500 p-1 -mt-1">Moving</button>
+                  ) : (
+                    <button className="text-white bg-yellow-500 p-1 -mt-1">Pause</button>
+                  )}
                 </div>
 
                 <div className="lg:col-span-1 col-span-1">
                   <div className="grid grid-cols-4">
-                    <div className="lg:col-span-2 col-span-2">0Kpk</div>
-
-                    <div className="lg:col-span-1">
+                    <div className="lg:col-span-2 col-span-2">{item.gps.speed}</div>
+                    {item.gps.speed === 0 && item.ignition === 0 ? (
+                      <div className="lg:col-span-1">
+                        <svg
+                          className="h-6 w-3 text-red-500 mr-2"
+                          viewBox="0 0 24 24"
+                          fill="red"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinejoin="round"
+                        >
+                          {" "}
+                          <circle cx="12" cy="12" r="10" />
+                        </svg>
+                      </div>
+                    ) : item.gps.speed > 0 && item.ignition === 1 ? (
+                      <div className="lg:col-span-1">
+                        <svg
+                          className="h-6 w-3 text-green-500 mr-2"
+                          viewBox="0 0 24 24"
+                          fill="green"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinejoin="round"
+                        >
+                          {" "}
+                          <circle cx="12" cy="12" r="10" />
+                        </svg>
+                      </div>
+                    ) : <div className="lg:col-span-1">
                       <svg
-                        className="h-6 w-3 text-green-500 mr-2"
+                        className="h-6 w-3 text-yellow-500 mr-2"
                         viewBox="0 0 24 24"
-                        fill="none"
+                        fill="yellow"
                         stroke="currentColor"
                         strokeWidth="2"
                         strokeLinejoin="round"
@@ -253,20 +293,17 @@ const LiveTracking = () => {
                         <circle cx="12" cy="12" r="10" />
                       </svg>
                     </div>
-                  </div>
-                </div>
+                    }
 
-                <div className="grid lg:grid-cols-4">
-                  <div className="lg:col-span-5 ">
-                    <p className="w-full mt-10">August 24 2</p>
                   </div>
                 </div>
+                <p className="w-72 mt-10  text-start  px-4 text-gray-500">{item.timestamp}</p>
               </div>
             );
           })}
         </div>
 
-        <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ... bg-red-500">
+        <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ">
           {carData.length !== 0 && <DynamicCarMap carData={carData} />}
         </div>
       </div>
@@ -275,3 +312,5 @@ const LiveTracking = () => {
 };
 
 export default LiveTracking;
+
+
