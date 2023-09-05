@@ -21,8 +21,9 @@ export async function getVehicleDataByClientId(clientId: string) {
 }
 
 
-export async function getClientSettingByToken(token:string){
+export async function getClientSettingByClinetIdAndToken({token, clientId}: {token:string, clientId:string}){
 try {
+  console.log('{token, clientId}',{token, clientId})
   const response = await fetch("https://backend.vtracksolutions.com/SettingByClientId", {
     "headers": {
       "accept": "application/json, text/plain, */*",
@@ -30,7 +31,7 @@ try {
       "content-type": "application/json",
       
     },
-    "body": "{\"ClientId\":\"61e186bb39354279c013f6a4\"}",
+    "body": `{\"ClientId\":\"${clientId}\"}`,
     "method": "POST"
   });
   if (!response.ok) {

@@ -2,14 +2,16 @@
 // livetrack.tsx
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import uniqueDataByIMEIAndLatestTimestamp from "@/utils/uniqueDataByIMEIAndLatestTimeStamp";
+import uniqueDataByIMEIAndLatestTimestamp from "@/utils/uniqueDataByIMEIAndLatestTimestamp";
 import { VehicleData } from "@/types/vehicle";
 import {
-  getClientSettingByToken,
+  getClientSettingByClinetIdAndToken,
   getVehicleDataByClientId,
 } from "@/utils/API_CALLS";
 import { useSession } from "next-auth/react";
 import { socket } from "@/utils/socket";
+import L from "leaflet";
+
 
 const DynamicCarMap = dynamic(
   () => import("../../components/Layouts/LiveMapLayout"),
@@ -23,15 +25,14 @@ const LiveTracking = () => {
   const [carData, setCarData] = useState<VehicleData[]>([]);
   const [clientSettings, setClientSettings] = useState<ClientSettings[]>([]);
 
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  const [isOnline, setIsOnline] = useState(navigator.onLine);                                
   const [isFirstTimeFetchedFromGraphQL, setIsFirstTimeFetchedFromGraphQL] =
     useState(false);
   const [lastDataReceivedTimestamp, setLastDataReceivedTimestamp] = useState(
     new Date()
   );
-  const [selectedVehicle, setSelectedVehicle] = useState<VehicleData | null>(
-    null
-  );
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleData | null>(null);
 
   // This useEffect is responsible for checking internet connection in the browser.
   useEffect(() => {
@@ -63,12 +64,16 @@ const LiveTracking = () => {
             clientVehicleData?.data?.Currentlocation?.Value
           )?.cacheList;
           // call a filter function here to filter by IMEI and latest time stamp
-          setCarData(parsedData);
+          let uniqueData =  uniqueDataByIMEIAndLatestTimestamp(parsedData)
+          setCarData(uniqueData);
+          
           setIsFirstTimeFetchedFromGraphQL(true);
         }
-        const clientSettingData = await getClientSettingByToken(
-          session?.accessToken
-        );
+      
+        const clientSettingData = await getClientSettingByClinetIdAndToken({
+          token: session?.accessToken,
+          clientId: session?.clientId
+      });
         if (clientSettingData) {
           setClientSettings(clientSettingData);
         }
@@ -141,9 +146,24 @@ const LiveTracking = () => {
     };
   }, [isOnline, session?.clientId]);
 
+
   useEffect(() => {
     console.log("selectedVehicle", selectedVehicle?.gps);
+    
+  
   }, [selectedVehicle]);
+
+  const speeds = carData?.map((data) => data.gps.speed);
+  const ignitions = carData?.map((data) => data.ignition);
+   
+  const condition1Count = speeds.filter((speed, index) => speed === 0 && ignitions[index] === 0).length;
+  const condition2Count = speeds.filter((speed, index) => speed > 0 && ignitions[index] === 1).length;
+  const condition3Count = carData.length - (condition1Count + condition2Count);
+  
+
+
+
+
 
   return (
     <>
@@ -191,11 +211,12 @@ const LiveTracking = () => {
 
             <div className="lg:col-span-1">
               <div className="grid grid-cols-10">
+
                 <div className="lg:col-span-1">
                   <svg
                     className="h-6 w-3 text-green-500 mr-2"
                     viewBox="0 0 24 24"
-                    fill="none"
+                    fill="green"
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinejoin="round"
@@ -205,7 +226,7 @@ const LiveTracking = () => {
                   </svg>
                 </div>
 
-                <div className="lg:col-span-1">0</div>
+                <div className="lg:col-span-1">{condition2Count}</div>
 
                 <div className="lg:col-span-1"></div>
 
@@ -213,7 +234,7 @@ const LiveTracking = () => {
                   <svg
                     className="h-6 w-3 text-yellow-500 mr-2"
                     viewBox="0 0 24 24"
-                    fill="none"
+                    fill="yellow"
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinejoin="round"
@@ -223,14 +244,14 @@ const LiveTracking = () => {
                   </svg>
                 </div>
 
-                <div className="lg:col-span-1">0</div>
+                <div className="lg:col-span-1">{condition3Count}</div>
                 <div className="lg:col-span-1"></div>
 
                 <div className="lg:col-span-1">
                   <svg
                     className="h-6 w-3 text-red-500 mr-2"
                     viewBox="0 0 24 24"
-                    fill="none"
+                    fill="red"
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinejoin="round"
@@ -240,9 +261,10 @@ const LiveTracking = () => {
                   </svg>
                 </div>
 
-                <div className="lg:col-span-1">1</div>
+                <div className="lg:col-span-1">{condition1Count}</div>
               </div>
             </div>
+            
           </div>
           {carData.map((item: VehicleData) => {
             return (
@@ -280,7 +302,7 @@ const LiveTracking = () => {
                 <div className="lg:col-span-1 col-span-1">
                   <div className="grid grid-cols-4">
                     <div className="lg:col-span-2 col-span-2">
-                      {item.gps.speed}
+                      {item.gps.speed} Mph
                     </div>
                     {item.gps.speed === 0 && item.ignition === 0 ? (
                       <div className="lg:col-span-1">
@@ -346,3 +368,6 @@ const LiveTracking = () => {
 };
 
 export default LiveTracking;
+
+
+

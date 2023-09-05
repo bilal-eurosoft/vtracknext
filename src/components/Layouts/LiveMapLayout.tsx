@@ -38,7 +38,7 @@ const CarMap = ({
   const icon = (speed: number, ignition: number, angle: number) => {
     const IconComponent = getIconForStatus(speed, ignition);
     const rotation = angle; // Set the rotation angle here
-
+    
     const customIcon = L.divIcon({
       html: `<div style="transform: rotate(${rotation}deg);"><img src="${IconComponent.src}" style="transform: rotate(270deg)"} /></div>`,
 
@@ -48,6 +48,7 @@ const CarMap = ({
 
     return customIcon;
   };
+  
 
   const pos: string[] = carData?.map((datas) => datas?.vehicleNo);
 
@@ -63,6 +64,24 @@ const CarMap = ({
     return <>Map Loading...</>;
   }
   let mapCoordinates: [number, number] = [0, 0];
+
+
+  // Use a regular expression to match and extract lat and lng values
+const regex = /lat:([^,]+),lng:([^}]+)/;
+const match = clientMapSettings.match(regex);
+
+if (match) {
+  // match[1] contains the lat value, match[2] contains the lng value
+  const lat = parseFloat(match[1]);
+  const lng = parseFloat(match[2]);
+  
+  // Store lat and lng values in an array
+  mapCoordinates = [lat, lng];
+  console.log(mapCoordinates); // Output: [51.5361504, -0.28807]
+} else {
+  console.log("No match found");
+}
+
 
   const mapSettingsSplit = clientMapSettings.split(",");
 
