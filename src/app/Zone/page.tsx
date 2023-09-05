@@ -1,72 +1,63 @@
 export default function Zone() {
   return <div>
 
-
-
-    {/* <form className="mx-4 bg-green-50">
-      <p className="bg-[#00B56C] px-4 py-1 text-white">Zone</p>
-
-      <div className="grid grid-cols-2 md:gap-6  mt-5 mx-4">
-
-        <div className="relative z-0 w-full mb-6 group">
-          <label className="">Zone name</label>
-          <input type="text" className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter Zone Name " required />
-        </div>
-        <div className="relative z-0 w-full mb-6 group">
-          <label className="">Zone sort name</label>
-          <input type="text" className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter sort Zone Name " required />
-        </div>
-      </div>
-
-
-      <div className="grid grid-cols-2 md:gap-6 mx-4 mt-5">
-        <div className="relative z-0 w-full mb-6 group">
-          <label className="">Geofence</label><br></br>
-          <select className=" bg-transparent border-2 p-1 w-full h-10 outline-none border-[#00B56C]-600">
-            <option>Select Vehicle</option>
-            <option>Uk</option>
-            <option>Uk</option>
-          </select>
-        </div>
-        <div className="relative z-0 w-full mb-6 group">
-          <label className="">Zone Type</label><br></br>
-          <button className=" border-2 border-gray-200 px-4 h-10">Circle</button>
-          <button className=" border-2 border-gray-200 px-4 h-10">Polygon</button>
-        </div>
-      </div>
-
-
-      <div className="grid grid-cols-2 md:gap-6 mx-4 mt-5">
-       
-        <div className="  w-full mb-6 ">
-          <button className="text-white px-4 h-10 bg-[#00B56C] mr-3">Search</button>
-          <button className="text-gray px-7 h-10 bg-white border-2 border-gray-200">Clear</button>
-        </div>
-
-        <div className="relative z-0 w-full  mb-6 group text-end">
-          <button className="text-white px-4 h-10 bg-[#00B56C] mr-3">Add Zone</button>
-          <button className="text-gray px-7 h-10 bg-white border-2 border-gray-200">Delete Zone</button>
-        </div>
-
-      </div>
-
-
-    </form> */}
     <form>
       <div className="mx-4">
         <p className="bg-[#00B56C] px-4 py-1 text-white">Zone</p>
-        <div className="grid grid-cols-2 gap-6 pt-5 px-5 bg-green-50 ">
+        <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
           <div className="lg:col-span-1">
             <label className="">Zone name</label>
             <input type="text" className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter Zone Name " required />
-            <br></br><br></br>
+          </div>
+
+          <div className="lg:col-span-1 md:col-span-1 col-span-1">
+            <label className="">Zone sort name</label>
+            <input type="text" className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter Zone Name " required />
+          </div>
+
+        </div>
+
+
+        <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
+          <div className="lg:col-span-1">
+            {/* <label className="">Zone name</label>
+            <input type="text" className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter Zone Name " required /> */}
+            {/* <br></br><br></br> */}
 
             <label>Geofence</label>
             <select className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 outline-none " placeholder="Enter Zone Name " required >
               <option>TEst</option>
               <option>TEst</option>
             </select>
-            <br></br><br></br>
+            {/* <br></br><br></br> */}
+
+            {/* <div className="text-start">
+              <button className="text-white px-4 h-10 bg-[#00B56C] mr-3">Search</button>
+              <button className="text-gray px-7 h-10 bg-white border-2 border-gray-200">Clear</button>
+            </div> */}
+
+          </div>
+
+          <div className="lg:col-span-1 md:col-span-1 col-span-1">
+            {/* <label className="">Zone sort name</label>
+            <input type="text" className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter Zone Name " required /> */}
+            {/* <br></br><br></br> */}
+            <label className="">Zone Type</label><br></br>
+            <button className=" border-2 border-gray-200 px-4 h-10">Circle</button>
+            <button className=" border-2 border-gray-200 px-4 h-10">Polygon</button>
+            {/* <br></br><br></br> */}
+            {/* <div className="text-end">
+              <button className="text-white px-4 h-10 bg-[#00B56C] mr-3">Add Zone</button>
+              <button className="text-gray px-7 h-10 bg-white border-2 border-gray-200">Delete Zone</button>
+            </div> */}
+
+          </div>
+
+        </div>
+
+
+        <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
+          <div className="lg:col-span-1">
 
             <div className="text-start">
               <button className="text-white px-4 h-10 bg-[#00B56C] mr-3">Search</button>
@@ -75,19 +66,13 @@ export default function Zone() {
 
           </div>
 
-          <div className="lg:col-span-1 col-span-1">
-            <label className="">Zone sort name</label>
-            <input type="text" className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter Zone Name " required />
-            <br></br><br></br>
-            <label className="">Zone Type</label><br></br>
-            <button className=" border-2 border-gray-200 px-4 h-10">Circle</button>
-            <button className=" border-2 border-gray-200 px-4 h-10">Polygon</button>
-            <br></br><br></br>
-            <div className="text-end">
+          <div className="lg:col-span-1 md:col-span-1 col-span-1">
+
+            <div className="lg:text-end sm:text-start text-start ">
               <button className="text-white px-4 h-10 bg-[#00B56C] mr-3">Add Zone</button>
               <button className="text-gray px-7 h-10 bg-white border-2 border-gray-200">Delete Zone</button>
             </div>
-
+            <br></br>
           </div>
 
         </div>

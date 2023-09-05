@@ -64,7 +64,7 @@ const CarMap: React.FC<CarMapProps> = ({ carData }) => {
 
     return (
         <>
-            <MapContainer center={center} zoom={zoom} className='w-full h-screen'>
+            <MapContainer center={center} zoom={zoom} className='w-full' style={{ height: '71.5em' }}>
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'

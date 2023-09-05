@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 
+
 const DynamicCarMap = dynamic(() => import('../../components/Layouts/CarMapLayout'), {
   ssr: false,
 });
@@ -62,9 +63,8 @@ const LiveTracking = () => {
 
   return <div>
 
-    <div className="grid lg:grid-cols-5  sm:grid-cols-5 md:grid-cols-5 grid-cols-1 ">
-
-      <div className="lg:col-span-1 md:col-span-2 sm:col-span-4 col-span-4 bg-gray-200 h-screen overflow-y-scroll">
+    <div className="grid lg:grid-cols-5  sm:grid-cols-5 md:grid-cols-5 grid-cols-1 " style={{ height: '92vh' }}>
+      <div className="lg:col-span-1 md:col-span-2 sm:col-span-4 col-span-4 bg-gray-200 overflow-y-scroll" >
 
         <div className="grid grid-cols-2 bg-[#00B56C] py-3">
           <div className="lg:col-span-1">
@@ -159,12 +159,9 @@ const LiveTracking = () => {
         ))}
       </div>
 
-      <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4">
-        {carData.length !== 0 && <DynamicCarMap carData={carData} />}
+      <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4  " >
+        {carData.length !== 0 && <DynamicCarMap carData={carData}   />}
       </div>
-
-
-
 
     </div>
 
