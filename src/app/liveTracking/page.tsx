@@ -10,7 +10,7 @@ import {
 } from "@/utils/API_CALLS";
 import { useSession } from "next-auth/react";
 import { socket } from "@/utils/socket";
-import L from "leaflet";
+
 
 
 const DynamicCarMap = dynamic(
@@ -26,7 +26,7 @@ const LiveTracking = () => {
   const [clientSettings, setClientSettings] = useState<ClientSettings[]>([]);
 
 
-  const [isOnline, setIsOnline] = useState(navigator.onLine);                                
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isFirstTimeFetchedFromGraphQL, setIsFirstTimeFetchedFromGraphQL] =
     useState(false);
   const [lastDataReceivedTimestamp, setLastDataReceivedTimestamp] = useState(
@@ -64,16 +64,16 @@ const LiveTracking = () => {
             clientVehicleData?.data?.Currentlocation?.Value
           )?.cacheList;
           // call a filter function here to filter by IMEI and latest time stamp
-          let uniqueData =  uniqueDataByIMEIAndLatestTimestamp(parsedData)
+          let uniqueData = uniqueDataByIMEIAndLatestTimestamp(parsedData)
           setCarData(uniqueData);
-          
+
           setIsFirstTimeFetchedFromGraphQL(true);
         }
-      
+
         const clientSettingData = await getClientSettingByClinetIdAndToken({
           token: session?.accessToken,
           clientId: session?.clientId
-      });
+        });
         if (clientSettingData) {
           setClientSettings(clientSettingData);
         }
@@ -146,28 +146,74 @@ const LiveTracking = () => {
     };
   }, [isOnline, session?.clientId]);
 
+  const handleMapLocationUpdate = (latitude: number, longitude: number) => {
+
+    return { latitude, longitude }
+  };
+
 
   useEffect(() => {
     console.log("selectedVehicle", selectedVehicle?.gps);
-    
-  
+    const latitude = selectedVehicle?.gps?.latitude ?? 0; // Default to 0 if undefined
+    const longitude = selectedVehicle?.gps?.longitude ?? 0; // Default to 0 if undefined
+
+
+    handleMapLocationUpdate(latitude, longitude);
   }, [selectedVehicle]);
+
 
   const speeds = carData?.map((data) => data.gps.speed);
   const ignitions = carData?.map((data) => data.ignition);
-   
+
   const condition1Count = speeds.filter((speed, index) => speed === 0 && ignitions[index] === 0).length;
   const condition2Count = speeds.filter((speed, index) => speed > 0 && ignitions[index] === 1).length;
   const condition3Count = carData.length - (condition1Count + condition2Count);
+
+
+
+
+  const handleWheel = (event: WheelEvent) => {
+    if (event.deltaY !== 0) {
+      // Scrolling, so set selectedVehicle to null
+      setSelectedVehicle(null);
+    }
+  };
+
+  const handleClick = () => {
+    // Click event occurred, so set selectedVehicle to null
+    setSelectedVehicle(null);
+  };
+
+  useEffect(() => {
+    // Add event listeners when the component mounts
+    window.addEventListener('wheel', handleWheel);
+    window.addEventListener('click', handleClick);
+
+    // Remove event listeners when the component unmounts
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('click', handleClick);
+    };
+  }, []);
+// sorted array for car dta according to vehicleReg
+  carData.sort((a, b) => {
+    const regA = Number(a.vehicleReg);
+    const regB = Number(b.vehicleReg);
+ 
+    // Compare the vehicle registration values
+    if (regA < regB) return -1;
+    if (regA > regB) return 1;
+    return 0;
+  });
   
-
-
-
+  // Create an array to store the sorted objects
+  const sortedArray = [...carData];
 
 
   return (
     <>
-      <div className="grid lg:grid-cols-5  sm:grid-cols-5 md:grid-cols-5 grid-cols-1">
+
+      <div className="grid lg:grid-cols-5  sm:grid-cols-5 md:grid-cols-5 grid-cols-1" >
         <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4 bg-gray-200 h-screen overflow-y-scroll">
           <div className="grid grid-cols-2 bg-[#00B56C] py-3">
             <div className="lg:col-span-1">
@@ -264,9 +310,10 @@ const LiveTracking = () => {
                 <div className="lg:col-span-1">{condition1Count}</div>
               </div>
             </div>
-            
+
           </div>
-          {carData.map((item: VehicleData) => {
+         {/*  {carData.map((item: VehicleData) => { */}
+         {sortedArray.map((item: VehicleData) => {
             return (
               <div
                 key={item?.IMEI}
@@ -277,7 +324,17 @@ const LiveTracking = () => {
               >
                 <div className="lg:col-span-1 col-span-1">
                   <p>
-                    <b className="text-[#CF000F] ">{item?.vehicleNo}</b>
+                  {item.gps.speed === 0 && item.ignition === 0 ? (
+                    <b className="text-red-500 ">{item?.vehicleReg}</b>
+          
+                    
+                  ) : item.gps.speed > 0 && item.ignition === 1 ? (
+                    
+                      <b className="text-green-500 ">{item?.vehicleReg}</b>
+                  ) : (
+                    <b className="text-yellow-500 ">{item?.vehicleReg}</b>
+                  )}
+                    
                   </p>
                 </div>
 
@@ -359,7 +416,7 @@ const LiveTracking = () => {
 
         <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ">
           {carData.length !== 0 && (
-            <DynamicCarMap carData={carData} clientSettings={clientSettings} />
+            <DynamicCarMap carData={carData} clientSettings={clientSettings} selectedVehicle={selectedVehicle} />
           )}
         </div>
       </div>
@@ -368,6 +425,4 @@ const LiveTracking = () => {
 };
 
 export default LiveTracking;
-
-
 
