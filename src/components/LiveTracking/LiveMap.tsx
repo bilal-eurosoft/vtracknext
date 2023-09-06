@@ -1,12 +1,11 @@
 "use client";
 
-// carmap.tsx
 import React from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { VehicleData } from "@/types/vehicle";
 
-import LiveCars from "../LiveCars";
+import LiveCars from "./LiveCars";
 
 const DynamicCarMap = ({
   carData,
@@ -40,30 +39,28 @@ const DynamicCarMap = ({
   }
   const zoom = clientZoomSettings ? parseInt(clientZoomSettings) : 11;
 
-  if (selectedVehicle) {
-    console.log("selectedVehicle", selectedVehicle);
-  }
-
   return (
     <>
-      <div>
-        <MapContainer
-          id="map"
-          center={mapCoordinates}
-          zoom={zoom}
-          className="w-full h-screen"
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'
-          />
+      <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ">
+        <div>
+          <MapContainer
+            id="map"
+            center={mapCoordinates}
+            zoom={zoom}
+            className="w-full h-screen"
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'
+            />
 
-          <LiveCars
-            carData={carData}
-            clientSettings={clientSettings}
-            selectedVehicle={selectedVehicle}
-          />
-        </MapContainer>
+            <LiveCars
+              carData={carData}
+              clientSettings={clientSettings}
+              selectedVehicle={selectedVehicle}
+            />
+          </MapContainer>
+        </div>
       </div>
     </>
   );
