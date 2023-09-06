@@ -8,18 +8,15 @@ import { VehicleData } from "@/types/vehicle";
 
 import LiveCars from "../LiveCars";
 
-const CarMap = ({
+const DynamicCarMap = ({
   carData,
   clientSettings,
-  selectedVehicle
+  selectedVehicle,
 }: {
   carData: VehicleData[];
   clientSettings: ClientSettings[];
   selectedVehicle: VehicleData | null; // Make sure it can handle null values
 }) => {
-
-
-
   const clientMapSettings = clientSettings?.filter(
     (el) => el?.PropertDesc === "Map"
   )[0]?.PropertyValue;
@@ -40,23 +37,21 @@ const CarMap = ({
     const lat = parseFloat(match[1]);
     const lng = parseFloat(match[2]);
     mapCoordinates = [lat, lng];
-
   }
   const zoom = clientZoomSettings ? parseInt(clientZoomSettings) : 11;
 
-  if(selectedVehicle){
-    console.log('selectedVehicle',selectedVehicle)
+  if (selectedVehicle) {
+    console.log("selectedVehicle", selectedVehicle);
   }
 
   return (
     <>
-      <div  >
-        <MapContainer id="map"
-        
+      <div>
+        <MapContainer
+          id="map"
           center={mapCoordinates}
           zoom={zoom}
           className="w-full h-screen"
-
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -68,11 +63,10 @@ const CarMap = ({
             clientSettings={clientSettings}
             selectedVehicle={selectedVehicle}
           />
-
         </MapContainer>
       </div>
     </>
   );
 };
 
-export default CarMap;
+export default DynamicCarMap;

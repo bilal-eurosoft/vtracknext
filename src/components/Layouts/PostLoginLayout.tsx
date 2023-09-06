@@ -4,22 +4,7 @@ import logo from "@/../public/Images/logo.png";
 import Image from "next/image";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import {
-  Menu,
-  MenuHandler,
-  MenuList,
-  MenuItem,
-} from "@material-tailwind/react";
-
 import { useRouter } from "next/navigation";
-import {
-  Popover,
-  PopoverHandler,
-  PopoverContent,
-  Button,
-} from "@material-tailwind/react";
-import { useState, useEffect } from "react";
-
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,20 +14,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [time, setTime] = useState<any>(new Date())
-  useEffect(() => {
-    setInterval(() => setTime(new Date()), 1000)
-  }, [])
-
-
-  const date: any = new Date().toDateString()
-
-  // const func = () => {
-  //   setInterval(() => {
-  //     new Date().toLocaleTimeString()
-  //   }, 1000)
-  // }
-  // console.log(func)
 
   const { data: session } = useSession();
 
@@ -54,9 +25,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div>
-          <div className="flex flex-row ">
-            <div className="basis-20 py-6 bg-[#29303b] h-screen hidden md:block">
-              <br></br><br></br>
+          <div className="flex flex-row">
+            <div className="basis-20 py-3 bg-[#29303b] h-screen">
               <Link href="/liveTracking">
                 <button
                   type="button"
@@ -67,7 +37,7 @@ export default function RootLayout({
                   title="Live Tracking"
                 >
                   <svg
-                    className="w-20 h-14 py-3  border-y-2   text-[white]  text-white-10 dark:text-white"
+                    className="w-20 h-14 py-3  border-y-2 mt-12  text-[white]  text-white-10 dark:text-white"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -176,8 +146,6 @@ export default function RootLayout({
                 </button>
               </Link>
 
-
-
               <Link href="/Reports">
                 <button
                   type="button"
@@ -203,47 +171,6 @@ export default function RootLayout({
                   </svg>
                 </button>
               </Link>
-
-
-
-              {/* <Link href="/DriverProfile">
-                <button
-                  type="button"
-                  data-te-toggle="tooltip"
-                  data-te-placement="right"
-                  data-te-ripple-init
-                  data-te-ripple-color="light"
-                  title="Dual Camera"
-                >
-                  <svg className="w-20 h-14 py-3  border-y-2 -my-2  text-[white]  text-white-10  dark:text-white" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z" />  <circle cx="7" cy="17" r="2" />  <circle cx="17" cy="17" r="2" />  <path d="M5 17h-2v-6l2-5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" /></svg>
-                </button>
-              </Link> */}
-
-              <Menu placement="right">
-                <MenuHandler className='border-none'>
-                  <button
-                    type="button"
-                    data-te-toggle="tooltip"
-                    data-te-placement="right"
-                    data-te-ripple-init
-                    data-te-ripple-color="light"
-                    title="Dual Camera"
-                  >
-                    <svg className="w-20 h-14 py-3  border-y-2 -my-2  text-[white]  text-white-10  dark:text-white" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z" />  <circle cx="7" cy="17" r="2" />  <circle cx="17" cy="17" r="2" />  <path d="M5 17h-2v-6l2-5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" /></svg>
-                  </button>
-                </MenuHandler>
-
-                <MenuList  >
-                  <Link href="/DriverProfile">
-                    <MenuItem className="mb-5 text-[#00B56C]" >Driver Profile</MenuItem>
-                  </Link>
-
-                  <Link href="/DriverAssign">
-                    <MenuItem className="text-[#00B56C]">Assign Deriver</MenuItem>
-                  </Link>
-                </MenuList>
-
-              </Menu>
             </div>
             <hr></hr>
 
@@ -266,44 +193,41 @@ export default function RootLayout({
                 </div>
                 <div className="w-full block flex-grow lg:flex lg:items-center text-end lg:w-auto">
                   <div className="text-sm lg:flex-grow">
-
-                    <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  ">
-
+                    <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  mr-4">
+                      Tester{" "}
                       <span className="text-black">
                         {" "}
-                        &nbsp;<span className="text-1xl"> <span className="text-[#00B56C]">Tester </span>{date}</span>
+                        &nbsp; 8/30/2023, 2:25:59 PM
                       </span>
                     </a>
 
-                    <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  w-24 mr-8">
-
-                      <span className="text-black">
-                        {" "}
-                        &nbsp;<span className="text-1xl">{time.toLocaleTimeString()}</span>
-                      </span>
+                    <a className="block mt-4 lg:inline-block lg:mt-0   mr-4">
+                      <select className="w-20 bg-transparent border-2 border-[#00B56C]-600">
+                        <option>Uk</option>
+                        <option>Uk</option>
+                        <option>Uk</option>
+                      </select>
                     </a>
-
-
-
-
                   </div>
-
-                  <Popover  >
-                    <PopoverHandler >
-                      <img className=" cursor-pointer w-10 h-10 rounded-full" src="https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg" alt="Rounded avatar" />
-
-                    </PopoverHandler>
-                    <PopoverContent className="text-center h-52 w-80 "  >
-                      <img className="ms-auto mr-auto mt-5 mb-5 w-10 h-10 rounded-full" src="https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg" alt="Rounded avatar" />
-                      <h1 className="text-3xl mb-3">Bilal Hussain</h1><hr></hr>
-
-                      <button className="text-white bg-green-500 p-1 px-5 py-2 mt-3" onClick={() => {
-                        signOut();
-                      }}>Sign Out</button>
-
-                    </PopoverContent>
-                  </Popover>
-
+                  <div>
+                    <a
+                      href="#"
+                      className="inline-block text-sm px-4 py-2 leading-none lg:mt-0"
+                    >
+                      <img
+                        className="inline-block h-10 -my-4 w-10 rounded-full ring-2 ring-white"
+                        src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        alt=""
+                      />
+                    </a>
+                  </div>
+                  <button
+                    onClick={() => {
+                      signOut();
+                    }}
+                  >
+                    Logout
+                  </button>
                 </div>
               </nav>
               {children}
@@ -311,6 +235,6 @@ export default function RootLayout({
           </div>
         </div>
       </body>
-    </html >
+    </html>
   );
 }
