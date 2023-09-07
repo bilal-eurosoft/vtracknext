@@ -27,13 +27,14 @@ export default function RootLayout({
     onMouseEnter: () => setOpenPopover(true),
     onMouseLeave: () => setOpenPopover(false),
   };
+  const time = dayjs()
   dayjs.extend(utc);
   dayjs.extend(timezone);
   const { data: session } = useSession();
   if (!session) {
     router.push("/login");
   }
-  const dynamicTime = dayjs.tz("2013-11-18 11:55:20", session?.timezone);
+  const dynamicTime = dayjs.tz(time.format(), session?.timezone);
   return (
     <div className={inter.className}>
       <div>
