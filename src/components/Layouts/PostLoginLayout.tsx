@@ -22,26 +22,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [time, setTime] = useState<any>(new Date())
-  useEffect(() => {
-    setInterval(() => setTime(new Date()), 1000)
-  }, [])
-  const date: any = new Date().toDateString()
   const [openPopover, setOpenPopover] = useState(false);
   const triggers = {
     onMouseEnter: () => setOpenPopover(true),
     onMouseLeave: () => setOpenPopover(false),
   };
+  const time = dayjs()
   dayjs.extend(utc);
   dayjs.extend(timezone);
   const { data: session } = useSession();
   if (!session) {
     router.push("/login");
   }
-
-  const torontoTime = dayjs.tz("2013-11-18 11:55:20", session?.timezone);
-
-  console.log(session)
+  const dynamicTime = dayjs.tz(time.format(), session?.timezone);
   return (
     <div className={inter.className}>
       <div>
@@ -216,14 +209,11 @@ export default function RootLayout({
                       &nbsp;<span className="text-1xl"> <span className="text-[#00B56C] mr-10">
                         {session?.clientName}
                       </span>
-                        {/* {date} */}
-
                       </span>
                     </span>
                   </a>
-
                   <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  w-42 mr-8">
-                    { <p>Toronto Time: {torontoTime.format('YYYY-MM-DD HH:mm:ss z')}</p>}
+                    {<p> {dynamicTime.format('YYYY-MM-DD HH:mm:ss z')}</p>}
                   </a>
                 </div>
                 <div>
