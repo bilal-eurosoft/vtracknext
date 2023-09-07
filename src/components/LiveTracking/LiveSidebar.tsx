@@ -62,7 +62,7 @@ const LiveSidebar = ({
                 type="text"
                 name="search"
                 className="bg-transparent text-white w-full px-1 py-1 placeholder-gray-100 border-none outline-none"
-                placeholder="John"
+                placeholder="Vehicle Reg."
                 required
                 onChange={handleInputChange}
               />
