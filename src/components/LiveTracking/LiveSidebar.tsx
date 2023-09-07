@@ -1,4 +1,5 @@
 import { VehicleData } from "@/types/vehicle";
+import { useEffect, useState } from "react";
 
 const LiveSidebar = ({
   carData,
@@ -13,6 +14,29 @@ const LiveSidebar = ({
   countMoving: Number;
   setSelectedVehicle: any;
 }) => {
+
+
+   const [searchData, setSearchData] = useState({
+    search: ""
+  });
+  const [filteredData, setFilteredData] = useState<VehicleData[]>([]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSearchData({ ...searchData, [name]: value });
+  };
+
+  useEffect(() => {
+    // Filter the carData based on the user's input
+    const filtered = carData.filter((data) =>
+      data.vehicleReg.includes(searchData.search)
+    );
+
+    // Update the filteredData and sortedData states
+    setFilteredData(filtered);
+   
+  }, [searchData.search, carData]);
+
   return (
     <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4 bg-gray-200 h-screen overflow-y-scroll">
       <div className="grid grid-cols-2 bg-[#00B56C] py-3">
@@ -36,9 +60,11 @@ const LiveSidebar = ({
             <div className="lg:col-span-5 col-span-5">
               <input
                 type="text"
+                name="search"
                 className="bg-transparent text-white w-full px-1 py-1 placeholder-gray-100 border-none outline-none"
                 placeholder="John"
                 required
+                onChange={handleInputChange}
               />
             </div>
           </div>
@@ -110,7 +136,7 @@ const LiveSidebar = ({
           </div>
         </div>
       </div>
-      {carData?.map((item: VehicleData) => {
+      {filteredData?.map((item: VehicleData) => {
         return (
           <div
             key={item?.IMEI}

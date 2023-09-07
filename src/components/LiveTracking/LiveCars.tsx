@@ -86,7 +86,7 @@ const LiveCars = ({
             angle[index] || 0
           )}
         >
-          <Tooltip direction="bottom" offset={[0, 20]} opacity={1} permanent>
+          <Tooltip direction="bottom" offset={[0, 10]} opacity={1} permanent>
             {pos[index]}
           </Tooltip>
         </Marker>
