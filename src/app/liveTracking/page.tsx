@@ -146,7 +146,7 @@ const LiveTracking = () => {
 
   return (
     <>
-      <div className="grid lg:grid-cols-5 sm:grid-cols-5 md:grid-cols-5 grid-cols-1">
+      <div className="grid lg:grid-cols-5 sm:grid-cols-5 md:grid-cols-5 grid-cols-1 overflow-y-scroll" >
         <LiveSidebar
           carData={carData.current}
           countMoving={countMoving}
