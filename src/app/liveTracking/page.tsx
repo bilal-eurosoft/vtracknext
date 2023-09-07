@@ -65,7 +65,7 @@ const LiveTracking = () => {
           // call a filter function here to filter by IMEI and latest time stamp
           let uniqueData = uniqueDataByIMEIAndLatestTimestamp(parsedData);
           carData.current = uniqueData;
-          setIsFirstTimeFetchedFromGraphQL(true);
+                setIsFirstTimeFetchedFromGraphQL(true);
         }
 
         const clientSettingData = await getClientSettingByClinetIdAndToken({
@@ -143,6 +143,35 @@ const LiveTracking = () => {
   }, [isOnline, session?.clientId]);
 
   const { countParked, countMoving, countPause } = countCars(carData?.current);
+
+  
+// scroll down fix 
+  const handleWheel = (event: WheelEvent) => {
+    if (event.deltaY !== 0) {
+      // Scrolling, so set selectedVehicle to null
+      setSelectedVehicle(null);
+    }
+  };
+
+  const handleClick = () => {
+    // Click event occurred, so set selectedVehicle to null
+    setSelectedVehicle(null);
+  };
+
+  useEffect(() => {
+    // Add event listeners when the component mounts
+    window.addEventListener('wheel', handleWheel);
+    window.addEventListener('click', handleClick);
+
+    // Remove event listeners when the component unmounts
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('click', handleClick);
+    };
+  }, []);
+
+
+
 
   return (
     <>

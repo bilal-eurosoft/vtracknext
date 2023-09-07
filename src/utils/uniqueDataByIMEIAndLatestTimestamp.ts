@@ -20,5 +20,17 @@ export default function uniqueDataByIMEIAndLatestTimestamp(
   })
 
   const uniqueEntries = Object.values(uniqueData).map((item) => item.entry)
-  return uniqueEntries
+  uniqueEntries.sort((a, b) => {
+    const regA = Number(a.vehicleReg);
+    const regB = Number(b.vehicleReg);
+ 
+    // Compare the vehicle registration values
+    if (regA < regB) return -1;
+    if (regA > regB) return 1;
+    return 0;
+  });
+  
+  // Create an array to store the sorted objects
+  const uniqueEntrieswithsortedArray = [...uniqueEntries];
+  return uniqueEntrieswithsortedArray
 }
