@@ -5,14 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Popover,
   PopoverHandler,
   PopoverContent,
   Typography,
 } from "@material-tailwind/react";
+import BlinkingTime from "../General/BlinkingTime";
 const inter = Inter({ subsets: ["latin"] });
+
 export default function RootLayout({
   children,
 }: {
@@ -28,6 +30,7 @@ export default function RootLayout({
   if (!session) {
     router.push("/login");
   }
+
   return (
     <div className={inter.className}>
       <div>
@@ -195,25 +198,36 @@ export default function RootLayout({
               </div>
               <div className="w-full block flex-grow lg:flex lg:items-center text-end lg:w-auto">
                 <div className="text-sm lg:flex-grow">
-                  <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  mr-4">
-                    Tester{" "}
+                  <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  ">
                     <span className="text-black">
                       {" "}
-                      &nbsp; 8/30/2023, 2:25:59 PM
+                      &nbsp;
+                      <span className="text-1xl">
+                        {" "}
+                        <span className="text-[#00B56C] mr-10">
+                          {session?.clientName}
+                        </span>
+                      </span>
                     </span>
+                  </a>
+                  <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  w-42 mr-8">
+                    <BlinkingTime timezone={session?.timezone} />
                   </a>
                 </div>
                 <div>
                   <a
                     href="#"
                     className="inline-block text-sm px-4 py-2 leading-none lg:mt-0"
-                  >
-                  </a>
+                  ></a>
                   <Popover open={openPopover} handler={setOpenPopover}>
                     <PopoverHandler {...triggers}>
-                      <img className=" cursor-pointer -mt-6 w-10 h-10 rounded-full" src="https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg" alt="Rounded avatar" />
+                      <img
+                        className=" cursor-pointer -mt-6 w-10 h-10 rounded-full"
+                        src="https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg"
+                        alt="Rounded avatar"
+                      />
                     </PopoverHandler>
-                    <PopoverContent {...triggers} className="z-50 w-80 ">
+                    <PopoverContent {...triggers} className="z-50 w-80">
                       <div className="mb-2 flex items-center gap-3 px-20">
                         <Typography
                           as="a"
@@ -222,15 +236,31 @@ export default function RootLayout({
                           color="blue-gray"
                           className="font-medium transition-colors hover:text-gray-900 w-full"
                         >
-                          <img className="ms-auto mr-auto mt-5 mb-5 w-10 h-10 rounded-full" src="https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg" alt="Rounded avatar" />
+                          <img
+                            className="ms-auto mr-auto mt-5 mb-5 w-10 h-10 rounded-full"
+                            src="https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg"
+                            alt="Rounded avatar"
+                          />
                         </Typography>
                       </div>
-                      <Typography variant="small" color="gray" className="font-normal ">
-                        <p className="text-2xl mb-3 text-center">Bilal Hussain</p><hr></hr>
+                      <Typography
+                        variant="small"
+                        color="gray"
+                        className="font-normal "
+                      >
+                        <p className="text-2xl mb-3 text-center">
+                          Bilal Hussain
+                        </p>
+                        <hr></hr>
                         <div className="flex justify-center">
-                          <button className="bg-[#00B56C] px-5 py-3 text-white mt-5" onClick={() => {
-                            signOut();
-                          }}>Sighn Out</button>
+                          <button
+                            className="bg-[#00B56C] px-5 py-3 text-white mt-5"
+                            onClick={() => {
+                              signOut();
+                            }}
+                          >
+                            Sign Out
+                          </button>
                         </div>
                       </Typography>
                     </PopoverContent>
