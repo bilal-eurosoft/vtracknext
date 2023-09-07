@@ -43,18 +43,17 @@ const DynamicCarMap = ({
     <>
       <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ">
         <div>
-          <MapContainer 
+          <MapContainer
             id="map"
             center={mapCoordinates}
             zoom={zoom}
-            className="w-full "
-            style={{ height: '71.6em' }}
+            className="w-full z-10"
+            style={{ height: '71em' }}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'
             />
-
             <LiveCars
               carData={carData}
               clientSettings={clientSettings}
