@@ -48,7 +48,7 @@ const DynamicCarMap = ({
             center={mapCoordinates}
             zoom={zoom}
             className="w-full "
-            style={{ height: '71.5em' }}
+            style={{ height: '71.6em' }}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
