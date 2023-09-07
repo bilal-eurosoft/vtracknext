@@ -38,10 +38,7 @@ export default function RootLayout({
   if (!session) {
     router.push("/login");
   }
-
-  const torontoTime = dayjs.tz("2013-11-18 11:55:20", session?.timezone);
-
-  console.log(session)
+  const dynamicTime = dayjs.tz("2013-11-18 11:55:20", session?.timezone);
   return (
     <div className={inter.className}>
       <div>
@@ -216,14 +213,11 @@ export default function RootLayout({
                       &nbsp;<span className="text-1xl"> <span className="text-[#00B56C] mr-10">
                         {session?.clientName}
                       </span>
-                        {/* {date} */}
-
                       </span>
                     </span>
                   </a>
-
                   <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  w-42 mr-8">
-                    { <p>Toronto Time: {torontoTime.format('YYYY-MM-DD HH:mm:ss z')}</p>}
+                    {<p> {dynamicTime.format('YYYY-MM-DD HH:mm:ss z')}</p>}
                   </a>
                 </div>
                 <div>
