@@ -16,7 +16,7 @@ const LiveSidebar = ({
 }) => {
 
 
-   const [searchData, setSearchData] = useState({
+  const [searchData, setSearchData] = useState({
     search: ""
   });
   const [filteredData, setFilteredData] = useState<VehicleData[]>([]);
@@ -34,11 +34,11 @@ const LiveSidebar = ({
 
     // Update the filteredData and sortedData states
     setFilteredData(filtered);
-   
+
   }, [searchData.search, carData]);
 
   return (
-    <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4 bg-gray-200  overflow-y-scroll">
+    <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4 bg-gray-200  overflow-y-scroll" style={{ height: '53.5em' }}>
       <div className="grid grid-cols-2 bg-[#00B56C] py-3">
         <div className="lg:col-span-1">
           <div className="grid grid-cols-6">
