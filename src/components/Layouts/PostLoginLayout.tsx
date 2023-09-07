@@ -22,11 +22,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [time, setTime] = useState<any>(new Date())
-  useEffect(() => {
-    setInterval(() => setTime(new Date()), 1000)
-  }, [])
-  const date: any = new Date().toDateString()
   const [openPopover, setOpenPopover] = useState(false);
   const triggers = {
     onMouseEnter: () => setOpenPopover(true),
