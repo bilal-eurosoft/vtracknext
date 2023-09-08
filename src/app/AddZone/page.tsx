@@ -22,7 +22,7 @@ export default function AddZone() {
         <div className="flex justify-center">
           <div className="grid lg:grid-cols-2 grid-cols-2 bg-green w-24">
             <div className="col-span-1">
-              <svg className="h-10 py-3 w-full text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />  <polyline points="17 21 17 13 7 13 7 21" />  <polyline points="7 3 7 8 15 8" /></svg>
+              <svg className="h-10 py-3 w-full text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />  <polyline points="17 21 17 13 7 13 7 21" />  <polyline points="7 3 7 8 15 8" /></svg>
             </div>
             <div className="col-span-1">
               <button className="text-white  h-10 bg-[#00B56C] -ms-2">Save</button>
@@ -42,7 +42,7 @@ export default function AddZone() {
         <div className="flex justify-start">
           <div className="grid lg:grid-cols-2 grid-cols-2 bg-green w-auto">
             <div className="col-span-1">
-              <svg className="h-10 py-3 w-full text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />  <polyline points="17 21 17 13 7 13 7 21" />  <polyline points="7 3 7 8 15 8" /></svg>
+              <svg className="h-10 py-3 w-full text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />  <polyline points="17 21 17 13 7 13 7 21" />  <polyline points="7 3 7 8 15 8" /></svg>
             </div>
             <div className="col-span-1">
               <button className="text-white  h-10 bg-[#00B56C] -ms-2 mx-4">Redrow</button>
