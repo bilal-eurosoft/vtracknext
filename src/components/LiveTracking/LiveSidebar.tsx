@@ -226,10 +226,11 @@ const LiveSidebar = ({
               </div>
             </div>
             <p className="w-80 mt-10  text-start  px-4 text-gray-500">
-              <p className="text-sm text-[#00B56C] ">Addres OF The Car Dynamic Test</p>
+              <p className="text-sm text-[#00B56C] ">
+                {item?.OSM?.display_name}
+              </p>
               <p className="mt-2 text-sm">{item.timestamp}</p>
             </p>
-
           </div>
         );
       })}
