@@ -226,7 +226,7 @@ const LiveSidebar = ({
                 )}
               </div>
             </div>
-            <p className="w-80 mt-10  text-start  px-4 text-gray-450">
+            <p className="w-80 mt-10  text-start  px-4 text-gray-500">
               <p className="text-sm text-[#00B56C] ">
                 {getCurrentAddressOSM(item?.OSM)}
               </p>
