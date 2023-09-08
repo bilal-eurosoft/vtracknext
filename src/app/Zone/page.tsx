@@ -1,4 +1,12 @@
+"use client"
+import { useRouter } from "next/navigation";
+
 export default function Zone() {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push('/AddZone')
+  }
   return <div>
     <form>
       <div className="mx-4">
@@ -6,25 +14,25 @@ export default function Zone() {
         <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
           <div className="lg:col-span-1">
             <label className="">Zone name</label>
-            <input type="text" className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter Zone Name " required />
+            <input type="text" className="block py-2 px-0 w-full text-sm text-grayLight bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter Zone Name " required />
           </div>
           <div className="lg:col-span-1 md:col-span-1 col-span-1">
             <label className="">Zone sort name</label>
-            <input type="text" className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter Zone Name " required />
+            <input type="text" className="block py-2 px-0 w-full text-sm text-grayLight bg-white-10 border-0 border-2 border-grayLight-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none " placeholder="Enter Zone Name " required />
           </div>
         </div>
         <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
           <div className="lg:col-span-1">
             <label>Geofence</label>
-            <select className="block py-2 px-0 w-full text-sm text-gray-900 bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 outline-none " placeholder="Enter Zone Name " required >
+            <select className="block py-2 px-0 w-full text-sm text-grayLight bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 outline-none " placeholder="Enter Zone Name " required >
               <option>TEst</option>
               <option>TEst</option>
             </select>
           </div>
           <div className="lg:col-span-1 md:col-span-1 col-span-1">
             <label className="">Zone Type</label><br></br>
-            <button className=" border-2 border-gray-200 px-4 h-10">Circle</button>
-            <button className=" border-2 border-gray-200 px-4 h-10">Polygon</button>
+            <button className=" border-2 border-grayLight px-4 h-10">Circle</button>
+            <button className=" border-2 border-grayLight px-4 h-10">Polygon</button>
           </div>
         </div>
         <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
@@ -37,7 +45,7 @@ export default function Zone() {
           <div className="lg:col-span-1 md:col-span-1 col-span-1">
 
             <div className="lg:text-end sm:text-start text-start ">
-              <button className="text-white px-4 h-10 bg-[#00B56C] mr-3">Add Zone</button>
+              <button className="text-white px-4 h-10 bg-[#00B56C] mr-3" onClick={handleClick}>Add Zone</button>
               <button className="text-gray px-7 h-10 bg-white border-2 border-gray-200">Delete Zone</button>
             </div>
             <br></br>
