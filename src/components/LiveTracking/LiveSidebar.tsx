@@ -1,4 +1,5 @@
 import { VehicleData } from "@/types/vehicle";
+import { getCurrentAddressOSM } from "@/utils/getCurrentAddressOSM";
 import { useEffect, useState } from "react";
 
 const LiveSidebar = ({
@@ -227,7 +228,7 @@ const LiveSidebar = ({
             </div>
             <p className="w-80 mt-10  text-start  px-4 text-gray-500">
               <p className="text-sm text-[#00B56C] ">
-                {item?.OSM?.display_name}
+                {getCurrentAddressOSM(item?.OSM)}
               </p>
               <p className="mt-2 text-sm">{item.timestamp}</p>
             </p>
