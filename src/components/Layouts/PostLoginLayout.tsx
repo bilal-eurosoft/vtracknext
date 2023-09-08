@@ -24,8 +24,8 @@ export default function RootLayout({
   const router = useRouter();
   const [openPopover, setOpenPopover] = useState(false);
   const triggers = {
-    onMouseEnter: () => setOpenPopover(true),
-    onMouseLeave: () => setOpenPopover(false),
+    onMouseClick: () => setOpenPopover(true),
+    OnMouseClick: () => setOpenPopover(false),
   };
   const time = dayjs()
   dayjs.extend(utc);
@@ -34,7 +34,7 @@ export default function RootLayout({
   if (!session) {
     router.push("/login");
   }
-  const dynamicTime = dayjs.tz(time.format(), session?.timezone);
+const dynamicTime = dayjs.tz(time.format(), session?.timezone);
   return (
     <div className={inter.className}>
       <div>
@@ -219,7 +219,7 @@ export default function RootLayout({
                 <div>
                   <a
                     href="#"
-                    className="inline-block text-sm px-4 py-2 leading-none lg:mt-0"
+                    className="inline-block text-sm px-6 py-2 leading-none lg:mt-0"
                   >
                   </a>
                   <Popover open={openPopover} handler={setOpenPopover} >
