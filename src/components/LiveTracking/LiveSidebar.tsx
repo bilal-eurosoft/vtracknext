@@ -61,7 +61,7 @@ const LiveSidebar = ({
               <input
                 type="text"
                 name="search"
-                className="bg-transparent text-white w-full px-1 py-1 placeholder-gray-100 border-none outline-none"
+                className="bg-transparent text-white w-full px-1 py-1 placeholder-gray-300 border-none outline-none"
                 placeholder="Vehicle Reg."
                 required
                 onChange={handleInputChange}
@@ -70,7 +70,7 @@ const LiveSidebar = ({
           </div>
         </div>
         <div className="lg:col-span-1 col-span-1">
-          <h1 className="text-center text-white ">
+          <h1 className="text-center text-white mt-1">
             Show({carData?.length}) Vehicles
           </h1>
         </div>
@@ -225,9 +225,11 @@ const LiveSidebar = ({
                 )}
               </div>
             </div>
-            <p className="w-72 mt-10  text-start  px-4 text-gray-500">
-              {item.timestamp}
+            <p className="w-80 mt-10  text-start  px-4 text-gray-500">
+              <p className="text-sm text-[#00B56C] ">Addres OF The Car Dynamic Test</p>
+              <p className="mt-2 text-sm">{item.timestamp}</p>
             </p>
+
           </div>
         );
       })}
