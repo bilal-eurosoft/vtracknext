@@ -29,12 +29,9 @@ const LiveSidebar = ({
   };
 
   useEffect(() => {
-    // Filter the carData based on the user's input
     const filtered = carData.filter((data) =>
       data.vehicleReg.toLowerCase().startsWith(searchData.search.toLowerCase())
     );
-
-    // Update the filteredData and sortedData states
     setFilteredData(filtered);
   }, [searchData.search, carData]);
 
@@ -207,91 +204,4 @@ const LiveSidebar = ({
   );
 };
 
-export default LiveSidebar; /*
-/* BlinkingTime has the current time so ,
-here i want to implement the logic if BlinkingTime has time 3PM and ListItem.timestamp has 1PM only gap between 2 hours now the div shows red otherwise shows green
-
-// livepage.tsx
-{filteredData?.map((item: VehicleData) => {
-  <p className="w-72 mt-10  text-start  px-4 text-gray-500">
-  {item.timestamp}
- 
-</p>
-
-{ time condition here (
-  <div className="lg:col-span-1">
-    <svg
-      className="h-6 w-3 text-red-500 mr-2"
-      viewBox="0 0 24 24"
-      fill="red"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinejoin="round"
-    >
-      {" "}
-      <circle cx="12" cy="12" r="10" />
-    </svg>
-  </div>
-  })}
-
-//BlinkingTime.ts
-import React, { useState, useEffect } from "react";
-
-const BlinkingTime = ({ timezone }: { timezone: string | undefined }) => {
-  const [time, setTime] = useState("");
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      let currentTime;
-
-      if (timezone) {
-        currentTime = new Date().toLocaleString("en-US", {
-          timeZone: timezone,
-        });
-      } else {
-        currentTime = new Date().toLocaleString();
-      }
-
-      setTime(currentTime);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [timezone]);
-
-  return <p>{time}</p>;
-};
-
-export default BlinkingTime; */ /* 
-import React from "react";
-import BlinkingTime from "./BlinkingTime"; // Import your BlinkingTime component
-
-// Assuming VehicleData has a 'timestamp' property with a valid time format (e.g., "3:00 PM")
-{filteredData?.map((item: VehicleData) => {
-  // Parse the time strings into Date objects
-  const currentTime = new Date(BlinkingTime);
-  const listItemTime = new Date(item.timestamp);
-
-  // Calculate the time difference in hours
-  const timeDiffHours = (listItemTime - currentTime) / (1000 * 60 * 60);
-
-  // Determine the color based on the time difference
-  const divColor = timeDiffHours <= 2 ? "red" : "green";
-
-  return (
-    <div key={item.id}>
-      <p className="w-72 mt-10 text-start px-4 text-gray-500">{item.timestamp}</p>
-      <div className="lg:col-span-1">
-        <svg
-          className={`h-6 w-3 text-${divColor}-500 mr-2`}
-          viewBox="0 0 24 24"
-          fill={divColor}
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinejoin="round"
-        >
-          <circle cx="12" cy="12" r="10" />
-        </svg>
-      </div>
-    </div>
-  );
-})} */
+export default LiveSidebar;
