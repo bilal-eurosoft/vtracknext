@@ -1,4 +1,5 @@
 import { VehicleData } from "@/types/vehicle";
+import { getCurrentAddressOSM } from "@/utils/getCurrentAddressOSM";
 import { useEffect, useState } from "react";
 import { ActiveStatus } from "../General/ActiveStatus";
 import { useSession } from "next-auth/react";
@@ -39,10 +40,10 @@ const LiveSidebar = ({
 
   return (
     <div
-      className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4 bg-gray-200  overflow-y-scroll"
+      className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4   overflow-y-scroll"
       style={{ height: "53.5em" }}
     >
-      <div className="grid grid-cols-2 bg-[#00B56C] py-3">
+      <div className="grid grid-cols-2 bg-green py-3 ">
         <div className="lg:col-span-1">
           <div className="grid grid-cols-6">
             <div className="lg:col-span-1">
@@ -64,7 +65,7 @@ const LiveSidebar = ({
               <input
                 type="text"
                 name="search"
-                className="bg-transparent text-white w-full px-1 py-1 placeholder-gray-100 border-none outline-none"
+                className="bg-transparent text-white w-full px-1 py-1 placeholder-gray border-none outline-none"
                 placeholder="Vehicle Reg."
                 required
                 onChange={handleInputChange}
@@ -73,13 +74,13 @@ const LiveSidebar = ({
           </div>
         </div>
         <div className="lg:col-span-1 col-span-1">
-          <h1 className="text-center text-white ">
+          <h1 className="text-center text-white mt-1">
             Show({carData?.length}) Vehicles
           </h1>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 text-center bg-gray-600 py-4 text-white">
+      <div className="grid grid-cols-2 text-center bg-gray py-4 text-white">
         <div className="lg:col-span-1">
           <h1>Vehicle Summary:</h1>
         </div>
@@ -88,7 +89,7 @@ const LiveSidebar = ({
           <div className="grid grid-cols-10">
             <div className="lg:col-span-1">
               <svg
-                className="h-6 w-3 text-green-500 mr-2"
+                className="h-6 w-3 text-green mr-2"
                 viewBox="0 0 24 24"
                 fill="green"
                 stroke="currentColor"
@@ -106,7 +107,7 @@ const LiveSidebar = ({
 
             <div className="lg:col-span-1">
               <svg
-                className="h-6 w-3 text-yellow-500 mr-2"
+                className="h-6 w-3 text-yellow mr-2"
                 viewBox="0 0 24 24"
                 fill="yellow"
                 stroke="currentColor"
@@ -123,7 +124,7 @@ const LiveSidebar = ({
 
             <div className="lg:col-span-1">
               <svg
-                className="h-6 w-3 text-red-500 mr-2"
+                className="h-6 w-3 text-red mr-2"
                 viewBox="0 0 24 24"
                 fill="red"
                 stroke="currentColor"
@@ -143,7 +144,7 @@ const LiveSidebar = ({
         return (
           <div
             key={item?.IMEI}
-            className="grid lg:grid-cols-3 grid-cols-3 text-center py-5 mt-2 bg-white border-b-2 border-[#00B56C] cursor-pointer"
+            className="grid lg:grid-cols-3 grid-cols-3 text-center py-5 mt-2 bg-white border-b-2 border-green cursor-pointer"
             onClick={() => {
               setSelectedVehicle(item);
             }}
@@ -151,11 +152,11 @@ const LiveSidebar = ({
             <div className="lg:col-span-1 col-span-1">
               <p>
                 {item.gps.speed === 0 && item.ignition === 0 ? (
-                  <b className="text-red-500 ">{item?.vehicleReg}</b>
+                  <b className="text-red ">{item?.vehicleReg}</b>
                 ) : item.gps.speed > 0 && item.ignition === 1 ? (
-                  <b className="text-green-500 ">{item?.vehicleReg}</b>
+                  <b className="text-green">{item?.vehicleReg}</b>
                 ) : (
-                  <b className="text-yellow-500 ">{item?.vehicleReg}</b>
+                  <b className="text-yellow ">{item?.vehicleReg}</b>
                 )}
               </p>
             </div>
@@ -163,16 +164,16 @@ const LiveSidebar = ({
             <div className="lg:col-span-1 col-span-1">
               {item.gps.speed === 0 && item.ignition === 0 ? (
                 <>
-                  <button className="text-white bg-red-500 p-1 -mt-1">
+                  <button className="text-white bg-red p-1 -mt-1 shadow-lg">
                     Parked
                   </button>
                 </>
               ) : item.gps.speed > 0 && item.ignition === 1 ? (
-                <button className="text-white bg-green-500 p-1 -mt-1">
+                <button className="text-white bg-green p-1 -mt-1 shadow-lg">
                   Moving
                 </button>
               ) : (
-                <button className="text-white bg-yellow-500 p-1 -mt-1">
+                <button className="text-white bg-yellow p-1 -mt-1 shadow-lg">
                   Pause
                 </button>
               )}
