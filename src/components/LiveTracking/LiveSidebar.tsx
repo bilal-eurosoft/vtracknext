@@ -1,6 +1,8 @@
 import { VehicleData } from "@/types/vehicle";
 import { getCurrentAddressOSM } from "@/utils/getCurrentAddressOSM";
 import { useEffect, useState } from "react";
+import { ActiveStatus } from "../General/ActiveStatus";
+import { useSession } from "next-auth/react";
 
 const LiveSidebar = ({
   carData,
@@ -15,6 +17,7 @@ const LiveSidebar = ({
   countMoving: Number;
   setSelectedVehicle: any;
 }) => {
+  const { data: session } = useSession();
   const [searchData, setSearchData] = useState({
     search: "",
   });
@@ -26,12 +29,9 @@ const LiveSidebar = ({
   };
 
   useEffect(() => {
-    // Filter the carData based on the user's input
     const filtered = carData.filter((data) =>
       data.vehicleReg.toLowerCase().startsWith(searchData.search.toLowerCase())
     );
-
-    // Update the filteredData and sortedData states
     setFilteredData(filtered);
   }, [searchData.search, carData]);
 
@@ -181,57 +181,22 @@ const LiveSidebar = ({
                 <div className="lg:col-span-2 col-span-2">
                   {item.gps.speed} Mph
                 </div>
-                {item.gps.speed === 0 && item.ignition === 0 ? (
-                  <div className="lg:col-span-1">
-                    <svg
-                      className="h-6 w-3 text-red mr-2"
-                      viewBox="0 0 24 24"
-                      fill="red"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinejoin="round"
-                    >
-                      {" "}
-                      <circle cx="12" cy="12" r="10" />
-                    </svg>
-                  </div>
-                ) : item.gps.speed > 0 && item.ignition === 1 ? (
-                  <div className="lg:col-span-1">
-                    <svg
-                      className="h-6 w-3 text-green mr-2"
-                      viewBox="0 0 24 24"
-                      fill="green"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinejoin="round"
-                    >
-                      {" "}
-                      <circle cx="12" cy="12" r="10" />
-                    </svg>
-                  </div>
+                {session?.timezone !== undefined ? (
+                  <ActiveStatus
+                    currentTime={new Date().toLocaleString("en-US", {
+                      timeZone: session.timezone,
+                    })}
+                    targetTime={item.timestamp}
+                  />
                 ) : (
-                  <div className="lg:col-span-1">
-                    <svg
-                      className="h-6 w-3 text-yellow mr-2"
-                      viewBox="0 0 24 24"
-                      fill="yellow"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinejoin="round"
-                    >
-                      {" "}
-                      <circle cx="12" cy="12" r="10" />
-                    </svg>
-                  </div>
+                  <p>Timezone is undefined</p>
                 )}
+                {/*  )} */}
               </div>
             </div>
-            <div  className=" mt-10 w-72  text-start px-4 text-green">
-              <p className="text-sm text-[#00B56C] ">
-                {getCurrentAddressOSM(item?.OSM)}
-              </p>
-              <p className="mt-2 text-sm text-gray">{item.timestamp}</p>
-            </div>
+            <p className="w-72 mt-10  text-start  px-4 text-gray-500">
+              {item.timestamp}
+            </p>
           </div>
         );
       })}

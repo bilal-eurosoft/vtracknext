@@ -191,9 +191,8 @@ export default function RootLayout({
                   <a
                     href="#"
                     className="inline-block text-sm px-6 py-2 leading-none lg:mt-0"
-                  >
-                  </a>
-                  <Popover open={openPopover} handler={setOpenPopover} >
+                  ></a>
+                  <Popover open={openPopover} handler={setOpenPopover}>
                     <PopoverHandler {...triggers}>
                       <img
                         className=" cursor-pointer -mt-6 w-10 h-10 rounded-full"
