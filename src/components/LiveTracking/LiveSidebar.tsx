@@ -14,10 +14,8 @@ const LiveSidebar = ({
   countMoving: Number;
   setSelectedVehicle: any;
 }) => {
-
-
   const [searchData, setSearchData] = useState({
-    search: ""
+    search: "",
   });
   const [filteredData, setFilteredData] = useState<VehicleData[]>([]);
 
@@ -29,16 +27,18 @@ const LiveSidebar = ({
   useEffect(() => {
     // Filter the carData based on the user's input
     const filtered = carData.filter((data) =>
-      data.vehicleReg.includes(searchData.search)
+      data.vehicleReg.toLowerCase().startsWith(searchData.search.toLowerCase())
     );
 
     // Update the filteredData and sortedData states
     setFilteredData(filtered);
-
   }, [searchData.search, carData]);
 
   return (
-    <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4 bg-gray-200  overflow-y-scroll" style={{ height: '53.5em' }}>
+    <div
+      className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4 bg-gray-200  overflow-y-scroll"
+      style={{ height: "53.5em" }}
+    >
       <div className="grid grid-cols-2 bg-[#00B56C] py-3">
         <div className="lg:col-span-1">
           <div className="grid grid-cols-6">
@@ -62,7 +62,7 @@ const LiveSidebar = ({
                 type="text"
                 name="search"
                 className="bg-transparent text-white w-full px-1 py-1 placeholder-gray-100 border-none outline-none"
-                placeholder="John"
+                placeholder="Vehicle Reg."
                 required
                 onChange={handleInputChange}
               />
