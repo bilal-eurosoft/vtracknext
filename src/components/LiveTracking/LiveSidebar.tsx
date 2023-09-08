@@ -170,7 +170,7 @@ const LiveSidebar = ({
                   Moving
                 </button>
               ) : (
-                <button className="text-white bg-yellow p-1 -mt-1 shadow-lg">
+                <button className="text-white bg-yellow p-1 -mt-1 shadow-md">
                   Pause
                 </button>
               )}

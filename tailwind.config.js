@@ -9,9 +9,11 @@ module.exports = {
       current: 'currentColor',
       'white': '#ffffff',
       'green': '#00B56C',
-      'gray':'#808080',
-      'red':'#FF0000',
-      'yellow':'#eec40f'
+      'gray': '#808080',
+      'red': '#FF0000',
+      'yellow': '#eec40f',
+      'grayLight': '#D3D3D3',
+      'bgLight':'rgb(248,255,253)'
     },
   },
   plugins: [],
