@@ -25,21 +25,21 @@ export default function RootLayout({
   const router = useRouter();
   const [openPopover, setOpenPopover] = useState(false);
   const triggers = {
-    onMouseClick: () => setOpenPopover(true),
-    OnMouseClick: () => setOpenPopover(false),
+    onClick: () => setOpenPopover(true),
+    onMouseLeave: () => setOpenPopover(false),
   };
+
   const { data: session } = useSession();
+  
   if (!session) {
     router.push("/login");
   }
 
   return (
     <div className={inter.className}>
-
-    
       <div>
         <div className="flex flex-row">
-          <div className="basis-20 py-6 bg-[#29303b]  hidden md:block">
+          <div className="basis-20 py-6 bg-[#29303b] h-screen hidden md:block">
 
             <Link href="/liveTracking">
               <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Live Map">
@@ -158,7 +158,7 @@ export default function RootLayout({
                 <Image src={logo} className="h-9 w-32" alt="" />
               </div>
               <div className="block lg:hidden">
-                <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
+                {/* <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
                   <svg
                     className="fill-current h-3 w-3"
                     viewBox="0 0 20 20"
@@ -167,7 +167,7 @@ export default function RootLayout({
                     <title>Menu</title>
                     <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
                   </svg>
-                </button>
+                </button> */}
               </div>
               <div className="w-full block flex-grow lg:flex lg:items-center text-end lg:w-auto">
                 <div className="text-sm lg:flex-grow">
