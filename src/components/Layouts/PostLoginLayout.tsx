@@ -204,13 +204,13 @@ export default function RootLayout({
                       &nbsp;
                       <span className="text-1xl">
                         {" "}
-                        <span className="text-[#00B56C] mr-10">
+                        <span className="text-[#00B56C] ">
                           {session?.clientName}
                         </span>
                       </span>
                     </span>
                   </a>
-                  <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  w-42 mr-8">
+                  <a className="block mt-4 lg:inline-block lg:mt-0 text-black-500  w-44 mr-8">
                     <BlinkingTime timezone={session?.timezone} />
                   </a>
                 </div>
