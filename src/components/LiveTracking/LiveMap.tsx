@@ -47,7 +47,7 @@ const DynamicCarMap = ({
             id="map"
             center={mapCoordinates}
             zoom={zoom}
-            className="z-10"
+            className="z-10 "
             style={{ height: '71.5em' }}
           >
             <TileLayer

@@ -86,7 +86,7 @@ const LiveSidebar = ({
           <div className="grid grid-cols-10">
             <div className="lg:col-span-1">
               <svg
-                className="h-6 w-3 text-green-500 mr-2"
+                className="h-6 w-3 text-green mr-2"
                 viewBox="0 0 24 24"
                 fill="green"
                 stroke="currentColor"
@@ -104,7 +104,7 @@ const LiveSidebar = ({
 
             <div className="lg:col-span-1">
               <svg
-                className="h-6 w-3 text-yellow-500 mr-2"
+                className="h-6 w-3 text-yellow mr-2"
                 viewBox="0 0 24 24"
                 fill="yellow"
                 stroke="currentColor"
@@ -121,7 +121,7 @@ const LiveSidebar = ({
 
             <div className="lg:col-span-1">
               <svg
-                className="h-6 w-3 text-red-500 mr-2"
+                className="h-6 w-3 text-red mr-2"
                 viewBox="0 0 24 24"
                 fill="red"
                 stroke="currentColor"
@@ -161,16 +161,16 @@ const LiveSidebar = ({
             <div className="lg:col-span-1 col-span-1">
               {item.gps.speed === 0 && item.ignition === 0 ? (
                 <>
-                  <button className="text-white bg-red p-1 -mt-1">
+                  <button className="text-white bg-red p-1 -mt-1 shadow-lg">
                     Parked
                   </button>
                 </>
               ) : item.gps.speed > 0 && item.ignition === 1 ? (
-                <button className="text-white bg-green p-1 -mt-1">
+                <button className="text-white bg-green p-1 -mt-1 shadow-lg">
                   Moving
                 </button>
               ) : (
-                <button className="text-white bg-yellow p-1 -mt-1">
+                <button className="text-white bg-yellow p-1 -mt-1 shadow-lg">
                   Pause
                 </button>
               )}
