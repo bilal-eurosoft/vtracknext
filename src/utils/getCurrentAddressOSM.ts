@@ -5,15 +5,15 @@ export function getCurrentAddressOSM(currentLocation: any) {
       var city;
       var postcode;
 
-      if (!currentLocation.address) {
+      if (!currentLocation?.address) {
         return "";
       }
 
       if (
         currentLocation === null ||
         currentLocation === undefined ||
-        currentLocation.address === null ||
-        currentLocation.address === undefined
+        currentLocation?.address === null ||
+        currentLocation?.address === undefined
       ) {
         address1 = "";
       } else if (currentLocation?.address?.office) {
@@ -31,14 +31,14 @@ export function getCurrentAddressOSM(currentLocation: any) {
         address2 = "";
       }
 
-      if (currentLocation === null || currentLocation.address === null) {
+      if (currentLocation === null || currentLocation?.address === null) {
         address2 = "";
       } else if (currentLocation?.address?.city) {
         city = currentLocation?.address?.city;
       } else {
         city = "";
       }
-      if (currentLocation === null || currentLocation.address === null) {
+      if (currentLocation === null || currentLocation?.address === null) {
         postcode = "";
       } else if (currentLocation?.address?.postcode) {
         postcode = currentLocation?.address?.postcode;
@@ -47,9 +47,7 @@ export function getCurrentAddressOSM(currentLocation: any) {
       }
       var currentLocationPoint =
         address1 + " " + address2 + " " + city + " " + postcode;
-      //   setaddress(currentLocationPoint);
       return currentLocationPoint;
-      //End work
     } catch (err) {
       console.error(err);
     }
