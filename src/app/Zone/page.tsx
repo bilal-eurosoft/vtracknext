@@ -1,15 +1,16 @@
 "use client";
+
+"use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { getZoneListByClientId } from "@/utils/API_CALLS";
 import { zonelistType } from "@/types/zoneType";
 
-
 export default function Zone() {
   const { data: session } = useSession();
   const [zoneList, setZoneList] = useState<zonelistType[]>([]);
-
+  const [inputs, setInputs] = useState("");
   useEffect(() => {
     (async function () {
       if (session) {
@@ -24,12 +25,30 @@ export default function Zone() {
 
   const router = useRouter();
 
-  const handleClick = () => {
-    router.push('/AddZone')
+  function handleSearchClick(e: React.FormEvent<HTMLFormElement>) {
+    if (inputs === "") {
+      setZoneList(zoneList);
+      return;
+    }
+    e.preventDefault();
+    const filterBySearch = zoneList.filter((item) => {
+      if (
+        item.zoneName.toLowerCase().includes(inputs.toLowerCase()) ||
+        item.zoneShortName.toLowerCase().includes(inputs.toLowerCase())
+      )
+        return item;
+    });
+
+    setZoneList(filterBySearch);
   }
+
+  const handleClick = () => {
+    router.push("/AddZone");
+  };
+
   return (
     <div>
-      <form>
+      <form onSubmit={handleSearchClick}>
         <div className="mx-4">
           <p className="bg-[#00B56C] px-4 py-1 text-white">Zone</p>
           <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
@@ -40,6 +59,7 @@ export default function Zone() {
                 className="block py-2 px-0 w-full text-sm text-grayLight bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none "
                 placeholder="Enter Zone Name "
                 required
+                onChange={(e) => setInputs(e.target.value)}
               />
             </div>
             <div className="lg:col-span-1 md:col-span-1 col-span-1">
@@ -49,6 +69,7 @@ export default function Zone() {
                 className="block py-2 px-0 w-full text-sm text-grayLight bg-white-10 border-0 border-2 border-grayLight-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none "
                 placeholder="Enter Zone Name "
                 required
+                onChange={(e) => setInputs(e.target.value)}
               />
             </div>
           </div>
@@ -59,9 +80,11 @@ export default function Zone() {
                 className="block py-2 px-0 w-full text-sm text-grayLight bg-white-10 border-0 border-2 border-gray-200 appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 outline-none "
                 placeholder="Enter Zone Name "
                 required
+                onChange={(e) => setInputs(e.target.value)}
               >
-                <option>TEst</option>
-                <option>TEst</option>
+                <option>On-Site</option>
+                <option>Off-Site</option>
+                <option>City-Area</option>
               </select>
             </div>
             <div className="lg:col-span-1 md:col-span-1 col-span-1">
@@ -78,7 +101,11 @@ export default function Zone() {
           <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
             <div className="lg:col-span-1">
               <div className="text-start">
-                <button className="text-white px-4 h-10 bg-[#00B56C] mr-3">
+                <button
+                  className="text-white px-4 h-10 bg-[#00B56C] mr-3"
+                  /* onClick={handleSearchClick} */
+                  type="submit"
+                >
                   Search
                 </button>
                 <button className="text-gray px-7 h-10 bg-white border-2 border-gray-200">
@@ -88,7 +115,10 @@ export default function Zone() {
             </div>
             <div className="lg:col-span-1 md:col-span-1 col-span-1">
               <div className="lg:text-end sm:text-start text-start ">
-                <button className="text-white px-4 h-10 bg-[#00B56C] mr-3" onClick={handleClick}>
+                <button
+                  className="text-white px-4 h-10 bg-[#00B56C] mr-3"
+                  onClick={handleClick}
+                >
                   Add Zone
                 </button>
                 <button className="text-gray px-7 h-10 bg-white border-2 border-gray-200">
@@ -101,11 +131,11 @@ export default function Zone() {
         </div>
         <br></br>
       </form>
-      <div className="bg-gray-100  mx-4">
+      <div className="bg-gray-100  mx-4 ">
         <p className="bg-[#00B56C] px-4 py-1 text-white ">Zone</p>
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg h-96">
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
               <tr>
                 <th scope="col" className="p-4">
                   <div className="flex items-center">
