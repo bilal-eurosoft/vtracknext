@@ -1,3 +1,6 @@
+import { zonelistType } from "@/types/zoneType";
+
+
 export async function getVehicleDataByClientId(clientId: string) {
   try {
     const response = await fetch('https://live.vtracksolutions.com/graphql', {
@@ -20,6 +23,7 @@ export async function getVehicleDataByClientId(clientId: string) {
   }
 }
 
+// api.ts
 export async function getClientSettingByClinetIdAndToken({
   token,
   clientId,
@@ -81,3 +85,30 @@ export async function getZoneListByClientId({
 }
 
 
+export async function postZoneDataByClientId({
+  token,
+  formData,
+}: {
+  token: string;
+  formData: zonelistType;
+}) {
+  try {
+    const response = await fetch("https://backend.vtracksolutions.com/zone", {
+      "method": "POST",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": `Bearer ${token}`,
+        "content-type": "application/json",
+      },
+      "body": `{\"formData\":\"${formData}\"}`, 
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API')
+    }
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.log('Error fetching data')
+    return []
+  }
+}
