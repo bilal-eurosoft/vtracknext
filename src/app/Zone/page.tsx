@@ -36,7 +36,8 @@ export default function Zone() {
     const filterBySearch = zoneList.filter((item) => {
       if (
         item?.zoneName?.toLowerCase().includes(inputs.toLowerCase()) ||
-        item?.zoneShortName?.toLowerCase().includes(inputs.toLowerCase())
+        item?.zoneShortName?.toLowerCase().includes(inputs.toLowerCase()) ||
+        item?.zoneType.toLowerCase().includes(inputs.toLowerCase())
       )
         return item;
     });
@@ -64,7 +65,7 @@ export default function Zone() {
             <label className="text-sm text-labelColor">Zone Name</label>
             <input
               type="text"
-              className="block py-1 mt-2 px-0 w-full text-sm text-grayLight bg-white-10 border border-grayLight appearance-none px-3 dark:text-white text-labelColor  outline-green"
+              className="block py-1 mt-2 px-0 w-full text-sm text-labelColor bg-white-10 border border-grayLight appearance-none px-3 dark:text-white text-labelColor  outline-green"
               placeholder="Enter Zone Name "
               required
               onChange={(e) => setInputs(e.target.value)}
@@ -74,7 +75,7 @@ export default function Zone() {
             <label className="text-sm text-labelColor">Zone Short Name</label>
             <input
               type="text"
-              className="block py-1 mt-2 px-0 w-full text-sm text-grayLight bg-white-10 border border-grayLight appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 text-labelColor  outline-green"
+              className="block py-1 mt-2 px-0 w-full text-sm text-labelColor bg-white-10 border border-grayLight appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 text-labelColor  outline-green"
               placeholder="Enter Zone Short Name"
               required
               onChange={(e) => setInputs(e.target.value)}
@@ -86,7 +87,7 @@ export default function Zone() {
           <div className="lg:col-span-1">
             <label className="text-sm text-labelColor">Geofence</label>
             <select
-              className="block mt-2 py-1 px-0 w-full text-sm text-grayLight bg-white-10 border border-grayLight  px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 outline-green mb-5 text-labelColor "
+              className="block mt-2 py-1 px-0 w-full text-sm text-labelColor bg-white-10 border border-grayLight  px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 outline-green mb-5 text-labelColor "
               placeholder="Geofence Type "
               required
               style={{ fontSize: '1em' }}
