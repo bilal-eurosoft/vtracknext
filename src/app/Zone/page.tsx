@@ -1,5 +1,4 @@
 "use client";
-
 //zone
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -59,7 +58,7 @@ export default function Zone() {
   return (
     <div className="mt-10 bg-bgLight">
       <form onSubmit={handleSearchClick}>
-        <p className="bg-[#00B56C] px-4 py-1 text-white text-sm">Zone Filter</p>
+        <p className="bg-green px-4 py-1 text-white text-sm">Zone Filter</p>
         <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
           <div className="lg:col-span-1">
             <label className="text-sm text-labelColor">Zone Name</label>
@@ -164,98 +163,85 @@ export default function Zone() {
                   <button className="text-labelColor text-sm  h-10  -ms-5 mr-4">DeleteZone</button>
                 </div>
               </div>
-              <div className="lg:col-span-1 md:col-span-1 col-span-1">
-                <div className="lg:text-end sm:text-start text-start ">
-                  <button
-                    className="text-white px-4 h-10 bg-[#00B56C] mr-3"
-                    onClick={handleClick}
-                  >
-                    Add Zone
-                  </button>
-                  <button className="text-gray px-7 h-10 bg-white border-2 border-gray-200">
-                    Delete Zone
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <br></br>
-          <div className="bg-gray-100  mx-4  " >
-            <p className="bg-[#00B56C] px-4 py-1 text-white ">ZoneTitle</p>
-            <div className="relative overflow-x-auto shadow-md sm:rounded-lg h-96 h-96">
-              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-                <thead className="text-xs text-gray-700 uppercase bg-zoneTabelBg dark:bg-gray-700 dark:text-gray-400 ">
-                  <tr>
-                    <th scope="col" className="p-4 border-r border-grayLight">
-                      <div className="flex items-center ">
-                        <input
-                          id="checkbox-all-search"
-                          type="checkbox"
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 border-r border-grayLight "
-                        />
-                        <label className="sr-only text-labelColor">checkbox</label>
-                      </div>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-labelColor text-md font-bold  font-normal border-r border-grayLight ">
-                      zone Name
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-labelColor font-bold text-md font-normal border-r border-grayLight">
-                      zone Short Name
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-labelColor font-bold text-md font-normal border-r border-grayLight">
-                      zone Type
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-labelColor font-bold text-md font-normal">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {zoneList?.map((item: zonelistType) => (
-                    <tr
-                      key={item.id}
-                      className="bg-white border-b border-t  border-grayLight  hover:bg-zoneTabelBg"
-                    >
-                      <td className="w-4 p-4  border-r border-grayLight ">
-                        <div className="flex items-center">
-                          <input
-                            id="checkbox-table-search-1"
-                            type="checkbox"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                          />
-                          <label className="sr-only  text-labelColor text-md font-normal">checkbox</label>
-                        </div>
-                      </td>
-                      <th
-                        scope="row"
-                        className="px-6 py-4  text-labelColor text-md font-normal border-r border-grayLight"
-                      >
-                        {item.zoneName}
-                      </th>
-                      <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">{item.zoneShortName}</td>
-                      <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">{item.zoneType}</td>
-                      <td className="flex items-center px-6 py-4 space-x-3">
 
-
-                        <Link
-                          className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                          href={`/AddZone?id=${item.id}`}
-                        /* href={{
-                          pathname: "/EditZone/",
-                          query: { id: `${item.id}` },
-                        }} */
-                        >
-                          Edit
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           </div>
         </div>
-      </form> 
+      </form>
+
+      <br></br>
+      <div className="bg-gray-100  mx-4  " >
+        <p className="bg-[#00B56C] px-4 py-1 text-white ">ZoneTitle</p>
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg h-96 h-96">
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+            <thead className="text-xs text-gray-700 uppercase bg-zoneTabelBg dark:bg-gray-700 dark:text-gray-400 ">
+              <tr>
+                <th scope="col" className="p-4 border-r border-grayLight">
+                  <div className="flex items-center ">
+                    <input
+                      id="checkbox-all-search"
+                      type="checkbox"
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 border-r border-grayLight "
+                    />
+                    <label className="sr-only text-labelColor">checkbox</label>
+                  </div>
+                </th>
+                <th scope="col" className="px-6 py-3 text-labelColor text-md font-bold  font-normal border-r border-grayLight ">
+                  zone Name
+                </th>
+                <th scope="col" className="px-6 py-3 text-labelColor font-bold text-md font-normal border-r border-grayLight">
+                  zone Short Name
+                </th>
+                <th scope="col" className="px-6 py-3 text-labelColor font-bold text-md font-normal border-r border-grayLight">
+                  zone Type
+                </th>
+                <th scope="col" className="px-6 py-3 text-labelColor font-bold text-md font-normal">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {zoneList?.map((item: zonelistType) => (
+                <tr
+                  key={item.id}
+                  className="bg-white border-b border-t  border-grayLight  hover:bg-zoneTabelBg"
+                >
+                  <td className="w-4 p-4  border-r border-grayLight ">
+                    <div className="flex items-center">
+                      <input
+                        id="checkbox-table-search-1"
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label className="sr-only  text-labelColor text-md font-normal">checkbox</label>
+                    </div>
+                  </td>
+                  <th
+                    scope="row"
+                    className="px-6 py-4  text-labelColor text-md font-normal border-r border-grayLight"
+                  >
+                    {item.zoneName}
+                  </th>
+                  <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">{item.zoneShortName}</td>
+                  <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">{item.zoneType}</td>
+                  <td className="flex items-center px-6 py-4 space-x-3">
+
+
+                    <Link
+                      className="font-medium text-green dark:text-blue-500 hover:underline"
+                      href={`/AddZone?id=${item.id}`}
+
+                    >
+                      Edit
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   );
 }
