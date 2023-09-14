@@ -50,3 +50,36 @@ export async function getClientSettingByClinetIdAndToken({
     return []
   }
 }
+
+
+export async function vehicleListByClientId({
+  token,
+  clientId,
+}: {
+  token: string
+  clientId: string
+}) {
+  try {
+    const response = await fetch(
+      'https://backend.vtracksolutions.com/vehicleListByClientId',
+      {
+        "headers": {
+          "accept": "application/json, text/plain, */*",
+          "authorization": `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        "body": `{\"clientId\":\"${clientId}\"}`,
+        "method": "POST"
+      },
+    )
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API')
+    }
+    const data = await response.json()
+    console.log('data', data)
+    return data
+  } catch (error) {
+    console.log('Error fetching data')
+    return []
+  }
+}
