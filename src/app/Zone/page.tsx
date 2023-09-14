@@ -1,15 +1,17 @@
 "use client";
+//zone
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { getZoneListByClientId } from "@/utils/API_CALLS";
 import { zonelistType } from "@/types/zoneType";
-import { Select, Option } from "@material-tailwind/react";
+import Link from "next/link";
 
 export default function Zone() {
   const { data: session } = useSession();
   const [zoneList, setZoneList] = useState<zonelistType[]>([]);
   const [active, setActive] = useState(false)
+  const [inputs, setInputs] = useState("");
 
   useEffect(() => {
     (async function () {
@@ -32,9 +34,27 @@ export default function Zone() {
     setActive(!active)
   }
 
+  function handleSearchClick(e: React.FormEvent<HTMLFormElement>) {
+    if (inputs === "") {
+      setZoneList(zoneList);
+      return;
+    }
+    e.preventDefault();
+    const filterBySearch = zoneList.filter((item) => {
+      if (
+        item?.zoneName?.toLowerCase().includes(inputs.toLowerCase()) ||
+        item?.zoneShortName?.toLowerCase().includes(inputs.toLowerCase())
+      )
+        return item;
+    });
+    setZoneList(filterBySearch);
+  }
+
+
+
   return (
     <div className="mt-10 bg-bgLight">
-      <form >
+      <form onSubmit={handleSearchClick}>
         <div className="mx-4">
           <p className="bg-[#00B56C] px-4 py-1 text-white text-sm">Zone Filter</p>
           <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
@@ -45,6 +65,7 @@ export default function Zone() {
                 className="block py-1 mt-2 px-0 w-full text-sm text-grayLight bg-white-10 border border-grayLight appearance-none px-3 dark:text-white text-labelColor  outline-green"
                 placeholder="Enter Zone Name "
                 required
+                onChange={(e) => setInputs(e.target.value)}
               />
             </div>
             <div className="lg:col-span-1 md:col-span-1 col-span-1">
@@ -54,10 +75,11 @@ export default function Zone() {
                 className="block py-1 mt-2 px-0 w-full text-sm text-grayLight bg-white-10 border border-grayLight appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 text-labelColor  outline-green"
                 placeholder="Enter Zone Short Name"
                 required
+                onChange={(e) => setInputs(e.target.value)}
               />
             </div>
           </div>
-          <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
+          <div className="grid lg:grid-cols-2 md:grid-cols-2   gap-6 pt-5 px-5 bg-green-50 ">
             <div className="lg:col-span-1">
               <label className="text-sm text-labelColor">Geofence</label>
               <select
@@ -65,6 +87,7 @@ export default function Zone() {
                 placeholder="Geofence Type "
                 required
                 style={{fontSize:'1em'}}
+                onChange={(e) => setInputs(e.target.value)}
               >
                 <option style={{height:'20vh'}} >On-Site</option>
                 <option >Off-Site</option>
@@ -106,7 +129,7 @@ export default function Zone() {
                     <svg className="h-10 py-3 w-full text-white" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z" />  <circle cx="10" cy="10" r="7" />  <line x1="21" y1="21" x2="15" y2="15" /></svg>
                   </div>
                   <div className="col-span-1">
-                    <button className="text-white  h-10 bg-[#00B56C] -ms-4 text-sm">Search</button>
+                    <button className="text-white  h-10 bg-[#00B56C] -ms-4 text-sm" type="submit">Search</button>
                   </div>
                 </div>
 
@@ -132,7 +155,7 @@ export default function Zone() {
                     <svg className="h-10 py-3 w-full text-white" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z" />  <rect x="4" y="4" width="16" height="16" rx="2" />  <line x1="9" y1="12" x2="15" y2="12" />  <line x1="12" y1="9" x2="12" y2="15" /></svg>
                   </div>
                   <div className="col-span-1">
-                    <button className="text-white  h-10 bg-[#00B56C] -ms-6 text-sm " >AddZone</button>
+                    <button className="text-white  h-10 bg-[#00B56C] -ms-6 text-sm ">AddZone</button>
                   </div>
                 </div>
 
@@ -205,12 +228,18 @@ export default function Zone() {
                   <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">{item.zoneShortName}</td>
                   <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">{item.zoneType}</td>
                   <td className="flex items-center px-6 py-4 space-x-3">
-                    <a
-                      href="#"
-                      className="text-green text-md font-normal  hover:underline"
+
+                
+                    <Link
+                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      href={`/AddZone?id=${item.id}`}
+                      /* href={{
+                        pathname: "/EditZone/",
+                        query: { id: `${item.id}` },
+                      }} */
                     >
                       Edit
-                    </a>
+                    </Link>
                   </td>
                 </tr>
               ))}
