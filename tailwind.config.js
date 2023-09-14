@@ -13,7 +13,11 @@ module.exports = {
       'red': '#FF0000',
       'yellow': '#eec40f',
       'grayLight': '#D3D3D3',
-      'bgLight':'rgb(248,255,253)'
+      'bgLight':'rgb(248,255,253)',
+      'labelColor':'#000000D9',
+      'zonebtnColor':'#F5F5F5',
+      'zoneTabelBg':'#FAFAFA',
+      'black':"#000000"
     },
   },
   plugins: [],

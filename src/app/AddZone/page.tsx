@@ -1,10 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import dynamic from "next/dynamic"; // Import dynamic from Next.js
 import { useSession } from "next-auth/react";
-import { postZoneDataByClientId } from "@/utils/API_CALLS";
+import { useSearchParams } from "next/navigation";
+import { zonelistType } from "@/types/zoneType";
+import { ZoneFindById } from "@/utils/API_CALLS";
 
 // why we use it because Load MapContainer and related components dynamically on the client side
 const MapContainer = dynamic(
@@ -19,6 +21,11 @@ const FeatureGroup = dynamic(
   () => import("react-leaflet").then((module) => module.FeatureGroup),
   { ssr: false }
 );
+const Polygon = dynamic(
+  () => import("react-leaflet/Polygon").then((module) => module.Polygon),
+  { ssr: false }
+);
+
 const EditControl = dynamic(
   () => import("react-leaflet-draw").then((module) => module.EditControl),
   { ssr: false }
@@ -27,9 +34,13 @@ const EditControl = dynamic(
 const ZonePage: React.FC = () => {
   const { data: session } = useSession();
   const [zoneCoordinates, setZoneCoordinates] = useState<
-    { latitude: number; longitude: number }[] | null
-  >(null);
-  const [getForm, setForm] = useState({
+    { latitude: number; longitude: number }[]
+  >([]);
+  const [zoneCoordinatesById, setZoneCoordinatesById] = useState<
+    { latitude: number; longitude: number }[]
+  >([]);
+  const [zoneDataById, setZoneDataById] = useState<zonelistType | null>(null); // Use null initially
+  const [Form, setForm] = useState({
     GeoFenceType: "",
     centerPoints: "",
     id: "",
@@ -37,60 +48,124 @@ const ZonePage: React.FC = () => {
     zoneShortName: "",
     zoneType: "Polygon",
   });
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
+  useEffect(() => {
+    const fetchZoneDataById = async () => {
+      try {
+        if (id && session) {
+          const data = await ZoneFindById({
+            token: session.accessToken,
+            id: id,
+          });
+          console.log("id data", data);
+          setZoneDataById(data);
+        }
+      } catch (error) {
+        console.error("Error fetching zone data:", error);
+      }
+    };
+
+    fetchZoneDataById();
+  }, [id, session]);
+
+  const latdata = zoneDataById?.latlngCordinates;
+
+  useEffect(() => {
+    if (latdata) {
+      const latlngdata = JSON.parse(latdata);
+      const formattedCoordinates = latlngdata?.map(
+        (coord: { lat: number; lng: number }) => ({
+          latitude: coord.lat,
+          longitude: coord.lng,
+        })
+      );
+
+      setZoneCoordinatesById(formattedCoordinates);
+    }
+  }, [latdata]);
+
+  useEffect(() => {
+    if (zoneDataById) {
+      const formData = {
+        GeoFenceType: zoneDataById.GeoFenceType || "",
+        centerPoints: zoneDataById.centerPoints || "",
+        id: zoneDataById.id || "",
+        zoneName: zoneDataById.zoneName || "",
+        zoneShortName: zoneDataById.zoneShortName || "",
+        zoneType: zoneDataById.zoneType || "Polygon",
+      };
+      setForm(formData);
+    }
+  }, [zoneDataById]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setForm({ ...getForm, [name]: value });
+    setForm({ ...Form, [name]: value });
+  };
+
+  const handleZoneSave = (coordinates: [number, number][]) => {
+    console.log("Received coordinates:", coordinates);
+    const zoneCoords = coordinates.slice(0, -1).map(([lat, lng]) => ({
+      latitude: lat,
+      longitude: lng,
+    }));
+
+    setZoneCoordinates(zoneCoords);
   };
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Capture the form data
     const formData = {
-      ...getForm,
-      latlngCordinates: zoneCoordinates,
-      clientId: session?.clientId,
+      ...Form,
+      latlngCordinates: zoneCoordinates || zoneDataById?.latlngCordinates,
+      clientId: session?.clientId || zoneDataById?.clientId,
     };
-
-    /* try {
-      if (session && ) {
-        const response = await postZoneDataByClientId({
-          token: session?.accessToken,
-          Data: formData, // Convert formData to JSON
-        });
-
-        // Check the response and handle it as needed
-        if (response && response.success) {
-          // The request was successful
-          console.log("Data saved successfully.");
-        } else {
-          // Handle any errors or validation issues from the server
-          console.error("Failed to save data:", response.error);
-        }
-      }
-    } catch (error) {
-      console.error("Error while saving data:", error);
-    } */
-    console.log("Form data:", formData);
+    setForm(formData);
   };
+  console.log("form ", Form);
+  let polygonCoords: [number, number][] = [];
 
-  const handleZoneSave = (coordinates: [number, number][]) => {
-    const zoneCoords = coordinates.slice(0, -1).map(([lat, lng]) => ({
-      latitude: lat,
-      longitude: lng,
-    }));
-    setZoneCoordinates(zoneCoords);
-  };
+  if (zoneCoordinatesById && zoneCoordinatesById.length > 0) {
+    polygonCoords = zoneCoordinatesById.map((coord) => [
+      coord.latitude,
+      coord.longitude,
+    ]);
+  }
 
+  let mapCenter: [number, number] = [0, 0]; // Default center
+
+  if (polygonCoords.length > 0) {
+    const lats = polygonCoords.map((coord) => coord[0]);
+    const lngs = polygonCoords.map((coord) => coord[1]);
+    console.log("lats", lats, "lngs", lngs);
+    const minLat = Math.min(...lats);
+    const maxLat = Math.max(...lats);
+    const minLng = Math.min(...lngs);
+    const maxLng = Math.max(...lngs);
+    const avglat = (minLat + maxLat) / 2;
+    const avglng = (minLng + maxLng) / 2;
+    console.log("minLat", minLat.toFixed(5), "lng", avglng);
+    mapCenter = [avglat, avglng];
+    /*  mapCenter = [(minLat + maxLat) / 2, (minLng + maxLng) / 2];
+    let lat = mapCenter[0];
+    let lng = mapCenter[1];
+    mapCenter = [lat, lng]; */
+  } else {
+    mapCenter = [24.86531784185422, 67.07918112343596];
+  }
+  console.log("mapCenter", mapCenter);
   return (
     <div className="mx-8 mt-8 shadow-lg bg-bgLight h-5/6 ">
       <p className="bg-[#00B56C] px-4 py-1 text-white">Zone Entry</p>
-      <div className="grid lg:grid-cols-6  sm:grid-cols-5 md:grid-cols-5 grid-cols-1 pt-8 ">
+
+      <div className="grid lg:grid-cols-6 sm:grid-cols-5 md:grid-cols-5 grid-cols-1 pt-8 ">
         <form onSubmit={handleSave}>
-          <div className="lg:col-span-1 md:col-span-1 sm:col-span-4  col-span-4 bg-gray-200 mx-5">
+          <div className="lg:col-span-1 md:col-span-1 sm:col-span-4 col-span-4 bg-gray-200 mx-5">
             <label className="text-gray text-sm">
               <span className="text-red">*</span> Please Enter Zone Name:{" "}
             </label>
@@ -99,7 +174,8 @@ const ZonePage: React.FC = () => {
               onChange={handleChange}
               type="text"
               name="zoneName"
-              className="  block py-2 px-0 w-full text-sm text-grayLight bg-white-10 border border-grayLight appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-green mb-5"
+              value={Form.zoneName}
+              className="  block py-2 px-0 w-full text-sm text-labelColor bg-white-10 border border-grayLight appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-green mb-5"
               placeholder="Enter Zone Name "
               required
             />
@@ -108,14 +184,18 @@ const ZonePage: React.FC = () => {
             </label>
             <select
               onChange={handleChange}
-              className="block py-2 px-0 w-full text-sm text-grayLight bg-white-10 border border-grayLight  px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 outline-green mb-5"
+              value={Form?.GeoFenceType}
+              className="block py-2 px-0 w-full text-sm text-labelColor bg-white-10 border border-grayLight px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 outline-green mb-5"
               placeholder="geofence"
               required
               name="GeoFenceType"
             >
-              <option>On-Site</option>
-              <option>Off-Site</option>
-              <option>City-Area</option>
+              <optgroup>
+                GeoFence
+                <option>On-Site</option>
+                <option>Off-Site</option>
+                <option>City-Area</option>
+              </optgroup>
             </select>
             <label className="text-gray text-sm">
               <span className="text-red">*</span> Zone Short Name:{" "}
@@ -125,7 +205,8 @@ const ZonePage: React.FC = () => {
               onChange={handleChange}
               type="text"
               name="zoneShortName"
-              className="  block py-2 px-0 w-full text-sm text-grayLight bg-white-10 border border-grayLight appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-green mb-5"
+              value={Form?.zoneShortName}
+              className="  block py-2 px-0 w-full text-sm text-labelColor bg-white-10 border border-grayLight appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-green mb-5"
               placeholder="Enter Zone Name "
               required
             />
@@ -141,9 +222,8 @@ const ZonePage: React.FC = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    {" "}
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />{" "}
-                    <polyline points="17 21 17 13 7 13 7 21" />{" "}
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                    <polyline points="17 21 17 13 7 13 7 21" />
                     <polyline points="7 3 7 8 15 8" />
                   </svg>
                 </div>
@@ -160,79 +240,83 @@ const ZonePage: React.FC = () => {
             <br></br>
           </div>
         </form>
-        <div className="lg:col-span-5  md:col-span-4  sm:col-span-5 col-span-4 mx-3">
+        <div className="lg:col-span-5 md:col-span-4 sm:col-span-5 col-span-4 mx-3">
           <label className="text-gray text-sm">
             please enter text to search{" "}
           </label>
           <input
             type="text"
-            className="  block py-2 px-0 w-full text-sm text-grayLight bg-white-10 border border-grayLight appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-green mb-5"
+            className="  block py-2 px-0 w-full text-sm text-labelColor bg-white-10 border border-grayLight appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-green mb-5"
             placeholder="Search"
             required
           />
           <div className="flex justify-start"></div>
-          <div
-            style={{ height: "35em" }}
-            className="w-full  mt-4 overflow-hidden"
-          >
-            <MapContainer
-              center={[49.91073108485502, -97.16131092722385]}
-              zoom={12}
-              style={{ width: "100%", height: "800px" }}
+          <div className="lg:col-span-5  md:col-span-4  sm:col-span-5 col-span-4 mx-3">
+            <div className="flex justify-start"></div>
+            <div
+              style={{ height: "35em" }}
+              className="w-full  mt-4 overflow-hidden"
             >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'
-              />
-              {zoneCoordinates === null ? (
-                <FeatureGroup>
-                  <EditControl
-                    position="topright"
-                    /* onDeleted={handleLayerDeleted} */
-                    onCreated={(e) => {
-                      const coordinates = e.layer
-                        .toGeoJSON()
-                        .geometry.coordinates[0].map(
-                          (coord: [number, number]) => [coord[1], coord[0]]
-                        );
-                      handleZoneSave(coordinates);
-                    }}
-                    draw={{
-                      polyline: false,
-                      polygon: {
-                        allowIntersection: false,
-                        drawError: {
-                          color: "#e1e100",
-                          message:
-                            "<strong>Oh snap!</strong> you can't draw that!",
+              <MapContainer
+                zoom={mapCenter ? 14 : 8}
+                center={mapCenter}
+                className="zIndex:1"
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'
+                />
+                {zoneCoordinates.length == 0 ? (
+                  <FeatureGroup>
+                    <EditControl
+                      position="topright"
+                      onCreated={(e) => {
+                        const coordinates = e.layer
+                          .toGeoJSON()
+                          .geometry.coordinates[0].map((coord: any[]) => [
+                            coord[1],
+                            coord[0],
+                          ]);
+                        handleZoneSave(coordinates);
+                      }}
+                      draw={{
+                        polyline: false,
+                        polygon: {
+                          allowIntersection: false,
+                          drawError: {
+                            color: "#e1e100",
+                            message:
+                              "<strong>Oh snap!</strong> you can't draw that!",
+                          },
+                          shapeOptions: {
+                            color: "#97009c",
+                          },
                         },
-                        shapeOptions: {
-                          color: "#97009c",
-                        },
-                      },
-                      circle: false,
-                      marker: false,
-                      circlemarker: false,
-                      rectangle: false,
-                    }}
-                  />
-                </FeatureGroup>
-              ) : (
-                <FeatureGroup>
-                  <EditControl
-                    position="topright"
-                    draw={{
-                      polyline: false,
-                      polygon: false,
-                      circle: false,
-                      marker: false,
-                      circlemarker: false,
-                      rectangle: false,
-                    }}
-                  />
-                </FeatureGroup>
-              )}
-            </MapContainer>
+                        circle: false,
+                        marker: false,
+                        circlemarker: false,
+                        rectangle: false,
+                      }}
+                    />
+                    <Polygon positions={polygonCoords} color="#97009c" />
+                  </FeatureGroup>
+                ) : (
+                  <FeatureGroup>
+                    <EditControl
+                      position="topright"
+                      draw={{
+                        polyline: false,
+                        polygon: false,
+                        circle: false,
+                        marker: false,
+                        circlemarker: false,
+                        rectangle: false,
+                      }}
+                    />
+                  </FeatureGroup>
+                )}
+              </MapContainer>
+            </div>
           </div>
         </div>
       </div>

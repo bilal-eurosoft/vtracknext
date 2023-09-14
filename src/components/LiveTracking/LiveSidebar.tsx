@@ -62,7 +62,7 @@ const LiveSidebar = ({
               <input
                 type="text"
                 name="search"
-                className="bg-transparent text-white w-full px-1 py-1 placeholder-gray border-none outline-none"
+                className="text-sm bg-transparent text-white w-full px-1 py-1 placeholder-gray border-none outline-none"
                 placeholder="Vehicle Reg."
                 required
                 onChange={handleInputChange}
@@ -71,15 +71,15 @@ const LiveSidebar = ({
           </div>
         </div>
         <div className="lg:col-span-1 col-span-1">
-          <h1 className="text-center text-white mt-1">
+          <p className="text-center text-sm text-white mt-1">
             Show({carData?.length}) Vehicles
-          </h1>
+          </p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 text-center bg-gray py-4 text-white">
         <div className="lg:col-span-1">
-          <h1>Vehicle Summary:</h1>
+          <p className="text-sm mt-1">Vehicle Summary:</p>
         </div>
 
         <div className="lg:col-span-1">
@@ -138,10 +138,10 @@ const LiveSidebar = ({
         </div>
       </div>
       {filteredData?.map((item: VehicleData) => {
-        return (
+        return <div>
           <div
             key={item?.IMEI}
-            className="grid lg:grid-cols-3 grid-cols-3 text-center py-5 mt-2 bg-white border-b-2 border-green cursor-pointer"
+            className="grid lg:grid-cols-3 grid-cols-3 text-center py-5 mt-2 bg-white  cursor-pointer"
             onClick={() => {
               setSelectedVehicle(item);
             }}
@@ -194,12 +194,21 @@ const LiveSidebar = ({
                 {/*  )} */}
               </div>
             </div>
-            <p className="w-72 mt-10  text-start  px-4 text-gray-500">
-              {item.timestamp}
-            </p>
           </div>
-        );
+
+          <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-5 pb-5 text-sm border-b-2 border-green text-green">
+            {item.timestamp}<br></br>
+            <span className="text-labelColor">
+              {item?.OSM?.address?.neighbourhood}
+
+              {item?.OSM?.address?.road}
+
+              {item?.OSM?.address?.city}
+            </span>
+          </p>
+        </div>
       })}
+
     </div>
   );
 };

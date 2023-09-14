@@ -25,8 +25,8 @@ export default function RootLayout({
   const router = useRouter();
   const [openPopover, setOpenPopover] = useState(false);
   const triggers = {
-    onClick: () => setOpenPopover(true),
-    onMouseLeave: () => setOpenPopover(false),
+    onMouseEnter: () => setOpenPopover(true),
+    // onMouseLeave: () => setOpenPopover(false),
   };
 
   const { data: session } = useSession();
