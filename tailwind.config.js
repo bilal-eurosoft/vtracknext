@@ -16,7 +16,8 @@ module.exports = {
       'bgLight':'rgb(248,255,253)',
       'labelColor':'#000000D9',
       'zonebtnColor':'#F5F5F5',
-      'zoneTabelBg':'#FAFAFA'
+      'zoneTabelBg':'#FAFAFA',
+      'black':"#000000"
     },
   },
   plugins: [],
