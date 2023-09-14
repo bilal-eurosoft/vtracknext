@@ -1,4 +1,6 @@
 "use client";
+
+"use client";
 //zone
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -26,9 +28,27 @@ export default function Zone() {
   }, []);
 
   const router = useRouter();
-  const handleClick = () => {
-    router.push('/AddZone')
+
+  function handleSearchClick(e: React.FormEvent<HTMLFormElement>) {
+    if (inputs === "") {
+      setZoneList(zoneList);
+      return;
+    }
+    e.preventDefault();
+    const filterBySearch = zoneList.filter((item) => {
+      if (
+        item.zoneName.toLowerCase().includes(inputs.toLowerCase()) ||
+        item.zoneShortName.toLowerCase().includes(inputs.toLowerCase())
+      )
+        return item;
+    });
+
+    setZoneList(filterBySearch);
   }
+  const handleClick = () => {
+    router.push("/AddZone");
+  };
+
 
   const toggleBtn = () => {
     setActive(!active)
@@ -54,7 +74,7 @@ export default function Zone() {
 
   return (
     <div className="mt-10 bg-bgLight">
-      <form onSubmit={handleSearchClick}>
+      <form onSubmit={handleSearchClick} onSubmit={handleSearchClick}>
         <div className="mx-4">
           <p className="bg-[#00B56C] px-4 py-1 text-white text-sm">Zone Filter</p>
           <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
@@ -66,6 +86,7 @@ export default function Zone() {
                 placeholder="Enter Zone Name "
                 required
                 onChange={(e) => setInputs(e.target.value)}
+                onChange={(e) => setInputs(e.target.value)}
               />
             </div>
             <div className="lg:col-span-1 md:col-span-1 col-span-1">
@@ -75,6 +96,7 @@ export default function Zone() {
                 className="block py-1 mt-2 px-0 w-full text-sm text-grayLight bg-white-10 border border-grayLight appearance-none px-3 dark:text-white dark:border-gray-600 dark:focus:border-blue-500 text-labelColor  outline-green"
                 placeholder="Enter Zone Short Name"
                 required
+                onChange={(e) => setInputs(e.target.value)}
                 onChange={(e) => setInputs(e.target.value)}
               />
             </div>
@@ -88,11 +110,15 @@ export default function Zone() {
                 required
                 style={{fontSize:'1em'}}
                 onChange={(e) => setInputs(e.target.value)}
+                onChange={(e) => setInputs(e.target.value)}
               >
                 <option style={{height:'20vh'}} >On-Site</option>
                 <option >Off-Site</option>
                 <option>City-Area</option>
                 <option>Restriced-Area</option>
+                <option>On-Site</option>
+                <option>Off-Site</option>
+                <option>City-Area</option>
               </select>
             </div>
             <div className="lg:col-span-1 md:col-span-1 col-span-1 text-sm text-labelColor">
@@ -167,17 +193,28 @@ export default function Zone() {
                     <button className="text-labelColor text-sm  h-10  -ms-5 mr-4">DeleteZone</button>
                   </div>
                 </div>
+            <div className="lg:col-span-1 md:col-span-1 col-span-1">
+              <div className="lg:text-end sm:text-start text-start ">
+                <button
+                  className="text-white px-4 h-10 bg-[#00B56C] mr-3"
+                  onClick={handleClick}
+                >
+                  Add Zone
+                </button>
+                <button className="text-gray px-7 h-10 bg-white border-2 border-gray-200">
+                  Delete Zone
+                </button>
               </div>
             </div>
           </div>
         </div>
         <br></br>
       </form>
-      <div className="bg-gray-100  mx-4 " >
+      <div className="bg-gray-100  mx-4  " >
         <p className="bg-[#00B56C] px-4 py-1 text-white ">ZoneTitle</p>
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg h-96">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-zoneTabelBg dark:bg-gray-700 dark:text-gray-400">
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg h-96 h-96">
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+            <thead className="text-xs text-gray-700 uppercase bg-zoneTabelBg dark:bg-gray-700 dark:text-gray-400 ">
               <tr>
                 <th scope="col" className="p-4 border-r border-grayLight">
                   <div className="flex items-center ">

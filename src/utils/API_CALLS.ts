@@ -1,6 +1,9 @@
 import { zonelistType } from "@/types/zoneType";
 
 
+import { zonelistType } from "@/types/zoneType";
+
+
 export async function getVehicleDataByClientId(clientId: string) {
   try {
     const response = await fetch('https://live.vtracksolutions.com/graphql', {
@@ -23,6 +26,7 @@ export async function getVehicleDataByClientId(clientId: string) {
   }
 }
 
+// api.ts
 // api.ts
 export async function getClientSettingByClinetIdAndToken({
   token,
