@@ -190,12 +190,9 @@ const ZonePage: React.FC = () => {
               required
               name="GeoFenceType"
             >
-              <optgroup>
-                GeoFence
-                <option>On-Site</option>
-                <option>Off-Site</option>
-                <option>City-Area</option>
-              </optgroup>
+              <option>On-Site</option>
+              <option>Off-Site</option>
+              <option>City-Area</option>
             </select>
             <label className="text-gray text-sm">
               <span className="text-red">*</span> Zone Short Name:{" "}
@@ -254,13 +251,14 @@ const ZonePage: React.FC = () => {
           <div className="lg:col-span-5  md:col-span-4  sm:col-span-5 col-span-4 mx-3">
             <div className="flex justify-start"></div>
             <div
-              style={{ height: "35em" }}
+
               className="w-full  mt-4 overflow-hidden"
             >
               <MapContainer
                 zoom={mapCenter ? 14 : 8}
                 center={mapCenter}
-                className="zIndex:1"
+                className="z-10 "
+                style={{ height: '48em' }}
               >
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

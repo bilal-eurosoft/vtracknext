@@ -35,8 +35,8 @@ export default function Zone() {
     e.preventDefault();
     const filterBySearch = zoneList.filter((item) => {
       if (
-        item.zoneName.toLowerCase().includes(inputs.toLowerCase()) ||
-        item.zoneShortName.toLowerCase().includes(inputs.toLowerCase())
+        item?.zoneName?.toLowerCase().includes(inputs.toLowerCase()) ||
+        item?.zoneShortName?.toLowerCase().includes(inputs.toLowerCase())
       )
         return item;
     });
@@ -102,13 +102,21 @@ export default function Zone() {
           <div className="lg:col-span-1 md:col-span-1 col-span-1 text-sm text-labelColor">
             <label className="">Zone Type</label>
             <br></br>
-
             <span onClick={toggleBtn}>
               {active ? <button className=" mt-3 border border-grayLight px-4 h-8 text-sm text-labelColor bg-white transition duration-300">
                 Circle
               </button>
                 : <button className=" mt-3 border border-grayLight px-4 h-8 text-sm text-white bg-green transition duration-300" >
                   Circle
+                </button>
+              }
+            </span>
+            <span onClick={toggleBtn}>
+              {active ? <button className=" mt-3 border border-grayLight px-4 h-8 text-sm text-white bg-green transition duration-300" >
+                Polygon
+              </button>
+                : <button className=" mt-3 border border-grayLight px-4 h-8 text-sm text-labelColor bg-white transition duration-300" >
+                  Polygon
                 </button>
               }
             </span>
