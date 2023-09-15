@@ -1,3 +1,5 @@
+import { IgnitionReport } from "@/types/IgnitionReport";
+
 export async function getVehicleDataByClientId(clientId: string) {
   try {
     const response = await fetch('https://live.vtracksolutions.com/graphql', {
@@ -71,6 +73,196 @@ export async function vehicleListByClientId({
         "body": `{\"clientId\":\"${clientId}\"}`,
         "method": "POST"
       },
+    )
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API')
+    }
+    const data = await response.json()
+    console.log('data', data)
+    return data
+  } catch (error) {
+    console.log('Error fetching data')
+    return []
+  }
+}
+
+export async function IgnitionReportByTrip({
+  token,
+  payload,
+}: {
+  token: string;
+  payload: IgnitionReport;
+}) {
+  try {
+    const response = await fetch(
+      'https://reports.vtracksolutions.com/api/IgnitionReport',
+      {
+        method: 'POST',
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API');
+    }
+
+    const data = await response.json();
+    console.log('data', data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching data', error);
+    return [];
+  }
+}
+
+export async function IgnitionReportByDailyactivity({
+  token,
+  payload,
+}: {
+  token: string;
+  payload: IgnitionReport;
+}) {
+  try {
+    const response = await fetch(
+      'https://reports.vtracksolutions.com/api/IgnitionReportAddressWise',
+      {
+        method: 'POST',
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+    )
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API')
+    }
+    const data = await response.json()
+    console.log('data', data)
+    return data
+  } catch (error) {
+    console.log('Error fetching data')
+    return []
+  }
+}
+export async function IgnitionReportByIgnition({
+  token,
+  payload,
+}: {
+  token: string;
+  payload: IgnitionReport;
+}) {
+  try {
+    const response = await fetch(
+      'https://reports.vtracksolutions.com/api/IgnitionNewReport',
+      {
+        method: 'POST',
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+    )
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API')
+    }
+    const data = await response.json()
+    console.log('data', data)
+    return data
+  } catch (error) {
+    console.log('Error fetching data')
+    return []
+  }
+}
+export async function IgnitionReportByEvents({
+  token,
+  payload,
+}: {
+  token: string;
+  payload: IgnitionReport;
+}) {
+  try {
+    const response = await fetch(
+      'https://reports.vtracksolutions.com/api/EventsReport',
+      {
+        method: 'POST',
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+    )
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API')
+    }
+    const data = await response.json()
+    console.log('data', data)
+    return data
+  } catch (error) {
+    console.log('Error fetching data')
+    return []
+  }
+}
+export async function IgnitionReportByDetailReport({
+  token,
+  payload,
+}: {
+  token: string;
+  payload: IgnitionReport;
+}) {
+  try {
+    const response = await fetch(
+      'https://reports.vtracksolutions.com/api/DetailReportByStreet',
+      {
+        method: 'POST',
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+    )
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API')
+    }
+    const data = await response.json()
+    console.log('data', data)
+    return data
+  } catch (error) {
+    console.log('Error fetching data')
+    return []
+  }
+}
+export async function IgnitionReportByIdlingActivity({
+  token,
+  payload,
+}: {
+  token: string;
+  payload: IgnitionReport;
+}) {
+  try {
+    const response = await fetch(
+      'https://reports.vtracksolutions.com/api/MTSDailyIdling',
+      {
+        method: 'POST',
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
     )
     if (!response.ok) {
       throw new Error('Failed to fetch data from the API')
