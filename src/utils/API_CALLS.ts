@@ -22,8 +22,6 @@ export async function getVehicleDataByClientId(clientId: string) {
   }
 }
 
-// api.ts
-// api.ts
 export async function getClientSettingByClinetIdAndToken({
   token,
   clientId,
@@ -175,7 +173,6 @@ export async function IgnitionReportByIgnition({
       throw new Error('Failed to fetch data from the API')
     }
     const data = await response.json()
-    console.log('data', data)
     return data
   } catch (error) {
     console.log('Error fetching data')
@@ -206,7 +203,6 @@ export async function IgnitionReportByEvents({
       throw new Error('Failed to fetch data from the API')
     }
     const data = await response.json()
-    console.log('data', data)
     return data
   } catch (error) {
     console.log('Error fetching data')
@@ -237,7 +233,6 @@ export async function IgnitionReportByDetailReport({
       throw new Error('Failed to fetch data from the API')
     }
     const data = await response.json()
-    console.log('data', data)
     return data
   } catch (error) {
     console.log('Error fetching data')
@@ -268,7 +263,6 @@ export async function IgnitionReportByIdlingActivity({
       throw new Error('Failed to fetch data from the API')
     }
     const data = await response.json()
-    console.log('data', data)
     return data
   } catch (error) {
     console.log('Error fetching data')

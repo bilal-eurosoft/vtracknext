@@ -54,7 +54,6 @@ export default function Reports() {
   let timeOnly = currentTime.split(",")[1].trim();
   timeOnly = timeOnly.replace(/\s+[APap][Mm]\s*$/, "");
 
-  console.log(timeOnly, "timeonly");
   const [hours, minutes, seconds] = timeOnly
     .split(":")
     .map((part) => part.trim());
@@ -135,8 +134,6 @@ export default function Reports() {
             clientId: session.clientId,
             payload: newdata,
           });
-
-          console.log(`API response for ${newdata.reportType}:`, response);
         } catch (error) {
           console.error(`Error calling API for ${newdata.reportType}:`, error);
         }
