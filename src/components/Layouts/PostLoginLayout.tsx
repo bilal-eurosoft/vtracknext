@@ -11,7 +11,9 @@ import {
   PopoverHandler,
   PopoverContent,
   Typography,
+  Tooltip, Button
 } from "@material-tailwind/react";
+
 import BlinkingTime from "../General/BlinkingTime";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,9 +26,11 @@ export default function RootLayout({
   const [openPopover, setOpenPopover] = useState(false);
   const triggers = {
     onMouseEnter: () => setOpenPopover(true),
-    onMouseLeave: () => setOpenPopover(false),
+    // onMouseLeave: () => setOpenPopover(false),
   };
+
   const { data: session } = useSession();
+  
   if (!session) {
     router.push("/login");
   }
@@ -35,16 +39,10 @@ export default function RootLayout({
     <div className={inter.className}>
       <div>
         <div className="flex flex-row">
-          <div className="basis-20 py-3 bg-[#29303b] h-screen hidden md:block">
+          <div className="basis-20 py-6 bg-[#29303b] h-screen hidden md:block">
+
             <Link href="/liveTracking">
-              <button
-                type="button"
-                data-te-toggle="tooltip"
-                data-te-placement="right"
-                data-te-ripple-init
-                data-te-ripple-color="light"
-                title="Live Tracking"
-              >
+              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Live Map">
                 <svg
                   className="w-20 h-14 py-3  border-y-2 mt-12  text-[white]  text-white-10 dark:text-white"
                   fill="none"
@@ -64,19 +62,14 @@ export default function RootLayout({
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-              </button>
+
+              </Tooltip>
+
             </Link>
             <Link href="/journeyReplay">
-              <button
-                type="button"
-                data-te-toggle="tooltip"
-                data-te-placement="right"
-                data-te-ripple-init
-                data-te-ripple-color="light"
-                title="Journey Replay"
-              >
+              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Journey Replay">
                 <svg
-                  className="w-20 h-14 py-3  border-y-2 -my-2  text-[white]  text-white-10  dark:text-white"
+                  className="w-20 h-14 py-3  -my-1  text-[white]  text-white-10  dark:text-white"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -88,17 +81,10 @@ export default function RootLayout({
                   <circle cx="12" cy="12" r="10" />{" "}
                   <polygon points="10 8 16 12 10 16 10 8" />
                 </svg>
-              </button>
+              </Tooltip>
             </Link>
             <Link href="/Zone">
-              <button
-                type="button"
-                data-te-toggle="tooltip"
-                data-te-placement="right"
-                data-te-ripple-init
-                data-te-ripple-color="light"
-                title="Zone"
-              >
+              <Tooltip className='bg-white text-[#00B56C] rounded shadow-lg' placement="right" content="Zone">
                 <svg
                   className="w-20 h-14 py-3  border-y-2   text-[white]  text-white-10  dark:text-white"
                   width="24"
@@ -119,19 +105,12 @@ export default function RootLayout({
                   <line x1="12" y1="19" x2="12" y2="21" />{" "}
                   <line x1="19" y1="12" x2="21" y2="12" />
                 </svg>
-              </button>
+              </Tooltip>
             </Link>
             <Link href="/DualCam">
-              <button
-                type="button"
-                data-te-toggle="tooltip"
-                data-te-placement="right"
-                data-te-ripple-init
-                data-te-ripple-color="light"
-                title="Dual Camera"
-              >
+              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Dual Cam">
                 <svg
-                  className="w-20 h-14 py-3  border-y-2 -my-2  text-[white]  text-white-10  dark:text-white"
+                  className="w-20 h-12 py-2  text-[white]  text-white-10  dark:text-white"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -150,17 +129,11 @@ export default function RootLayout({
                   <path d="M13 18h-5a2 2 0 0 1 -2 -2v-8" />{" "}
                   <polyline points="10 15 13 18 10 21" />
                 </svg>
-              </button>
+              </Tooltip>
             </Link>
             <Link href="/Reports">
-              <button
-                type="button"
-                data-te-toggle="tooltip"
-                data-te-placement="right"
-                data-te-ripple-init
-                data-te-ripple-color="light"
-                title="Reports"
-              >
+              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Reports">
+
                 <svg
                   className="w-20 h-14 py-3 border-y-2 text-[white] text-white-10  dark:text-white"
                   width="24"
@@ -175,7 +148,7 @@ export default function RootLayout({
                   <path d="M9 7V2.13a2.98 2.98 0 0 0-1.293.749L4.879 5.707A2.98 2.98 0 0 0 4.13 7H9Z" />
                   <path d="M18.066 2H11v5a2 2 0 0 1-2 2H4v11a1.97 1.97 0 0 0 1.934 2h12.132A1.97 1.97 0 0 0 20 20V4a1.97 1.97 0 0 0-1.934-2ZM10 18a1 1 0 1 1-2 0v-2a1 1 0 1 1 2 0v2Zm3 0a1 1 0 0 1-2 0v-6a1 1 0 1 1 2 0v6Zm3 0a1 1 0 0 1-2 0v-4a1 1 0 1 1 2 0v4Z" />
                 </svg>
-              </button>
+              </Tooltip>
             </Link>
           </div>
           <hr></hr>
@@ -185,7 +158,7 @@ export default function RootLayout({
                 <Image src={logo} className="h-9 w-32" alt="" />
               </div>
               <div className="block lg:hidden">
-                <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
+                {/* <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
                   <svg
                     className="fill-current h-3 w-3"
                     viewBox="0 0 20 20"
@@ -194,7 +167,7 @@ export default function RootLayout({
                     <title>Menu</title>
                     <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
                   </svg>
-                </button>
+                </button> */}
               </div>
               <div className="w-full block flex-grow lg:flex lg:items-center text-end lg:w-auto">
                 <div className="text-sm lg:flex-grow">
@@ -204,20 +177,20 @@ export default function RootLayout({
                       &nbsp;
                       <span className="text-1xl">
                         {" "}
-                        <span className="text-[#00B56C] mr-10">
+                        <span className="text-[#00B56C] ">
                           {session?.clientName}
                         </span>
                       </span>
                     </span>
                   </a>
-                  <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  w-42 mr-8">
+                  <a className="block mt-4 lg:inline-block lg:mt-0 text-black-500  w-44 mr-8">
                     <BlinkingTime timezone={session?.timezone} />
                   </a>
                 </div>
                 <div>
                   <a
                     href="#"
-                    className="inline-block text-sm px-4 py-2 leading-none lg:mt-0"
+                    className="inline-block text-sm px-6 py-2 leading-none lg:mt-0"
                   ></a>
                   <Popover open={openPopover} handler={setOpenPopover}>
                     <PopoverHandler {...triggers}>

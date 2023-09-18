@@ -22,6 +22,8 @@ export async function getVehicleDataByClientId(clientId: string) {
   }
 }
 
+// api.ts
+// api.ts
 export async function getClientSettingByClinetIdAndToken({
   token,
   clientId,
@@ -78,7 +80,6 @@ export async function vehicleListByClientId({
       throw new Error('Failed to fetch data from the API')
     }
     const data = await response.json()
-    console.log('data', data)
     return data
   } catch (error) {
     console.log('Error fetching data')
@@ -144,7 +145,6 @@ export async function IgnitionReportByDailyactivity({
       throw new Error('Failed to fetch data from the API')
     }
     const data = await response.json()
-    console.log('data', data)
     return data
   } catch (error) {
     console.log('Error fetching data')
