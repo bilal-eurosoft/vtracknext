@@ -1,9 +1,5 @@
 import { zonelistType } from "@/types/zoneType";
 
-
-import { zonelistType } from "@/types/zoneType";
-
-
 export async function getVehicleDataByClientId(clientId: string) {
   try {
     const response = await fetch('https://live.vtracksolutions.com/graphql', {
@@ -132,6 +128,36 @@ export async function ZoneFindById({
         "content-type": "application/json",
       },
       "body": `{\"id\":\"${id}\"}`,
+      "method": "POST"
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API')
+    }
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.log('Error fetching data')
+    return []
+  }
+}
+
+
+
+export async function videoList({
+  token,
+  clientId,
+}: {
+  token: string
+  clientId: string
+}) {
+  try {
+    const response = await fetch("https://backend.vtracksolutions.com/videolistbyId", {
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "authorization": `Bearer ${token}`,
+        "content-type": "application/json",
+      },
+      "body": `{\"clientId\":\"${clientId}\"}`,
       "method": "POST"
     });
     if (!response.ok) {

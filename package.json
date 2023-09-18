@@ -28,6 +28,7 @@
     "eslint-config-next": "13.4.19",
     "flowbite": "^1.8.1",
     "leaflet": "^1.9.4",
+    "moment-timezone": "^0.5.43",
     "next": "13.4.19",
     "next-auth": "^4.22.1",
     "postcss": "8.4.28",
