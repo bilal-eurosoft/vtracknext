@@ -44,6 +44,7 @@ export default function DualCam() {
     };
     vehicleListData();
   }, [session]);
+
   return (<div>
     <p className="bg-green px-4 py-1 text-white mb-10">Video List</p>
     <div className="grid lg:grid-cols-2  md:grid-cols-4  px-4 text-start">

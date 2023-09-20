@@ -46,7 +46,7 @@ export default function LoginPage() {
         </svg>
         <span className="sr-only">Loading...</span>
       </div> : <div className="block w-100 h-screen h-auto justify-center flex items-center">
-        <div className="bg-[#ffffff] sm:mx-auto mt-20 mb-20 w-full sm:max-w-lg lg:px-5">
+        <div className="bg-white sm:mx-auto mt-20 mb-20 w-full sm:max-w-lg lg:px-5">
           <Image
             className=" mt-9 mx-auto h-14 w-auto"
             src={logo}
