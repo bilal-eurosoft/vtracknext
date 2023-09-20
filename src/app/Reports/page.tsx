@@ -398,7 +398,7 @@ export default function Reports() {
                 !Ignitionreport.toDateTime
               }
             >
-              Submitghf
+              Submits
             </button>
           </div>
         </div>
