@@ -184,8 +184,8 @@ export default function Reports() {
 
                 pdfWindow?.document.write(
                   "<iframe width='100%' height='100%' src='data:application/pdf;base64, " +
-                  response.data[0].reportString +
-                  "'></iframe>"
+                    response.data[0].reportString +
+                    "'></iframe>"
                 );
               }, 2000);
             } else {
@@ -398,15 +398,13 @@ export default function Reports() {
                 !Ignitionreport.toDateTime
               }
             >
-              submit
+              Submitghf
             </button>
           </div>
         </div>
       </form>
 
       <Toaster position="top-center" reverseOrder={false} />
-
-
     </div>
   );
 }
