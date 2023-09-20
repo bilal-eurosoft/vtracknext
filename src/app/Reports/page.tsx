@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { DeviceAttach } from "@/types/vehiclelistreports";
 import { IgnitionReport } from "@/types/IgnitionReport";
 import React, { useEffect, useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
 
 import {
   IgnitionReportByTrip,
@@ -26,7 +27,7 @@ export default function Reports() {
     period: "",
     reportType: "",
     toDateTime: "",
-    unit: "Mile",
+    unit: session?.unit || "",
   });
 
   useEffect(() => {
@@ -37,7 +38,6 @@ export default function Reports() {
             token: session.accessToken,
             clientId: session?.clientId,
           });
-
           setVehicleList(Data);
         }
       } catch (error) {
@@ -78,7 +78,7 @@ export default function Reports() {
 
     if (name === "period" && value === "custom") {
       setIsCustomPeriod(true);
-    } else {
+    } else if (name === "period" && value != "custom") {
       setIsCustomPeriod(false);
     }
   };
@@ -94,51 +94,141 @@ export default function Reports() {
     e.preventDefault();
 
     if (session) {
-      let newdata = { ...Ignitionreport };
+      const { reportType, VehicleReg, period } = Ignitionreport;
 
-      const apiFunctions: Record<
-        string,
-        (data: {
-          token: string;
-          clientId: string;
-          payload: any;
-        }) => Promise<any>
-      > = {
-        Trip: IgnitionReportByTrip,
-        DailyActivity: IgnitionReportByDailyactivity,
-        Ignition: IgnitionReportByIgnition,
-        Events: IgnitionReportByEvents,
-        DetailReportByStreet: IgnitionReportByDetailReport,
-        IdlingActivity: IgnitionReportByIdlingActivity,
-      };
+      if (reportType && VehicleReg && period) {
+        let newdata = { ...Ignitionreport };
 
-      if (apiFunctions[newdata.reportType]) {
-        const apiFunction = apiFunctions[newdata.reportType];
-        if (isCustomPeriod) {
-          newdata = {
-            ...newdata,
-            fromDateTime: `${Ignitionreport.fromDateTime}T${formattedTime}Z`,
-            toDateTime: `${Ignitionreport.toDateTime}T${formattedTime}Z`,
-          };
+        const apiFunctions: Record<
+          string,
+          (data: {
+            token: string;
+            clientId: string;
+            payload: any;
+          }) => Promise<any>
+        > = {
+          Trip: IgnitionReportByTrip,
+          DailyActivity: IgnitionReportByDailyactivity,
+          Ignition: IgnitionReportByIgnition,
+          Events: IgnitionReportByEvents,
+          DetailReportByStreet: IgnitionReportByDetailReport,
+          IdlingActivity: IgnitionReportByIdlingActivity,
+        };
+
+        if (apiFunctions[newdata.reportType]) {
+          const apiFunction = apiFunctions[newdata.reportType];
+          if (isCustomPeriod) {
+            newdata = {
+              ...newdata,
+              fromDateTime: `${Ignitionreport.fromDateTime}T${formattedTime}Z`,
+              toDateTime: `${Ignitionreport.toDateTime}T${formattedTime}Z`,
+            };
+          } else {
+            newdata = {
+              ...newdata,
+              fromDateTime: formattedDateTime,
+              toDateTime: formattedDateTime,
+            };
+          }
+          try {
+            const response = await toast.promise(
+              apiFunction({
+                token: session.accessToken,
+                clientId: session.clientId,
+                payload: newdata,
+              }),
+              {
+                loading: "Loading...",
+                success: "",
+                error: "",
+              },
+              {
+                style: {
+                  border: "1px solid #00B56C",
+                  padding: "16px",
+                  color: "#1A202C",
+                },
+                success: {
+                  duration: 10,
+                  iconTheme: {
+                    primary: "#00B56C",
+                    secondary: "#FFFAEE",
+                  },
+                },
+                error: {
+                  duration: 10,
+                  iconTheme: {
+                    primary: "#00B56C",
+                    secondary: "#FFFAEE",
+                  },
+                },
+              }
+            );
+
+            if (response.success === true) {
+              toast.success(`${response.message}`, {
+                style: {
+                  border: "1px solid #00B56C",
+                  padding: "16px",
+                  color: "#1A202C",
+                },
+                duration: 4000,
+                iconTheme: {
+                  primary: "#00B56C",
+                  secondary: "#FFFAEE",
+                },
+              });
+
+              setTimeout(() => {
+                let pdfWindow = window.open("");
+
+                pdfWindow?.document.write(
+                  "<iframe width='100%' height='100%' src='data:application/pdf;base64, " +
+                    response.data[0].reportString +
+                    "'></iframe>"
+                );
+              }, 2000);
+            } else {
+              toast.error(`${response.message}`, {
+                style: {
+                  border: "1px solid red",
+                  padding: "16px",
+                  color: "red",
+                },
+                iconTheme: {
+                  primary: "red",
+                  secondary: "white",
+                },
+              });
+            }
+          } catch (error) {
+            console.error(
+              `Error calling API for ${newdata.reportType}:`,
+              error
+            );
+          }
         } else {
-          newdata = {
-            ...newdata,
-            fromDateTime: formattedDateTime,
-            toDateTime: formattedDateTime,
-          };
-        }
-
-        try {
-          const response = await apiFunction({
-            token: session.accessToken,
-            clientId: session.clientId,
-            payload: newdata,
-          });
-        } catch (error) {
-          console.error(`Error calling API for ${newdata.reportType}:`, error);
+          console.error(`API function not found for ${newdata.reportType}`);
         }
       } else {
-        console.error(`API function not found for ${newdata.reportType}`);
+        console.error(
+          "Please fill in all three fields: reportType, VehicleReg, and period"
+        );
+
+        toast.error(
+          "Please fill in all three fields: reportType, VehicleReg, and period",
+          {
+            style: {
+              border: "1px solid #00B56C",
+              padding: "16px",
+              color: "#1A202C",
+            },
+            iconTheme: {
+              primary: "#00B56C",
+              secondary: "#FFFAEE",
+            },
+          }
+        );
       }
     }
   };
@@ -146,16 +236,16 @@ export default function Reports() {
   return (
     <div>
       <form
-        className="container mx-auto lg:max-w-screen-lg"
+        className="container mx-auto lg:max-w-screen-lg bg-[#E2E8F0]"
         onSubmit={handleSubmit}
       >
-        <div className=" bg-green-50 mt-20">
-          <div className="grid grid-cols-1 ">
-            <p className="bg-[#00B56C] px-4 py-3 rounded-md text-white ">
+        <div className="bg-green-50 mt-20">
+          <div className="grid grid-cols-1">
+            <p className="bg-[#00B56C] px-4 py-3 rounded-md text-white">
               Reports Filter
             </p>
           </div>
-          <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 mt-5 mb-8  grid-cols-2 pt-5 px-10 gap-2 flex justify-center">
+          <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 mt-5 mb-8  grid-cols-2 pt-5 px-10 gap-2 flex justify-center ">
             <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 ">
               <label>
                 Report Type: &nbsp;&nbsp;
@@ -273,12 +363,28 @@ export default function Reports() {
           </div>
 
           <div className="text-white h-20 flex justify-center items-center">
-            <button className="bg-green-500 py-2 px-5 mb-5" type="submit">
+            <button
+              className={`bg-[#00B56C] py-2 px-5 mb-5 ${
+                !Ignitionreport.reportType ||
+                !Ignitionreport.VehicleReg ||
+                !Ignitionreport.period
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+              type="submit"
+              disabled={
+                !Ignitionreport.reportType ||
+                !Ignitionreport.VehicleReg ||
+                !Ignitionreport.period
+              }
+            >
               submit
             </button>
           </div>
         </div>
       </form>
+
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 }
