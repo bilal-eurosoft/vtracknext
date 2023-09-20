@@ -19,7 +19,6 @@ export default function Reports() {
   const { data: session } = useSession();
   const [vehicleList, setVehicleList] = useState<DeviceAttach[]>([]);
   const [isCustomPeriod, setIsCustomPeriod] = useState(false);
-  const [loadingPdf, setLoadingPdf] = useState<Boolean>(false);
   const [Ignitionreport, setIgnitionreport] = useState<IgnitionReport>({
     TimeZone: session?.timezone || "",
     VehicleReg: "",
@@ -28,7 +27,7 @@ export default function Reports() {
     period: "",
     reportType: "",
     toDateTime: "",
-    unit: "Mile",
+    unit: session?.unit || "",
   });
 
   useEffect(() => {
@@ -39,7 +38,6 @@ export default function Reports() {
             token: session.accessToken,
             clientId: session?.clientId,
           });
-
           setVehicleList(Data);
         }
       } catch (error) {
@@ -80,7 +78,7 @@ export default function Reports() {
 
     if (name === "period" && value === "custom") {
       setIsCustomPeriod(true);
-    } else {
+    } else if (name === "period" && value != "custom") {
       setIsCustomPeriod(false);
     }
   };
@@ -132,7 +130,6 @@ export default function Reports() {
               toDateTime: formattedDateTime,
             };
           }
-
           try {
             const response = await toast.promise(
               apiFunction({
