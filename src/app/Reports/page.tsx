@@ -236,21 +236,21 @@ export default function Reports() {
   return (
     <div>
       <form
-        className="container mx-auto lg:max-w-screen-lg bg-[#E2E8F0]"
+        className="container mx-auto lg:max-w-screen-lg bg-bgLight shadow-lg"
         onSubmit={handleSubmit}
       >
         <div className="bg-green-50 mt-20">
           <div className="grid grid-cols-1">
-            <p className="bg-[#00B56C] px-4 py-3 rounded-md text-white">
+            <p className="bg-green px-4 py-3 rounded-md text-white">
               Reports Filter
             </p>
           </div>
           <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 mt-5 mb-8  grid-cols-2 pt-5 px-10 gap-2 flex justify-center ">
             <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 ">
-              <label>
+              <label className="text-labelColor">
                 Report Type: &nbsp;&nbsp;
                 <select
-                  className="h-8 lg:w-4/6 w-full  border-2 boder-gray-100 bg-white outline-none"
+                  className="h-8 lg:w-4/6 w-full  text-labelColor  outline-green border border-grayLight px-1"
                   name="reportType"
                   value={Ignitionreport.reportType}
                   onChange={handleInputChange}
@@ -267,40 +267,13 @@ export default function Reports() {
                 </select>
               </label>
             </div>
-            {isCustomPeriod && (
-              <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 mt-4">
-                <label>
-                  From Date:
-                  <input
-                    type="date"
-                    className="h-8 w-full border-2 border-gray-100 bg-white outline-none"
-                    name="fromDateTime"
-                    value={Ignitionreport.fromDateTime}
-                    onChange={(e) =>
-                      handleCustomDateChange("fromDateTime", e.target.value)
-                    }
-                  />
-                </label>
-                <label>
-                  To Date:
-                  <input
-                    type="date"
-                    className="h-8 w-full border-2 border-gray-100 bg-white outline-none"
-                    name="toDateTime"
-                    value={Ignitionreport.toDateTime}
-                    onChange={(e) =>
-                      handleCustomDateChange("toDateTime", e.target.value)
-                    }
-                  />
-                </label>
-              </div>
-            )}
+
 
             <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0 mt-4">
-              <label>
+              <label className="text-labelColor">
                 Vehicle: &nbsp;&nbsp;
                 <select
-                  className="h-8 lg:w-4/6 w-full border-2 boder-gray-100 bg-white outline-none"
+                  className="h-8 lg:w-4/6 w-full  text-labelColor  outline-green border border-grayLight px-1e"
                   name="VehicleReg"
                   value={Ignitionreport.VehicleReg}
                   onChange={handleInputChange}
@@ -315,70 +288,117 @@ export default function Reports() {
               </label>
             </div>
           </div>
+
+
+
+
           <div className="container grid lg:grid-cols-8  mb-5 md:grid-cols-6 sm:grid-cols-5 gap-5 lg:text-center lg:mx-52 md:mx-24 sm:mx-10  flex justify-center">
             <div className="lg:col-span-1 md:col-span-1 sm:col-span-1">
-              <input
-                type="radio"
-                className="w-5 h-4"
-                name="period"
-                value="today"
-                checked={Ignitionreport.period === "today"}
-                onChange={handleInputChange}
-              />
-              <label> &nbsp;&nbsp;Today</label>
+              <label>
+                <input
+                  type="radio"
+                  className="w-5 h-4"
+                  name="period"
+                  value="today"
+                  checked={Ignitionreport.period === "today"}
+                  onChange={handleInputChange}
+                />
+                &nbsp;&nbsp;Today</label>
             </div>
             <div className="lg:col-span-1 md:col-span-1 sm:col-span-1">
-              <input
-                type="radio"
-                className="w-5 h-4"
-                name="period"
-                value="yesterday"
-                checked={Ignitionreport.period === "yesterday"}
-                onChange={handleInputChange}
-              />
-              <label> &nbsp;&nbsp;Yesterday</label>
+              <label>
+                <input
+                  type="radio"
+                  className="w-5 h-4 form-radio text-green"
+                  name="period"
+                  value="yesterday"
+                  checked={Ignitionreport.period === "yesterday"}
+                  onChange={handleInputChange}
+                />
+                &nbsp;&nbsp;Yesterday</label>
+
+            </div>
+
+
+            <div className="lg:col-span-1 md:col-span-1">
+              <label>
+                <input
+                  type="radio"
+                  className="w-5 h-4"
+                  name="period"
+                  value="week"
+                  checked={Ignitionreport.period === "week"}
+                  onChange={handleInputChange}
+                />
+                &nbsp;&nbsp;Week</label>
             </div>
             <div className="lg:col-span-1 md:col-span-1">
-              <input
-                type="radio"
-                className="w-5 h-4"
-                name="period"
-                value="week"
-                checked={Ignitionreport.period === "week"}
-                onChange={handleInputChange}
-              />
-              <label> &nbsp;&nbsp;Week</label>
-            </div>
-            <div className="lg:col-span-1 md:col-span-1">
-              <input
-                type="radio"
-                className="w-5 h-4"
-                name="period"
-                value="custom"
-                checked={Ignitionreport.period === "custom"}
-                onChange={handleInputChange}
-              />
-              <label> &nbsp;&nbsp;Custom</label>
+              <label>
+                <input
+                  type="radio"
+                  className="w-5 h-4"
+                  name="period"
+                  value="custom"
+                  checked={Ignitionreport.period === "custom"}
+                  onChange={handleInputChange}
+                />
+                &nbsp;&nbsp;Custom</label>
             </div>
           </div>
 
+          {isCustomPeriod && (
+            <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 mt-5 mb-8  grid-cols-2 pt-5 px-10 gap-2 flex justify-center ">
+
+              <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0 mt-4 ">
+                <label className="text-labelColor">
+                  From Date: &nbsp;&nbsp;
+                  <input
+                    type="date"
+                    className="ms-1 h-8 lg:w-4/6 w-full  text-labelColor  outline-green border border-grayLight px-1"
+                    name="fromDateTime"
+                    value={Ignitionreport.fromDateTime}
+                    onChange={(e) =>
+                      handleCustomDateChange("fromDateTime", e.target.value)
+                    }
+                  />
+                </label>
+              </div>
+              <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0 mt-4 ">
+                <label className="text-labelColor">
+                  To Date: &nbsp;&nbsp;
+                  <input
+                    type="date"
+                    className="h-8 lg:w-4/6 w-full  text-labelColor  outline-green border border-grayLight px-1"
+                    name="toDateTime"
+                    value={Ignitionreport.toDateTime}
+                    onChange={(e) =>
+                      handleCustomDateChange("toDateTime", e.target.value)
+                    }
+                  />
+                </label>
+              </div>
+            </div>
+          )}
           <div className="text-white h-20 flex justify-center items-center">
             <button
-              className={`bg-[#00B56C] py-2 px-5 mb-5 ${
-                !Ignitionreport.reportType ||
+              className={`bg-green py-2 px-5 mb-5 ${!Ignitionreport.reportType ||
                 !Ignitionreport.VehicleReg ||
-                !Ignitionreport.period
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
+                !Ignitionreport.period ||
+                !Ignitionreport.fromDateTime ||
+                !Ignitionreport.toDateTime
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+                }`}
               type="submit"
               disabled={
                 !Ignitionreport.reportType ||
                 !Ignitionreport.VehicleReg ||
-                !Ignitionreport.period
+                !Ignitionreport.period ||
+                !Ignitionreport.fromDateTime ||
+                !Ignitionreport.toDateTime
               }
             >
-              submit
+              Submits
             </button>
           </div>
         </div>
