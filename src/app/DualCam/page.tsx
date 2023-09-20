@@ -13,8 +13,8 @@ export default function DualCam() {
   const { data: session } = useSession()
   const [open, setOpen] = React.useState(false);
   const [openSecond, setOpenSecond] = React.useState(false);
-  const [getSingleImge, setSingleImage] = useState<any>()
-  const [getSingleVideo, setSingleVideo] = useState<any>()
+  const [singleImage, setSingleImage] = useState<any>()
+  const [singleVideo, setSingleVideo] = useState<any>()
   const [loading, setLaoding] = useState(false)
 
   const handleOpen = (item: any) => {
@@ -132,7 +132,7 @@ export default function DualCam() {
             })}
           </div>
           <Dialog open={open} handler={handleOpen} className="w-3/6 ms-auto mr-auto bg-bgLight">
-            <img src={getSingleImge} className="w-full h-screen" alt="" />
+            <img src={singleImage} className="w-full h-screen" alt="" />
           </Dialog>
           <div className="col-span-1 shadow-lg  overflow-y-scroll" style={{ height: '49em' }}>
             <div className="bg-green shadow-lg sticky top-0">
@@ -173,7 +173,7 @@ export default function DualCam() {
                       Video
                     </button>
                     <Dialog open={openSecond} handler={handleOpenSecond} className="w-3/6 ms-auto mr-auto bg-bgLight">
-                      <video muted loop autoPlay src={getSingleVideo} className="h-screen"></video>
+                      <video muted loop autoPlay src={singleVideo} className="h-screen"></video>
                     </Dialog>
                   </div>
                 </div>
