@@ -1,4 +1,4 @@
-import { IgnitionReport } from "@/types/IgnitionReport";
+import { IgnitionReport } from '@/types/IgnitionReport'
 
 export async function getVehicleDataByClientId(clientId: string) {
   try {
@@ -53,7 +53,6 @@ export async function getClientSettingByClinetIdAndToken({
   }
 }
 
-
 export async function vehicleListByClientId({
   token,
   clientId,
@@ -65,13 +64,13 @@ export async function vehicleListByClientId({
     const response = await fetch(
       'https://backend.vtracksolutions.com/vehicleListByClientId',
       {
-        "headers": {
-          "accept": "application/json, text/plain, */*",
-          "authorization": `Bearer ${token}`,
-          "content-type": "application/json",
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
         },
-        "body": `{\"clientId\":\"${clientId}\"}`,
-        "method": "POST"
+        body: `{\"clientId\":\"${clientId}\"}`,
+        method: 'POST',
       },
     )
     if (!response.ok) {
@@ -89,8 +88,8 @@ export async function IgnitionReportByTrip({
   token,
   payload,
 }: {
-  token: string;
-  payload: IgnitionReport;
+  token: string
+  payload: IgnitionReport
 }) {
   try {
     const response = await fetch(
@@ -103,19 +102,19 @@ export async function IgnitionReportByTrip({
           'content-type': 'application/json',
         },
         body: JSON.stringify(payload),
-      }
-    );
+      },
+    )
 
     if (!response.ok) {
-      throw new Error('Failed to fetch data from the API');
+      throw new Error('Failed to fetch data from the API')
     }
 
-    const data = await response.json();
-    console.log('data',data)
-    return data;
+    const data = await response.json()
+    console.log('data', data)
+    return data
   } catch (error) {
-    console.error('Error fetching data', error);
-    return [];
+    console.error('Error fetching data', error)
+    return []
   }
 }
 
@@ -123,8 +122,8 @@ export async function IgnitionReportByDailyactivity({
   token,
   payload,
 }: {
-  token: string;
-  payload: IgnitionReport;
+  token: string
+  payload: IgnitionReport
 }) {
   try {
     const response = await fetch(
@@ -137,7 +136,7 @@ export async function IgnitionReportByDailyactivity({
           'content-type': 'application/json',
         },
         body: JSON.stringify(payload),
-      }
+      },
     )
     if (!response.ok) {
       throw new Error('Failed to fetch data from the API')
@@ -153,8 +152,8 @@ export async function IgnitionReportByIgnition({
   token,
   payload,
 }: {
-  token: string;
-  payload: IgnitionReport;
+  token: string
+  payload: IgnitionReport
 }) {
   try {
     const response = await fetch(
@@ -167,7 +166,7 @@ export async function IgnitionReportByIgnition({
           'content-type': 'application/json',
         },
         body: JSON.stringify(payload),
-      }
+      },
     )
     if (!response.ok) {
       throw new Error('Failed to fetch data from the API')
@@ -183,8 +182,8 @@ export async function IgnitionReportByEvents({
   token,
   payload,
 }: {
-  token: string;
-  payload: IgnitionReport;
+  token: string
+  payload: IgnitionReport
 }) {
   try {
     const response = await fetch(
@@ -197,7 +196,7 @@ export async function IgnitionReportByEvents({
           'content-type': 'application/json',
         },
         body: JSON.stringify(payload),
-      }
+      },
     )
     if (!response.ok) {
       throw new Error('Failed to fetch data from the API')
@@ -213,8 +212,8 @@ export async function IgnitionReportByDetailReport({
   token,
   payload,
 }: {
-  token: string;
-  payload: IgnitionReport;
+  token: string
+  payload: IgnitionReport
 }) {
   try {
     const response = await fetch(
@@ -227,7 +226,7 @@ export async function IgnitionReportByDetailReport({
           'content-type': 'application/json',
         },
         body: JSON.stringify(payload),
-      }
+      },
     )
     if (!response.ok) {
       throw new Error('Failed to fetch data from the API')
@@ -243,8 +242,8 @@ export async function IgnitionReportByIdlingActivity({
   token,
   payload,
 }: {
-  token: string;
-  payload: IgnitionReport;
+  token: string
+  payload: IgnitionReport
 }) {
   try {
     const response = await fetch(
@@ -257,7 +256,7 @@ export async function IgnitionReportByIdlingActivity({
           'content-type': 'application/json',
         },
         body: JSON.stringify(payload),
-      }
+      },
     )
     if (!response.ok) {
       throw new Error('Failed to fetch data from the API')
@@ -270,8 +269,6 @@ export async function IgnitionReportByIdlingActivity({
   }
 }
 
-
-
 export async function videoList({
   token,
   clientId,
@@ -280,15 +277,80 @@ export async function videoList({
   clientId: string
 }) {
   try {
-    const response = await fetch("https://backend.vtracksolutions.com/videolistbyId", {
-      "headers": {
-        "accept": "application/json, text/plain, */*",
-        "authorization": `Bearer ${token}`,
-        "content-type": "application/json",
+    const response = await fetch(
+      'https://backend.vtracksolutions.com/videolistbyId',
+      {
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: `{\"clientId\":\"${clientId}\"}`,
+        method: 'POST',
       },
-      "body": `{\"clientId\":\"${clientId}\"}`,
-      "method": "POST"
-    });
+    )
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API')
+    }
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.log('Error fetching data')
+    return []
+  }
+}
+
+export async function getZoneListByClientId({
+  token,
+  clientId,
+}: {
+  token: string
+  clientId: string
+}) {
+  try {
+    const response = await fetch(
+      'https://backend.vtracksolutions.com/zonelist',
+      {
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: `{\"clientId\":\"${clientId}\"}`,
+        method: 'POST',
+      },
+    )
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API')
+    }
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.log('Error fetching data')
+    return []
+  }
+}
+
+export async function ZoneFindById({
+  token,
+  id,
+}: {
+  token: string
+  id: string
+}) {
+  try {
+    const response = await fetch(
+      'https://backend.vtracksolutions.com/findById',
+      {
+        headers: {
+          accept: 'application/json, text/plain, */*',
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: `{\"id\":\"${id}\"}`,
+        method: 'POST',
+      },
+    )
     if (!response.ok) {
       throw new Error('Failed to fetch data from the API')
     }

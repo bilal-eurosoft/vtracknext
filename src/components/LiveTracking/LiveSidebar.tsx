@@ -138,77 +138,79 @@ const LiveSidebar = ({
         </div>
       </div>
       {filteredData?.map((item: VehicleData) => {
-        return <div>
-          <div
-            key={item?.IMEI}
-            className="grid lg:grid-cols-3 grid-cols-3 text-center py-5 mt-2 bg-white  cursor-pointer"
-            onClick={() => {
-              setSelectedVehicle(item);
-            }}
-          >
-            <div className="lg:col-span-1 col-span-1">
-              <p>
+        return (
+          <div key={item.IMEI}>
+            <div
+              key={item?.IMEI}
+              className="grid lg:grid-cols-3 grid-cols-3 text-center py-5 mt-2 bg-white  cursor-pointer"
+              onClick={() => {
+                setSelectedVehicle(item);
+              }}
+            >
+              <div className="lg:col-span-1 col-span-1">
+                <p>
+                  {item.gps.speed === 0 && item.ignition === 0 ? (
+                    <b className="text-red ">{item?.vehicleReg}</b>
+                  ) : item.gps.speed > 0 && item.ignition === 1 ? (
+                    <b className="text-green">{item?.vehicleReg}</b>
+                  ) : (
+                    <b className="text-yellow ">{item?.vehicleReg}</b>
+                  )}
+                </p>
+              </div>
+
+              <div className="lg:col-span-1 col-span-1">
                 {item.gps.speed === 0 && item.ignition === 0 ? (
-                  <b className="text-red ">{item?.vehicleReg}</b>
+                  <>
+                    <button className="text-white bg-red p-1 -mt-1 shadow-lg">
+                      Parked
+                    </button>
+                  </>
                 ) : item.gps.speed > 0 && item.ignition === 1 ? (
-                  <b className="text-green">{item?.vehicleReg}</b>
-                ) : (
-                  <b className="text-yellow ">{item?.vehicleReg}</b>
-                )}
-              </p>
-            </div>
-
-            <div className="lg:col-span-1 col-span-1">
-              {item.gps.speed === 0 && item.ignition === 0 ? (
-                <>
-                  <button className="text-white bg-red p-1 -mt-1 shadow-lg">
-                    Parked
+                  <button className="text-white bg-green p-1 -mt-1 shadow-lg">
+                    Moving
                   </button>
-                </>
-              ) : item.gps.speed > 0 && item.ignition === 1 ? (
-                <button className="text-white bg-green p-1 -mt-1 shadow-lg">
-                  Moving
-                </button>
-              ) : (
-                <button className="text-white bg-yellow p-1 -mt-1 shadow-md">
-                  Pause
-                </button>
-              )}
-            </div>
-
-            <div className="lg:col-span-1 col-span-1">
-              <div className="grid grid-cols-4">
-                <div className="lg:col-span-2 col-span-2">
-                  {item.gps.speed} Mph
-                </div>
-                {session?.timezone !== undefined ? (
-                  <ActiveStatus
-                    currentTime={new Date().toLocaleString("en-US", {
-                      timeZone: session.timezone,
-                    })}
-                    targetTime={item.timestamp}
-                  />
                 ) : (
-                  <p>Timezone is undefined</p>
+                  <button className="text-white bg-yellow p-1 -mt-1 shadow-md">
+                    Pause
+                  </button>
                 )}
-                {/*  )} */}
+              </div>
+
+              <div className="lg:col-span-1 col-span-1">
+                <div className="grid grid-cols-4">
+                  <div className="lg:col-span-2 col-span-2">
+                    {item.gps.speed} Mph
+                  </div>
+                  {session?.timezone !== undefined ? (
+                    <ActiveStatus
+                      currentTime={new Date().toLocaleString("en-US", {
+                        timeZone: session.timezone,
+                      })}
+                      targetTime={item.timestamp}
+                    />
+                  ) : (
+                    <p>Timezone is undefined</p>
+                  )}
+                  {/*  )} */}
+                </div>
               </div>
             </div>
+
+            <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-5 pb-5 text-sm border-b-2 border-green text-green">
+              {item.timestamp}
+              <br></br>
+              <span className="text-labelColor">
+                {item?.OSM?.address?.neighbourhood}
+
+                {item?.OSM?.address?.road}
+
+                {item?.OSM?.address?.city}
+              </span>
+            </p>
           </div>
-
-          <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-5 pb-5 text-sm border-b-2 border-green text-green">
-            {item.timestamp}<br></br>
-            <span className="text-labelColor">
-              {item?.OSM?.address?.neighbourhood}
-
-              {item?.OSM?.address?.road}
-
-              {item?.OSM?.address?.city}
-            </span>
-          </p>
-        </div>
+        );
       })}
-
     </div>
   );
 };

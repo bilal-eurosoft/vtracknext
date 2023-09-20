@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import logo from "@/../public/Images/logo.png";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,11 +12,11 @@ import {
   PopoverHandler,
   PopoverContent,
   Typography,
-  Tooltip, Button
+  Tooltip,
 } from "@material-tailwind/react";
 
 import BlinkingTime from "../General/BlinkingTime";
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -30,19 +31,23 @@ export default function RootLayout({
   };
 
   const { data: session } = useSession();
-  
+
   if (!session) {
     router.push("/login");
   }
 
   return (
-    <div className={inter.className}>
+    // <div className={inter.className}>
+    <div>
       <div>
         <div className="flex flex-row">
           <div className="basis-20 py-6 bg-[#29303b] h-screen hidden md:block">
-
             <Link href="/liveTracking">
-              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Live Map">
+              <Tooltip
+                className="bg-white text-[#00B56C] shadow-lg rounded"
+                placement="right"
+                content="Live Map"
+              >
                 <svg
                   className="w-20 h-14 py-3  border-y-2 mt-12  text-[white]  text-white-10 dark:text-white"
                   fill="none"
@@ -62,12 +67,14 @@ export default function RootLayout({
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-
               </Tooltip>
-
             </Link>
             <Link href="/journeyReplay">
-              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Journey Replay">
+              <Tooltip
+                className="bg-white text-[#00B56C] shadow-lg rounded"
+                placement="right"
+                content="Journey Replay"
+              >
                 <svg
                   className="w-20 h-14 py-3  -my-1  text-[white]  text-white-10  dark:text-white"
                   viewBox="0 0 24 24"
@@ -84,7 +91,11 @@ export default function RootLayout({
               </Tooltip>
             </Link>
             <Link href="/Zone">
-              <Tooltip className='bg-white text-[#00B56C] rounded shadow-lg' placement="right" content="Zone">
+              <Tooltip
+                className="bg-white text-[#00B56C] rounded shadow-lg"
+                placement="right"
+                content="Zone"
+              >
                 <svg
                   className="w-20 h-14 py-3  border-y-2   text-[white]  text-white-10  dark:text-white"
                   width="24"
@@ -108,7 +119,11 @@ export default function RootLayout({
               </Tooltip>
             </Link>
             <Link href="/DualCam">
-              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Dual Cam">
+              <Tooltip
+                className="bg-white text-[#00B56C] shadow-lg rounded"
+                placement="right"
+                content="Dual Cam"
+              >
                 <svg
                   className="w-20 h-12 py-2  text-[white]  text-white-10  dark:text-white"
                   width="24"
@@ -132,8 +147,11 @@ export default function RootLayout({
               </Tooltip>
             </Link>
             <Link href="/Reports">
-              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Reports">
-
+              <Tooltip
+                className="bg-white text-[#00B56C] shadow-lg rounded"
+                placement="right"
+                content="Reports"
+              >
                 <svg
                   className="w-20 h-14 py-3 border-y-2 text-[white] text-white-10  dark:text-white"
                   width="24"
