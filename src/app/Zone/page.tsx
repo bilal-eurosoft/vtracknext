@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 //zone
 import { useEffect, useState } from "react";
@@ -157,9 +158,11 @@ export default function Zone() {
   };
 
   return (
-    <div className="mt-10 bg-bgLight">
-      <form onSubmit={handleSearchClick}>
-        <p className="bg-green px-4 py-1 text-black text-sm">Zone Filter</p>
+    <div className="mt-10 bg-bgLight mx-5">
+      <form onSubmit={handleSearchClick} className="shadow-lg">
+        <p className="bg-green px-4 py-1 text-black text-sm text-white font-bold">
+          Zone Filter
+        </p>
         <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
           <div className="lg:col-span-1">
             <label className="text-sm text-labelColor">Zone Name</label>
@@ -371,7 +374,7 @@ export default function Zone() {
 
       <br></br>
       <div className="bg-gray-100  mx-4  ">
-        <p className="bg-[#00B56C] px-4 py-1 text-white ">ZoneTitle</p>
+        <p className="bg-[#00B56C] px-4 py-1 text-white font-bold">ZoneTitle</p>
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg h-96 h-96">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
             <thead className="text-xs text-gray-700 uppercase bg-zoneTabelBg dark:bg-gray-700 dark:text-gray-400 ">
