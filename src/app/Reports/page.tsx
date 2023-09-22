@@ -242,7 +242,7 @@ export default function Reports() {
         <div className="bg-green-50 mt-20">
           <div className="grid grid-cols-1">
             <p className="bg-green px-4 py-3 rounded-md text-white">
-              Reports Filter
+              Reports Filter{" "}
             </p>
           </div>
           <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 mt-5 mb-8  grid-cols-2 pt-5 px-10 gap-2 flex justify-center ">
@@ -268,7 +268,6 @@ export default function Reports() {
               </label>
             </div>
 
-
             <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0 mt-4">
               <label className="text-labelColor">
                 Vehicle: &nbsp;&nbsp;
@@ -289,9 +288,6 @@ export default function Reports() {
             </div>
           </div>
 
-
-
-
           <div className="container grid lg:grid-cols-8  mb-5 md:grid-cols-6 sm:grid-cols-5 gap-5 lg:text-center lg:mx-52 md:mx-24 sm:mx-10  flex justify-center">
             <div className="lg:col-span-1 md:col-span-1 sm:col-span-1">
               <label>
@@ -303,7 +299,8 @@ export default function Reports() {
                   checked={Ignitionreport.period === "today"}
                   onChange={handleInputChange}
                 />
-                &nbsp;&nbsp;Today</label>
+                &nbsp;&nbsp;Today
+              </label>
             </div>
             <div className="lg:col-span-1 md:col-span-1 sm:col-span-1">
               <label>
@@ -315,10 +312,9 @@ export default function Reports() {
                   checked={Ignitionreport.period === "yesterday"}
                   onChange={handleInputChange}
                 />
-                &nbsp;&nbsp;Yesterday</label>
-
+                &nbsp;&nbsp;Yesterday
+              </label>
             </div>
-
 
             <div className="lg:col-span-1 md:col-span-1">
               <label>
@@ -330,7 +326,8 @@ export default function Reports() {
                   checked={Ignitionreport.period === "week"}
                   onChange={handleInputChange}
                 />
-                &nbsp;&nbsp;Week</label>
+                &nbsp;&nbsp;Week
+              </label>
             </div>
             <div className="lg:col-span-1 md:col-span-1">
               <label>
@@ -342,13 +339,13 @@ export default function Reports() {
                   checked={Ignitionreport.period === "custom"}
                   onChange={handleInputChange}
                 />
-                &nbsp;&nbsp;Custom</label>
+                &nbsp;&nbsp;Custom
+              </label>
             </div>
           </div>
 
           {isCustomPeriod && (
             <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 mt-5 mb-8  grid-cols-2 pt-5 px-10 gap-2 flex justify-center ">
-
               <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0 mt-4 ">
                 <label className="text-labelColor">
                   From Date: &nbsp;&nbsp;
@@ -381,14 +378,15 @@ export default function Reports() {
           )}
           <div className="text-white h-20 flex justify-center items-center">
             <button
-              className={`bg-green py-2 px-5 mb-5 ${!Ignitionreport.reportType ||
+              className={`bg-green py-2 px-5 mb-5 ${
+                !Ignitionreport.reportType ||
                 !Ignitionreport.VehicleReg ||
                 !Ignitionreport.period ||
                 !Ignitionreport.fromDateTime ||
                 !Ignitionreport.toDateTime
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-                }`}
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
               type="submit"
               disabled={
                 !Ignitionreport.reportType ||

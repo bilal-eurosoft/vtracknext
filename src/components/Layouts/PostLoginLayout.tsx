@@ -11,7 +11,8 @@ import {
   PopoverHandler,
   PopoverContent,
   Typography,
-  Tooltip, Button
+  Tooltip,
+  Button,
 } from "@material-tailwind/react";
 
 import BlinkingTime from "../General/BlinkingTime";
@@ -30,7 +31,7 @@ export default function RootLayout({
   };
 
   const { data: session } = useSession();
-  
+
   if (!session) {
     router.push("/login");
   }
@@ -40,9 +41,12 @@ export default function RootLayout({
       <div>
         <div className="flex flex-row">
           <div className="basis-20 py-6 bg-[#29303b] h-screen hidden md:block">
-
             <Link href="/liveTracking">
-              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Live Map">
+              <Tooltip
+                className="bg-white text-[#00B56C] shadow-lg rounded"
+                placement="right"
+                content="Live Map"
+              >
                 <svg
                   className="w-20 h-14 py-3  border-y-2 mt-12  text-[white]  text-white-10 dark:text-white"
                   fill="none"
@@ -62,12 +66,14 @@ export default function RootLayout({
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-
               </Tooltip>
-
             </Link>
             <Link href="/journeyReplay">
-              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Journey Replay">
+              <Tooltip
+                className="bg-white text-[#00B56C] shadow-lg rounded"
+                placement="right"
+                content="Journey Replay"
+              >
                 <svg
                   className="w-20 h-14 py-3  -my-1  text-[white]  text-white-10  dark:text-white"
                   viewBox="0 0 24 24"
@@ -84,7 +90,11 @@ export default function RootLayout({
               </Tooltip>
             </Link>
             <Link href="/Zone">
-              <Tooltip className='bg-white text-[#00B56C] rounded shadow-lg' placement="right" content="Zone">
+              <Tooltip
+                className="bg-white text-[#00B56C] rounded shadow-lg"
+                placement="right"
+                content="Zone"
+              >
                 <svg
                   className="w-20 h-14 py-3  border-y-2   text-[white]  text-white-10  dark:text-white"
                   width="24"
@@ -107,8 +117,57 @@ export default function RootLayout({
                 </svg>
               </Tooltip>
             </Link>
-            <Link href="/DualCam">
-              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Dual Cam">
+
+            <Popover placement="right-start">
+              <Tooltip
+                className="bg-white text-green shadow-lg rounded border-none"
+                placement="right"
+                content="Dual Camera"
+              >
+                <PopoverHandler>
+                  <svg
+                    className="w-20 h-12 py-2  text-[white]  text-white-10  dark:text-white cursor-pointer"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    {" "}
+                    <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                    <circle cx="6" cy="6" r="2" />{" "}
+                    <circle cx="18" cy="18" r="2" />{" "}
+                    <path d="M11 6h5a2 2 0 0 1 2 2v8" />{" "}
+                    <polyline points="14 9 11 6 14 3" />{" "}
+                    <path d="M13 18h-5a2 2 0 0 1 -2 -2v-8" />{" "}
+                    <polyline points="10 15 13 18 10 21" />
+                  </svg>
+                </PopoverHandler>
+              </Tooltip>
+              <PopoverContent className="border-none  cursor-pointer">
+                <span className="hover:bg-bgLight w-full">
+                  Get Image And Video
+                </span>
+                <br></br>
+                <br></br>
+                <span
+                  className="hover:bg-bgLight w-full"
+                  onClick={() => router.push("/DualCam")}
+                >
+                  View Image And Video
+                </span>
+                <br></br>
+              </PopoverContent>
+            </Popover>
+            {/* <Link href="/DualCam">
+              <Tooltip
+                className="bg-white text-[#00B56C] shadow-lg rounded"
+                placement="right"
+                content="Dual Cam"
+              >
                 <svg
                   className="w-20 h-12 py-2  text-[white]  text-white-10  dark:text-white"
                   width="24"
@@ -130,10 +189,13 @@ export default function RootLayout({
                   <polyline points="10 15 13 18 10 21" />
                 </svg>
               </Tooltip>
-            </Link>
+            </Link> */}
             <Link href="/Reports">
-              <Tooltip className='bg-white text-[#00B56C] shadow-lg rounded' placement="right" content="Reports">
-
+              <Tooltip
+                className="bg-white text-[#00B56C] shadow-lg rounded"
+                placement="right"
+                content="Reports"
+              >
                 <svg
                   className="w-20 h-14 py-3 border-y-2 text-[white] text-white-10  dark:text-white"
                   width="24"

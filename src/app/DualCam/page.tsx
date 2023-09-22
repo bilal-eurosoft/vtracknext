@@ -6,38 +6,39 @@ import { useState, useEffect } from "react";
 import { videoList } from "@/utils/API_CALLS";
 import { pictureVideoDataOfVehicleT } from "@/types/videoType";
 import Loading from "../loading";
-
+import Image from "next/image";
 export default function DualCam() {
-
-  const [pictureVideoDataOfVehicle, setPictureVideoDataOfVehicle] = useState<pictureVideoDataOfVehicleT[]>([])
-  const { data: session } = useSession()
+  const [pictureVideoDataOfVehicle, setPictureVideoDataOfVehicle] = useState<
+    pictureVideoDataOfVehicleT[]
+  >([]);
+  const { data: session } = useSession();
   const [open, setOpen] = React.useState(false);
   const [openSecond, setOpenSecond] = React.useState(false);
-  const [singleImage, setSingleImage] = useState<any>()
-  const [singleVideo, setSingleVideo] = useState<any>()
-  const [loading, setLaoding] = useState(false)
+  const [singleImage, setSingleImage] = useState<any>();
+  const [singleVideo, setSingleVideo] = useState<any>();
+  const [loading, setLaoding] = useState(false);
 
   const handleOpen = (item: any) => {
     setOpen(!open);
-    setSingleImage(item.path)
-  }
+    setSingleImage(item.path);
+  };
 
   const handleOpenSecond = (item: any) => {
     setOpenSecond(!openSecond);
-    setSingleVideo(item.path)
-  }
+    setSingleVideo(item.path);
+  };
   useEffect(() => {
     const vehicleListData = async () => {
       try {
-        setLaoding(true)
+        setLaoding(true);
         if (session) {
           const response = await videoList({
             token: session?.accessToken,
-            clientId: session?.clientId
+            clientId: session?.clientId,
           });
-          setPictureVideoDataOfVehicle(response)
+          setPictureVideoDataOfVehicle(response);
         }
-        setLaoding(false)
+        setLaoding(false);
       } catch (error) {
         console.error("Error fetching zone data:", error);
       }
@@ -45,9 +46,91 @@ export default function DualCam() {
     vehicleListData();
   }, [session]);
 
-  return (<div>
-    <p className="bg-green px-4 py-1 text-white mb-10">Video List</p>
-    <div className="grid lg:grid-cols-2  md:grid-cols-4  px-4 text-start">
+  return (
+    <div>
+      <p className="bg-green px-4 py-1 text-white mb-10 font-bold">
+        View Image & Videos
+      </p>
+      <div className="grid lg:grid-cols-2  md:grid-cols-4  px-4 text-start">
+        <div className="col-span-1">
+          <div className="grid grid-cols-3 gap-5">
+            <div className="col-span-1">
+              <select className=" w-full bg-transparent border-2 p-1 outline-none border-grayLight ">
+                <option>Select Vehicle</option>
+              </select>
+            </div>
+            <div className="col-span-2 ">
+              <p>Camera Type</p>
+              <label>
+                <input
+                  type="radio"
+                  className="w-5 h-4"
+                  name="period"
+                  value="today"
+                />
+                &nbsp;Front
+              </label>
+
+              <label>
+                <input
+                  type="radio"
+                  className="w-5 h-4 lg:ms-5"
+                  name="period"
+                  value="today"
+                />
+                &nbsp;Back
+              </label>
+
+              <label>
+                <input
+                  type="radio"
+                  className="w-5 h-4 lg:ms-5"
+                  name="period"
+                  value="today"
+                />
+                &nbsp;Both
+              </label>
+            </div>
+          </div>
+          <h1>test</h1>
+        </div>
+        <div className="col-span-1">
+          <h1>test</h1>
+        </div>
+        <div className="col-span-1">
+          <h1>test</h1>
+        </div>
+        <div className="lg:col-span-1 md:col-span-3  py-5">
+          <div className="grid lg:grid-cols-12 md:grid-cols-12 gap-5">
+            <div className="lg:col-span-3 md:col-span-3 px-2">
+              <select className=" w-full bg-transparent border-2 p-1 outline-none border-grayLight ">
+                <option>Select Vehicle</option>
+              </select>
+            </div>
+            {/* <div className="lg:col-span-2 md:col-span-2 mt-1">
+              <input type="radio" className="w-5 h-4  " name="bilal" />
+              <label className=" "> &nbsp;&nbsp;Today</label>
+            </div>
+            <div className="lg:col-span-2 md:col-span-3 mt-1">
+              <input type="radio" className="w-5 h-4  " name="bilal" />
+              <label className=" "> &nbsp;&nbsp;Yesterday</label>
+            </div>
+            <div className="lg:col-span-2 md:col-span-2 mt-1">
+              <input type="radio" className="w-5 h-4  " name="bilal" />
+              <label className=" "> &nbsp;&nbsp;Week</label>
+            </div>
+            <div className="lg:col-span-2 md:col-span-2 mt-1">
+              <input type="radio" className="w-5 h-4  " name="bilal" />
+              <label className=" "> &nbsp;&nbsp;Custom</label>
+            </div> */}
+            {/* <div className="lg:col-span-2 md:col-span-3 mt-1">
+              <button className="bg-[#00B56C] px-5 text-white">Search</button>
+            </div> */}
+          </div>
+        </div>
+        <div className="col-span-1"></div>
+      </div>
+      {/* <div className="grid lg:grid-cols-2  md:grid-cols-4  px-4 text-start">
       <div className="col-span-1"></div>
     </div>
     <div className="grid lg:grid-cols-5  sm:grid-cols-5 md:grid-cols-5 grid-cols-1" style={{ height: '49em' }}>
@@ -132,7 +215,7 @@ export default function DualCam() {
             })}
           </div>
           <Dialog open={open} handler={handleOpen} className="w-3/6 ms-auto mr-auto bg-bgLight">
-            <img src={singleImage} className="w-full h-screen" alt="" />
+            <Image src={singleImage} className="w-full h-screen" alt="" />
           </Dialog>
           <div className="col-span-1 shadow-lg  overflow-y-scroll" style={{ height: '49em' }}>
             <div className="bg-green shadow-lg sticky top-0">
@@ -183,7 +266,7 @@ export default function DualCam() {
         </div>
         }
       </div>
+    </div> */}
     </div>
-  </div>
   );
 }
