@@ -293,7 +293,8 @@ export default function Reports() {
               <label>
                 <input
                   type="radio"
-                  className="w-5 h-4"
+                  className="w-5 h-4 form-radio  "
+                  style={{ accentColor: "green" }}
                   name="period"
                   value="today"
                   checked={Ignitionreport.period === "today"}
@@ -309,6 +310,7 @@ export default function Reports() {
                   className="w-5 h-4 form-radio text-green"
                   name="period"
                   value="yesterday"
+                  style={{ accentColor: "green" }}
                   checked={Ignitionreport.period === "yesterday"}
                   onChange={handleInputChange}
                 />
@@ -323,12 +325,14 @@ export default function Reports() {
                   className="w-5 h-4"
                   name="period"
                   value="week"
+                  style={{ accentColor: "green" }}
                   checked={Ignitionreport.period === "week"}
                   onChange={handleInputChange}
                 />
                 &nbsp;&nbsp;Week
               </label>
             </div>
+
             <div className="lg:col-span-1 md:col-span-1">
               <label>
                 <input
@@ -336,6 +340,7 @@ export default function Reports() {
                   className="w-5 h-4"
                   name="period"
                   value="custom"
+                  style={{ accentColor: "green" }}
                   checked={Ignitionreport.period === "custom"}
                   onChange={handleInputChange}
                 />

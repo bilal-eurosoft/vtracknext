@@ -146,13 +146,13 @@ const LiveSidebar = ({
                 }}
               >
                 <div className="lg:col-span-1 col-span-1">
-                  <p>
+                  <p style={{ fontSize: "1.3em" }}>
                     {item.gps.speed === 0 && item.ignition === 0 ? (
-                      <b className="text-red ">{item?.vehicleReg}</b>
+                      <p className="text-red ">{item?.vehicleReg}</p>
                     ) : item.gps.speed > 0 && item.ignition === 1 ? (
-                      <b className="text-green">{item?.vehicleReg}</b>
+                      <p className="text-green">{item?.vehicleReg}</p>
                     ) : (
-                      <b className="text-yellow ">{item?.vehicleReg}</b>
+                      <p className="text-yellow ">{item?.vehicleReg}</p>
                     )}
                   </p>
                 </div>

@@ -33,7 +33,7 @@ export const ActiveStatus: React.FC<ActiveStatusProps> = ({
   return (
     <div className="lg:col-span-1">
       <svg
-        className={`h-6 w-3 text-${divColor}-500 mr-2`}
+        className={`h-6 w-3 text-${divColor} mr-2`}
         viewBox="0 0 24 24"
         fill={divColor}
         stroke="currentColor"

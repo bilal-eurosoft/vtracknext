@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import logo from "@/../public/Images/logo.png";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,7 +17,7 @@ import {
 } from "@material-tailwind/react";
 
 import BlinkingTime from "../General/BlinkingTime";
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -37,7 +38,8 @@ export default function RootLayout({
   }
 
   return (
-    <div className={inter.className}>
+    // <div className={inter.className}>
+    <div>
       <div>
         <div className="flex flex-row">
           <div className="basis-20 py-6 bg-[#29303b] h-screen hidden md:block">
@@ -283,8 +285,8 @@ export default function RootLayout({
                         color="gray"
                         className="font-normal "
                       >
-                        <p className="text-2xl mb-3 text-center">
-                          Bilal Hussain
+                        <p className=" mb-3 text-center">
+                          {session?.clientName}
                         </p>
                         <hr></hr>
                         <div className="flex justify-center">

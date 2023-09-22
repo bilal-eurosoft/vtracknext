@@ -51,62 +51,80 @@ export default function DualCam() {
       <p className="bg-green px-4 py-1 text-white mb-10 font-bold">
         View Image & Videos
       </p>
-      <div className="grid lg:grid-cols-2  md:grid-cols-4  px-4 text-start">
+      <div className="grid lg:grid-cols-6  md:grid-cols-4  px-4 text-start gap-5 ">
+        <div className="col-span-1 mt-1">
+          <select className=" w-full bg-transparent border-2 p-1 outline-none border-grayLight ">
+            <option>Select Vehicle</option>
+          </select>
+        </div>
         <div className="col-span-1">
-          <div className="grid grid-cols-3 gap-5">
-            <div className="col-span-1">
-              <select className=" w-full bg-transparent border-2 p-1 outline-none border-grayLight ">
-                <option>Select Vehicle</option>
-              </select>
-            </div>
-            <div className="col-span-2 ">
-              <p>Camera Type</p>
-              <label>
-                <input
-                  type="radio"
-                  className="w-5 h-4"
-                  name="period"
-                  value="today"
-                />
-                &nbsp;Front
-              </label>
+          <p className="text-sm">Camera Type</p>
+          <label className="text-sm">
+            <input
+              type="radio"
+              className="w-3 h-3 form-radio text-green"
+              name="period"
+              value="yesterday"
+            />
+            &nbsp;Front
+          </label>
+          <label className="text-sm">
+            <input
+              type="radio"
+              className="w-3 h-3 form-radio text-green lg:ms-5"
+              name="period"
+              value="yesterday"
+            />
+            &nbsp;Back
+          </label>
+          <label className="text-sm">
+            <input
+              type="radio"
+              className="w-3 h-3 form-radio text-green lg:ms-5"
+              name="period"
+              value="yesterday"
+            />
+            &nbsp;Both
+          </label>
+        </div>
+        <div className="col-span-2">
+          <p className="text-sm">Type</p>
+          <label className="text-sm">
+            <input
+              type="radio"
+              className="w-3 h-3 form-radio text-green"
+              name="period"
+              value="yesterday"
+            />
+            &nbsp;Photo
+          </label>
+          <label className="text-sm">
+            <input
+              type="radio"
+              className="w-3 h-3 form-radio text-green lg:ms-5"
+              name="period"
+              value="yesterday"
+            />
+            &nbsp;Video
+          </label>
+          <label className="text-sm">
+            <input
+              type="radio"
+              className="w-3 h-3 form-radio text-green lg:ms-5"
+              name="period"
+              value="yesterday"
+            />
+            &nbsp;Both
+          </label>
+        </div>
 
-              <label>
-                <input
-                  type="radio"
-                  className="w-5 h-4 lg:ms-5"
-                  name="period"
-                  value="today"
-                />
-                &nbsp;Back
-              </label>
-
-              <label>
-                <input
-                  type="radio"
-                  className="w-5 h-4 lg:ms-5"
-                  name="period"
-                  value="today"
-                />
-                &nbsp;Both
-              </label>
-            </div>
-          </div>
-          <h1>test</h1>
-        </div>
-        <div className="col-span-1">
-          <h1>test</h1>
-        </div>
-        <div className="col-span-1">
-          <h1>test</h1>
-        </div>
         <div className="lg:col-span-1 md:col-span-3  py-5">
           <div className="grid lg:grid-cols-12 md:grid-cols-12 gap-5">
-            <div className="lg:col-span-3 md:col-span-3 px-2">
+            {/* <div className="lg:col-span-3 md:col-span-3 px-2">
               <select className=" w-full bg-transparent border-2 p-1 outline-none border-grayLight ">
                 <option>Select Vehicle</option>
               </select>
-            </div>
+            </div> */}
             {/* <div className="lg:col-span-2 md:col-span-2 mt-1">
               <input type="radio" className="w-5 h-4  " name="bilal" />
               <label className=" "> &nbsp;&nbsp;Today</label>
@@ -130,6 +148,83 @@ export default function DualCam() {
         </div>
         <div className="col-span-1"></div>
       </div>
+
+      <div className="grid lg:grid-cols-6  md:grid-cols-4  px-4 text-start gap-5 mt-3">
+        <div className="col-span-2">
+          <p className="text-sm">Date</p>
+          <label className="text-sm">
+            <input
+              type="radio"
+              className="w-3 h-3 form-radio text-green"
+              name="period"
+              value="yesterday"
+            />
+            &nbsp;Today
+          </label>
+          <label className="text-sm">
+            <input
+              type="radio"
+              className="w-3 h-3 form-radio text-green lg:ms-5"
+              name="period"
+              value="yesterday"
+            />
+            &nbsp;Yesterday
+          </label>
+          <label className="text-sm">
+            <input
+              type="radio"
+              className="w-3 h-3 form-radio text-green lg:ms-5"
+              name="period"
+              value="yesterday"
+            />
+            &nbsp;Week
+          </label>
+
+          <label className="text-sm">
+            <input
+              type="radio"
+              className="w-3 h-3 form-radio text-green lg:ms-5"
+              name="period"
+              value="yesterday"
+            />
+            &nbsp;Custom
+          </label>
+        </div>
+        <div className="col-span-2">
+          <button className="bg-green px-5 py-2 text-white mt-2">Search</button>
+        </div>
+
+        <div className="lg:col-span-1 md:col-span-3  py-5">
+          <div className="grid lg:grid-cols-12 md:grid-cols-12 gap-5">
+            {/* <div className="lg:col-span-3 md:col-span-3 px-2">
+              <select className=" w-full bg-transparent border-2 p-1 outline-none border-grayLight ">
+                <option>Select Vehicle</option>
+              </select>
+            </div> */}
+            {/* <div className="lg:col-span-2 md:col-span-2 mt-1">
+              <input type="radio" className="w-5 h-4  " name="bilal" />
+              <label className=" "> &nbsp;&nbsp;Today</label>
+            </div>
+            <div className="lg:col-span-2 md:col-span-3 mt-1">
+              <input type="radio" className="w-5 h-4  " name="bilal" />
+              <label className=" "> &nbsp;&nbsp;Yesterday</label>
+            </div>
+            <div className="lg:col-span-2 md:col-span-2 mt-1">
+              <input type="radio" className="w-5 h-4  " name="bilal" />
+              <label className=" "> &nbsp;&nbsp;Week</label>
+            </div>
+            <div className="lg:col-span-2 md:col-span-2 mt-1">
+              <input type="radio" className="w-5 h-4  " name="bilal" />
+              <label className=" "> &nbsp;&nbsp;Custom</label>
+            </div> */}
+            {/* <div className="lg:col-span-2 md:col-span-3 mt-1">
+              <button className="bg-[#00B56C] px-5 text-white">Search</button>
+            </div> */}
+          </div>
+        </div>
+        <div className="col-span-1"></div>
+      </div>
+
       {/* <div className="grid lg:grid-cols-2  md:grid-cols-4  px-4 text-start">
       <div className="col-span-1"></div>
     </div>
