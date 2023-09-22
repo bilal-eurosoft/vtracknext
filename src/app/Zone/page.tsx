@@ -1,7 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-//zone
-import { useEffect, useState } from "react";
+
+import { Key, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
@@ -11,9 +10,11 @@ import {
   zoneRuleDeleteByZoneId,
   zoneDelete,
   alertSettingCountZone,
+  zonenamesearch,
 } from "@/utils/API_CALLS";
 import { zonelistType } from "@/types/zoneType";
 import Link from "next/link";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function Zone() {
   const { data: session } = useSession();
@@ -21,8 +22,10 @@ export default function Zone() {
   const [filteredZones, setFilteredZones] = useState<zonelistType[]>([]);
   const [selectedZoneType, setSelectedZoneType] = useState("");
   const [selectedZones, setSelectedZones] = useState<zonelistType[]>([]);
-
-  const [searchCriteria, setSearchCriteria] = useState<any>({
+  const [liveSearchZoneName, setLiveSearchZoneName] = useState<
+    string[] | undefined
+  >([]);
+  const [searchCriteria, setSearchCriteria] = useState({
     zoneName: "",
     zoneShortName: "",
     GeoFenceType: "",
@@ -48,7 +51,22 @@ export default function Zone() {
 
     const { zoneName, zoneShortName, GeoFenceType } = searchCriteria;
 
-    // Filter the zones based on user input and selected zone type
+    const filteredZone = zoneList.filter((zone) => {
+      return (
+        (zoneName === "" ||
+          zone.zoneName.toLowerCase().includes(zoneName.toLowerCase())) &&
+        (zoneShortName === "" ||
+          zone.zoneShortName
+            .toLowerCase()
+            .includes(zoneShortName.toLowerCase())) &&
+        (GeoFenceType === "" ||
+          zone.GeoFenceType.toLowerCase() === GeoFenceType.toLowerCase()) &&
+        (selectedZoneType === "" ||
+          zone.zoneType.toLowerCase() === selectedZoneType.toLowerCase())
+      );
+    });
+
+    setFilteredZones(filteredZone);
   }
 
   const handleClick = () => {
@@ -56,18 +74,14 @@ export default function Zone() {
   };
 
   const handleClear = () => {
-    // Reset all input values to an empty string
     setSearchCriteria({
       zoneName: "",
       zoneShortName: "",
       GeoFenceType: "",
-      zoneType: "", // Clear the zoneType as well
+      zoneType: "",
     });
 
-    // Clear the selectedZoneType state
     setSelectedZoneType("");
-
-    // Show all zones by setting filteredZones to the entire zoneList
     setFilteredZones(zoneList);
   };
 
@@ -77,100 +91,140 @@ export default function Zone() {
     );
 
     if (isChecked) {
-      // If the zone is already selected, remove it
       setSelectedZones((prevSelectedZones) =>
         prevSelectedZones.filter((selectedZone) => selectedZone.id !== zone.id)
       );
     } else {
-      // If the zone is not selected, add it
       setSelectedZones((prevSelectedZones) => [...prevSelectedZones, zone]);
+    }
+  }
+
+  async function handleLiveSearchChange(
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
+    setSearchCriteria({
+      ...searchCriteria,
+      zoneName: e.target.value,
+    });
+    let searchTerm = e.target.value;
+
+    let query = searchTerm.toUpperCase();
+    let filter = { zoneName: { $regex: query } };
+
+    if (session) {
+      try {
+        let filterByZoneName = await zonenamesearch({
+          token: session.accessToken,
+          clientId: session.clientId,
+          filter: filter,
+        });
+
+        if (Array.isArray(filterByZoneName)) {
+          const zoneNames = filterByZoneName.map(
+            (zone: { zoneName: string }) => zone.zoneName
+          );
+          setLiveSearchZoneName(zoneNames);
+        } else {
+          console.error("Invalid API response:", filterByZoneName);
+          setLiveSearchZoneName([]);
+        }
+      } catch (error) {
+        console.error("Error fetching live search results:", error);
+        setLiveSearchZoneName([]);
+      }
     }
   }
 
   async function deleteSelectedZones() {
     try {
       if (session) {
-        // Prepare an array of zone IDs to delete
         const zoneIdsToDelete = selectedZones.map((zone) => zone.id);
-        console.log("deleting zones", zoneIdsToDelete);
 
-        // Iterate through the selected zones and delete each one
+        const deletePromises = [];
+
         for (const zoneId of zoneIdsToDelete) {
-          // Delete the zone
-          await zoneDelete({ token: session?.accessToken, id: zoneId });
-
-          // Delete zone rules
-          await zoneRuleDeleteByZoneId({
-            token: session?.accessToken,
-            id: zoneId,
-          });
-
-          // Delete zone vehicles
-          await zonevehicleByZoneId({ token: session?.accessToken, zoneId });
-          await alertSettingCountZone({
-            token: session?.accessToken,
+          const alertPromise = await alertSettingCountZone({
+            token: session.accessToken,
             clientId: session.clientId,
             zoneId: zoneId,
           });
-          /* for (const vehicle of zoneVehicles) {
-          // Assuming vehicle.id is the ID of the associated vehicle
-          // You may need to adjust this based on your API structure
-          await modifyCollectionStatus({ token: session?.accessToken, collectionName: `vehicle-${vehicle.id}` });
-        } */
 
-          // Modify other collections if needed
+          const zoneDeletePromise = await zoneDelete({
+            token: session.accessToken,
+            id: zoneId,
+          });
+          const zoneRuleDeletePromise = await zoneRuleDeleteByZoneId({
+            token: session.accessToken,
+            id: zoneId,
+          });
+
+          const zoneVehicleDeletePromise = await zonevehicleByZoneId({
+            token: session.accessToken,
+            zoneId,
+          });
+
+          const modifyCollectionStatusPromise = await modifyCollectionStatus({
+            token: session.accessToken,
+            collectionName: "zones",
+          });
+
+          deletePromises.push(
+            alertPromise,
+            zoneDeletePromise,
+            zoneRuleDeletePromise,
+            zoneVehicleDeletePromise,
+            modifyCollectionStatusPromise
+          );
         }
 
-        // Static collection name
-        await modifyCollectionStatus({
-          token: session?.accessToken,
-          collectionName: "zones",
-        });
+        const loadingToast = await toast.loading("Deleting zones...");
 
-        console.log("Selected zones and associated data have been deleted.");
+        const responses = await Promise.all(deletePromises);
+
+        toast.dismiss(loadingToast);
+
+        const allSuccess = responses.every((response) => response.id !== null);
+
+        if (allSuccess) {
+          toast.success("Zones deleted successfully!");
+        } else {
+          toast.error("Error deleting zones. Please try again.");
+        }
+
         const newZoneList = await getZoneListByClientId({
-          token: session?.accessToken,
-          clientId: session?.clientId,
+          token: session.accessToken,
+          clientId: session.clientId,
         });
 
-        // Update the zoneList state with the new list
         setZoneList(newZoneList);
-        // After successful deletion, update your UI
-        setZoneList((prevZoneList) =>
-          prevZoneList.filter((zone) => !zoneIdsToDelete.includes(zone.id))
-        );
+        setFilteredZones(newZoneList);
+        setSelectedZones([]);
       }
-      // Clear the selectedZones state
-      setSelectedZones([]);
     } catch (error) {
-      // Handle errors here
       console.error("Error deleting selected zones:", error);
+      toast.error("An error occurred while deleting zones.");
     }
   }
 
-  const handleFilterClick = () => {
-    const filtered = zoneList.filter(
-      (item) =>
-        item.zoneShortName.toLowerCase() === searchCriteria.toLowerCase()
-    );
-
-    setFilteredZones(filtered);
-  };
-
+  console.log("zoneList", zoneList);
   return (
-    <div className="mt-10 bg-bgLight mx-5">
-      <form onSubmit={handleSearchClick} className="shadow-lg">
-        <p className="bg-green px-4 py-1 text-black text-sm text-white font-bold">
-          Zone Filter
-        </p>
+    <div className="mt-10 bg-bgLight">
+      <form onSubmit={handleSearchClick}>
+        <p className="bg-green px-4 py-1 text-black text-sm">Zone Filter</p>
         <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
           <div className="lg:col-span-1">
             <label className="text-sm text-labelColor">Zone Name</label>
             <input
+              list="zoneNames"
               type="text"
               name="zoneName"
               className="block py-1 mt-2 px-0 w-full text-sm text-black bg-white-10 border border-grayLight appearance-none px-3 outline-green"
               placeholder="Enter Zone Name"
+              value={searchCriteria.zoneName}
+              onChange={handleLiveSearchChange}
+            />
+            <select
+              className=" px-0 w-full text-sm text-black bg-white-10 border border-grayLight appearance-none px-3 outline-green"
               value={searchCriteria.zoneName}
               onChange={(e) =>
                 setSearchCriteria({
@@ -178,7 +232,14 @@ export default function Zone() {
                   zoneName: e.target.value,
                 })
               }
-            />
+            >
+              <option value=""></option>
+              {liveSearchZoneName?.map((zoneName, index) => (
+                <option key={index} value={zoneName}>
+                  {zoneName}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="lg:col-span-1 md:col-span-1 col-span-1">
             <label className="text-sm text-labelColor">Zone Short Name</label>
@@ -272,7 +333,6 @@ export default function Zone() {
                   <button
                     className="text-white  h-10 bg-[#00B56C] -ms-4 text-sm"
                     type="submit"
-                    onClick={handleFilterClick}
                   >
                     Search
                   </button>
@@ -371,10 +431,10 @@ export default function Zone() {
           </div>
         </div>
       </form>
-
-      <br></br>
+      {/* Live search input */}
+      <div className="mt-4 mx-5"></div>;<br></br>
       <div className="bg-gray-100  mx-4  ">
-        <p className="bg-[#00B56C] px-4 py-1 text-white font-bold">ZoneTitle</p>
+        <p className="bg-[#00B56C] px-4 py-1 text-white ">ZoneTitle</p>
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg h-96 h-96">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
             <thead className="text-xs text-gray-700 uppercase bg-zoneTabelBg dark:bg-gray-700 dark:text-gray-400 ">
@@ -453,7 +513,7 @@ export default function Zone() {
                       <td className="flex items-center px-6 py-4 space-x-3">
                         <Link
                           className="font-medium text-green dark:text-blue-500 hover:underline"
-                          href={`/AddZone?id=${item.id}`}
+                          href={`/EditZone?id=${item.id}`}
                         >
                           Edit
                         </Link>
@@ -496,7 +556,7 @@ export default function Zone() {
                       <td className="flex items-center px-6 py-4 space-x-3">
                         <Link
                           className="font-medium text-green dark:text-blue-500 hover:underline"
-                          href={`/AddZone?id=${item.id}`}
+                          href={`/EditZone?id=${item.id}`}
                         >
                           Edit
                         </Link>
@@ -507,6 +567,7 @@ export default function Zone() {
           </table>
         </div>
       </div>
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 }
