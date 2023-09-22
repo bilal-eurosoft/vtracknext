@@ -36,12 +36,9 @@ const LiveSidebar = ({
   }, [searchData.search, carData]);
 
   return (
-    <div
-      className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4   overflow-y-scroll"
-      style={{ height: "53.5em" }}
-    >
+    <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4  ">
       <div className="grid grid-cols-2 bg-green py-3 ">
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 sticky top-0">
           <div className="grid grid-cols-6">
             <div className="lg:col-span-1">
               <svg
@@ -62,7 +59,7 @@ const LiveSidebar = ({
               <input
                 type="text"
                 name="search"
-                className="text-sm bg-transparent text-white w-full px-1 py-1 placeholder-gray border-none outline-none"
+                className="text-sm bg-transparent text-white w-full px-1 py-1 placeholder-white border-b border-black outline-none"
                 placeholder="Vehicle Reg."
                 required
                 onChange={handleInputChange}
@@ -70,14 +67,14 @@ const LiveSidebar = ({
             </div>
           </div>
         </div>
-        <div className="lg:col-span-1 col-span-1">
-          <p className="text-center text-sm text-white mt-1">
+        <div className="lg:col-span-1 col-span-1 ">
+          <p className="text-center text-sm font-bold text-white mt-1">
             Show({carData?.length}) Vehicles
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 text-center bg-gray py-4 text-white">
+      <div className="grid grid-cols-2 text-center bg-liveTrackingGrayColor py-4 text-white">
         <div className="lg:col-span-1">
           <p className="text-sm mt-1">Vehicle Summary:</p>
         </div>
@@ -137,80 +134,82 @@ const LiveSidebar = ({
           </div>
         </div>
       </div>
-      {filteredData?.map((item: VehicleData) => {
-        return (
-          <div key={item.IMEI}>
-            <div
-              key={item?.IMEI}
-              className="grid lg:grid-cols-3 grid-cols-3 text-center py-5 mt-2 bg-white  cursor-pointer"
-              onClick={() => {
-                setSelectedVehicle(item);
-              }}
-            >
-              <div className="lg:col-span-1 col-span-1">
-                <p>
+      <div className="overflow-y-scroll " style={{ height: "46.8em" }}>
+        {filteredData?.map((item: VehicleData) => {
+          return (
+            <div className="hover:bg-bgLight cursor-pointer pt-2">
+              <div
+                key={item?.IMEI}
+                className="grid lg:grid-cols-3 grid-cols-3 text-center py-5      "
+                onClick={() => {
+                  setSelectedVehicle(item);
+                }}
+              >
+                <div className="lg:col-span-1 col-span-1">
+                  <p style={{ fontSize: "1.3em" }}>
+                    {item.gps.speed === 0 && item.ignition === 0 ? (
+                      <p className="text-red ">{item?.vehicleReg}</p>
+                    ) : item.gps.speed > 0 && item.ignition === 1 ? (
+                      <p className="text-green">{item?.vehicleReg}</p>
+                    ) : (
+                      <p className="text-yellow ">{item?.vehicleReg}</p>
+                    )}
+                  </p>
+                </div>
+
+                <div className="lg:col-span-1 col-span-1">
                   {item.gps.speed === 0 && item.ignition === 0 ? (
-                    <b className="text-red ">{item?.vehicleReg}</b>
+                    <>
+                      <button className="text-white bg-red p-1 -mt-1 shadow-lg">
+                        Parked
+                      </button>
+                    </>
                   ) : item.gps.speed > 0 && item.ignition === 1 ? (
-                    <b className="text-green">{item?.vehicleReg}</b>
-                  ) : (
-                    <b className="text-yellow ">{item?.vehicleReg}</b>
-                  )}
-                </p>
-              </div>
-
-              <div className="lg:col-span-1 col-span-1">
-                {item.gps.speed === 0 && item.ignition === 0 ? (
-                  <>
-                    <button className="text-white bg-red p-1 -mt-1 shadow-lg">
-                      Parked
+                    <button className="text-white bg-green p-1 -mt-1 shadow-lg">
+                      Moving
                     </button>
-                  </>
-                ) : item.gps.speed > 0 && item.ignition === 1 ? (
-                  <button className="text-white bg-green p-1 -mt-1 shadow-lg">
-                    Moving
-                  </button>
-                ) : (
-                  <button className="text-white bg-yellow p-1 -mt-1 shadow-md">
-                    Pause
-                  </button>
-                )}
-              </div>
-
-              <div className="lg:col-span-1 col-span-1">
-                <div className="grid grid-cols-4">
-                  <div className="lg:col-span-2 col-span-2">
-                    {item.gps.speed} Mph
-                  </div>
-                  {session?.timezone !== undefined ? (
-                    <ActiveStatus
-                      currentTime={new Date().toLocaleString("en-US", {
-                        timeZone: session.timezone,
-                      })}
-                      targetTime={item.timestamp}
-                    />
                   ) : (
-                    <p>Timezone is undefined</p>
+                    <button className="text-white bg-yellow p-1 -mt-1 shadow-md">
+                      Pause
+                    </button>
                   )}
-                  {/*  )} */}
+                </div>
+
+                <div className="lg:col-span-1 col-span-1">
+                  <div className="grid grid-cols-4">
+                    <div className="lg:col-span-2 col-span-2">
+                      {item.gps.speed} Mph
+                    </div>
+                    {session?.timezone !== undefined ? (
+                      <ActiveStatus
+                        currentTime={new Date().toLocaleString("en-US", {
+                          timeZone: session.timezone,
+                        })}
+                        targetTime={item.timestamp}
+                      />
+                    ) : (
+                      <p>Timezone is undefined</p>
+                    )}
+                    {/*  )} */}
+                  </div>
                 </div>
               </div>
+
+              <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-5 pb-5 text-sm border-b-2 border-green text-green">
+                {item.timestamp}
+                <br></br>
+                <span className="text-labelColor">
+                  {item?.OSM?.address?.neighbourhood}
+
+                  {item?.OSM?.address?.road}
+
+                  {item?.OSM?.address?.city}
+                </span>
+              </p>
             </div>
-
-            <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-5 pb-5 text-sm border-b-2 border-green text-green">
-              {item.timestamp}
-              <br></br>
-              <span className="text-labelColor">
-                {item?.OSM?.address?.neighbourhood}
-
-                {item?.OSM?.address?.road}
-
-                {item?.OSM?.address?.city}
-              </span>
-            </p>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };

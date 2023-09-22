@@ -13,6 +13,7 @@ import {
   PopoverContent,
   Typography,
   Tooltip,
+  Button,
 } from "@material-tailwind/react";
 
 import BlinkingTime from "../General/BlinkingTime";
@@ -118,7 +119,52 @@ export default function RootLayout({
                 </svg>
               </Tooltip>
             </Link>
-            <Link href="/DualCam">
+
+            <Popover placement="right-start">
+              <Tooltip
+                className="bg-white text-green shadow-lg rounded border-none"
+                placement="right"
+                content="Dual Camera"
+              >
+                <PopoverHandler>
+                  <svg
+                    className="w-20 h-12 py-2  text-[white]  text-white-10  dark:text-white cursor-pointer"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    {" "}
+                    <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                    <circle cx="6" cy="6" r="2" />{" "}
+                    <circle cx="18" cy="18" r="2" />{" "}
+                    <path d="M11 6h5a2 2 0 0 1 2 2v8" />{" "}
+                    <polyline points="14 9 11 6 14 3" />{" "}
+                    <path d="M13 18h-5a2 2 0 0 1 -2 -2v-8" />{" "}
+                    <polyline points="10 15 13 18 10 21" />
+                  </svg>
+                </PopoverHandler>
+              </Tooltip>
+              <PopoverContent className="border-none  cursor-pointer">
+                <span className="hover:bg-bgLight w-full">
+                  Get Image And Video
+                </span>
+                <br></br>
+                <br></br>
+                <span
+                  className="hover:bg-bgLight w-full"
+                  onClick={() => router.push("/DualCam")}
+                >
+                  View Image And Video
+                </span>
+                <br></br>
+              </PopoverContent>
+            </Popover>
+            {/* <Link href="/DualCam">
               <Tooltip
                 className="bg-white text-[#00B56C] shadow-lg rounded"
                 placement="right"
@@ -145,7 +191,7 @@ export default function RootLayout({
                   <polyline points="10 15 13 18 10 21" />
                 </svg>
               </Tooltip>
-            </Link>
+            </Link> */}
             <Link href="/Reports">
               <Tooltip
                 className="bg-white text-[#00B56C] shadow-lg rounded"
@@ -239,8 +285,8 @@ export default function RootLayout({
                         color="gray"
                         className="font-normal "
                       >
-                        <p className="text-2xl mb-3 text-center">
-                          Bilal Hussain
+                        <p className=" mb-3 text-center">
+                          {session?.clientName}
                         </p>
                         <hr></hr>
                         <div className="flex justify-center">
