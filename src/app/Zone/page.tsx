@@ -14,6 +14,9 @@ import {
 } from "@/utils/API_CALLS";
 import { zonelistType } from "@/types/zoneType";
 import Link from "next/link";
+import Typography from "@mui/material/Typography";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
 export default function Zone() {
   const { data: session } = useSession();
@@ -29,6 +32,23 @@ export default function Zone() {
     zoneType: "",
   });
 
+  // pagination work
+  const [input, setInput] = useState<any>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 6;
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+  const records = zoneList.slice(firstIndex, lastIndex);
+  const totalCount = Math.ceil(zoneList.length / recordsPerPage);
+
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+  };
+  const handleClickPagination = () => {
+    setCurrentPage(input);
+  };
+
+  console.log(records);
   useEffect(() => {
     (async function () {
       if (session) {
@@ -226,8 +246,10 @@ export default function Zone() {
             <br></br>
             {/* <span onClick={toggleBtn}  > */}
             <button
-              className={`mt-3 border border-grayLight px-4 h-8 text-sm text-black ${
-                selectedZoneType === "Circle" ? "bg-green" : "bg-white"
+              className={`mt-3 border border-grayLight px-4 h-8 text-sm  ${
+                selectedZoneType === "Circle"
+                  ? "bg-green text-white"
+                  : "bg-white text-black"
               } transition duration-300`}
               onClick={() => setSelectedZoneType("Circle")}
             >
@@ -235,8 +257,10 @@ export default function Zone() {
             </button>
 
             <button
-              className={`mt-3 border border-grayLight px-4 h-8 text-sm text-black ${
-                selectedZoneType === "Polygon" ? "bg-green" : "bg-white"
+              className={`mt-3 border border-grayLight px-4 h-8 text-sm   ${
+                selectedZoneType === "Polygon"
+                  ? "bg-green text-white"
+                  : "bg-white text-black"
               } transition duration-300`}
               onClick={() => setSelectedZoneType("Polygon")}
             >
@@ -249,7 +273,7 @@ export default function Zone() {
         <div className="grid grid-cols-2 px-5">
           <div className="col-span-1">
             <div className="grid grid-cols-8">
-              <div className="grid lg:grid-cols-2 grid-cols-3 bg-green shadow-md hover:shadow-gray transition duration-500">
+              <div className="grid lg:grid-cols-2 grid-cols-3 bg-green shadow-md hover:shadow-gray transition duration-500 cursor-pointer">
                 <div className="col-span-1">
                   <svg
                     className="h-10 py-3 w-full text-white"
@@ -270,7 +294,7 @@ export default function Zone() {
                 </div>
                 <div className="col-span-1">
                   <button
-                    className="text-white  h-10 bg-[#00B56C] -ms-4 text-sm"
+                    className="text-white  h-10 bg-green -ms-4 text-sm"
                     type="submit"
                     onClick={handleFilterClick}
                   >
@@ -279,7 +303,7 @@ export default function Zone() {
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-2 grid-cols-3 bg-zonebtnColor shadow-md ms-3 hover:shadow-gray transition duration-500">
+              <div className="grid lg:grid-cols-2 grid-cols-3 bg-zonebtnColor shadow-md ms-3 hover:shadow-gray transition duration-500 cursor-pointer">
                 <div className="col-span-1">
                   <svg
                     className="h-10 py-3 w-full text-labelColor"
@@ -300,7 +324,7 @@ export default function Zone() {
                 </div>
                 <div className="col-span-1">
                   <button
-                    className="text-labelColor text-sm  h-10 -ms-3"
+                    className="text-labelColor text-sm  h-10 -ms-2"
                     onClick={handleClear}
                   >
                     clear
@@ -310,8 +334,8 @@ export default function Zone() {
             </div>
           </div>
 
-          <div className="col-span-1 flex justify-end">
-            <div className="grid grid-cols-2">
+          <div className="col-span-1 flex justify-end mb-5">
+            <div className="grid grid-cols-2 cursor-pointer">
               <div
                 className="grid lg:grid-cols-2 grid-cols-3 bg-green shadow-md hover:shadow-gray transition duration-500"
                 onClick={handleClick}
@@ -342,7 +366,7 @@ export default function Zone() {
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-2 grid-cols-3 bg-zonebtnColor shadow-md hover:shadow-gray transition duration-500 ms-3">
+              <div className="grid lg:grid-cols-2 grid-cols-3 bg-zonebtnColor shadow-md hover:shadow-gray transition duration-500 ms-3 cursor-pointer">
                 <div className="col-span-1">
                   <svg
                     className="h-10 py-3 w-full text-labelColor"
@@ -372,10 +396,9 @@ export default function Zone() {
         </div>
       </form>
 
-      <br></br>
-      <div className="bg-gray-100  mx-4  ">
-        <p className="bg-[#00B56C] px-4 py-1 text-white font-bold">ZoneTitle</p>
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg h-96 h-96">
+      <div className="bg-gray-100  ">
+        <p className="bg-green px-4 py-1 text-white font-bold">ZoneTitle</p>
+        <div className="relative shadow-md sm:rounded-lg ">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
             <thead className="text-xs text-gray-700 uppercase bg-zoneTabelBg dark:bg-gray-700 dark:text-gray-400 ">
               <tr>
@@ -460,7 +483,7 @@ export default function Zone() {
                       </td>
                     </tr>
                   ))
-                : zoneList.map((item: zonelistType) => (
+                : records.map((item: zonelistType) => (
                     <tr
                       key={item.id}
                       className="bg-white border-b border-t  border-grayLight  hover:bg-zoneTabelBg"
@@ -505,6 +528,50 @@ export default function Zone() {
                   ))}
             </tbody>
           </table>
+          <div
+            // style={{
+            //   display: "flex",
+            //   justifyContent: "end",
+            //   alignItems: "end",
+            // }}
+
+            className="flex  justify-end"
+          >
+            <div className="grid lg:grid-cols-4 my-4 ">
+              <div className="col-span-1">
+                <p className="mt-1 text-labelColor text-end">
+                  Total {zoneList.length} items
+                </p>
+              </div>
+
+              <div
+                className="col-span-2 "
+                style={{ width: "22em", height: "4vh", overflow: "hidden" }}
+              >
+                <Stack spacing={2}>
+                  <Pagination
+                    count={totalCount}
+                    page={currentPage}
+                    onChange={handleChange}
+                  />
+                </Stack>
+              </div>
+              <div className="col-lg-1 mt-1">
+                <span>Go To</span>
+                <input
+                  type="text"
+                  className="w-10 border border-grayLight outline-green mx-2 px-2"
+                  onChange={(e: any) => setInput(e.target.value)}
+                />
+                <span
+                  className="text-labelColor cursor-pointer"
+                  onClick={handleClickPagination}
+                >
+                  page &nbsp;&nbsp;
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
