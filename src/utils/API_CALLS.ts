@@ -363,35 +363,6 @@ export async function ZoneFindById({
   }
 }
 
-export async function postZoneDataByClientId({
-  token,
-  newformdata,
-}: {
-  token: string;
-  newformdata: zonelistType;
-}) {
-  try {
-    console.log("before send data to api", newformdata);
-    const response = await fetch("https://backend.vtracksolutions.com/zone", {
-      method: "POST",
-      headers: {
-        accept: "application/json, text/plain, */*",
-        authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
-      body: `{\"clientId\":\"${newformdata.clientId}\", \"id\":\"${newformdata.id}\", \"GeoFenceType\":\"${newformdata.GeoFenceType}\", \"centerPoints\":\"${newformdata.centerPoints}\", \"latlngCordinates\":\"${newformdata.latlngCordinates}\", \"zoneName\":\"${newformdata.zoneName}\", \"zoneShortName\":\"${newformdata.zoneShortName}\", \"zoneType\":\"${newformdata.zoneType}\"}`,
-    });
-    if (!response.ok) {
-      throw new Error("Failed to fetch data from the API");
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.log("Error fetching data", error);
-    return [];
-  }
-}
-
 export async function alertSettingCountZone({
   token,
   clientId,
@@ -411,31 +382,6 @@ export async function alertSettingCountZone({
           "content-type": "application/json",
         },
         body: `{\"clientId\":\"${clientId}\", \"zoneId\":\"${zoneId}\"}`,
-        method: "POST",
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to fetch data from the API");
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.log("Error fetching data");
-    return [];
-  }
-}
-
-export async function zoneDelete({ token, id }: { token: string; id: string }) {
-  try {
-    const response = await fetch(
-      "https://backend.vtracksolutions.com/zoneDelete",
-      {
-        headers: {
-          accept: "application/json, text/plain, */*",
-          authorization: `Bearer ${token}`,
-          "content-type": "application/json",
-        },
-        body: `{\"id\":\"${id}\"}`,
         method: "POST",
       }
     );
@@ -539,6 +485,94 @@ export async function modifyCollectionStatus({
     return data;
   } catch (error) {
     console.log("Error fetching data");
+    return [];
+  }
+}
+
+export async function postZoneDataByClientId({
+  token,
+  newformdata,
+}: {
+  token: string;
+  newformdata: zonelistType;
+}) {
+  try {
+    console.log("before send data to api", newformdata);
+    const response = await fetch("https://backend.vtracksolutions.com/zone", {
+      method: "POST",
+      headers: {
+        accept: "application/json, text/plain, */*",
+        authorization: `Bearer ${token}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(newformdata),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching data", error);
+    return [];
+  }
+}
+
+export async function zoneDelete({ token, id }: { token: string; id: string }) {
+  try {
+    console.log("before api", id);
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/zoneDelete",
+      {
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: `{\"id\":\"${id}\"}`,
+        method: "POST",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching data");
+    return [];
+  }
+}
+
+export async function zonenamesearch({
+  token,
+  filter,
+  clientId,
+}: {
+  token: string;
+  filter: object;
+  clientId: string;
+}) {
+  try {
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/zonenamesearch",
+      {
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ clientId: clientId, Filters: [filter] }),
+        method: "POST",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching data:", error);
     return [];
   }
 }
