@@ -61,6 +61,7 @@ export default function Reports() {
   const formattedHours = hours.padStart(2, "0");
   const formattedMinutes = minutes.padStart(2, "0");
   const formattedSeconds = seconds.padStart(2, "0");
+  const currentDate = new Date().toISOString().split("T")[0];
   const formattedTime = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   const parsedDateTime = new Date(currentTime);
   const formattedDateTime = `${parsedDateTime
@@ -232,11 +233,10 @@ export default function Reports() {
       }
     }
   };
-
   return (
     <div>
       <form
-        className="container mx-auto lg:max-w-screen-lg bg-bgLight shadow-lg"
+        className="container mx-auto  lg:max-w-screen-lg bg-bgLight shadow-lg"
         onSubmit={handleSubmit}
       >
         <div className="bg-green-50 mt-20">
@@ -255,7 +255,9 @@ export default function Reports() {
                   value={Ignitionreport.reportType}
                   onChange={handleInputChange}
                 >
-                  <option value="">Select Report Type</option>
+                  <option value="" disabled selected hidden>
+                    Select Report Type
+                  </option>
                   <option value="Trip">Trip</option>
                   <option value="DailyActivity">Daily Activity</option>
                   <option value="Ignition">Ignition</option>
@@ -277,7 +279,9 @@ export default function Reports() {
                   value={Ignitionreport.VehicleReg}
                   onChange={handleInputChange}
                 >
-                  <option value="">Select Vehicle Name</option>
+                  <option value="" disabled selected hidden>
+                    Select Vehicle Name
+                  </option>
                   {vehicleList.map((item: DeviceAttach) => (
                     <option key={item.id} value={item.vehicleReg}>
                       {item.vehicleNo} (Reg#{item.vehicleReg})
@@ -288,8 +292,8 @@ export default function Reports() {
             </div>
           </div>
 
-          <div className="container grid lg:grid-cols-8  mb-5 md:grid-cols-6 sm:grid-cols-5 gap-5 lg:text-center lg:mx-52 md:mx-24 sm:mx-10  flex justify-center">
-            <div className="lg:col-span-1 md:col-span-1 sm:col-span-1">
+          <div className=" grid lg:grid-cols-8  mb-5 md:grid-cols-6 sm:grid-cols-5 gap-5 lg:text-center lg:mx-52 md:mx-24 sm:mx-10  flex justify-center">
+            <div className="lg:col-span-2 md:col-span-2 sm:col-span-2">
               <label>
                 <input
                   type="radio"
@@ -303,7 +307,7 @@ export default function Reports() {
                 &nbsp;&nbsp;Today
               </label>
             </div>
-            <div className="lg:col-span-1 md:col-span-1 sm:col-span-1">
+            <div className="lg:col-span-2 md:col-span-2 sm:col-span-2">
               <label>
                 <input
                   type="radio"
@@ -318,7 +322,7 @@ export default function Reports() {
               </label>
             </div>
 
-            <div className="lg:col-span-1 md:col-span-1">
+            <div className="lg:col-span-2 md:col-span-2">
               <label>
                 <input
                   type="radio"
@@ -333,7 +337,7 @@ export default function Reports() {
               </label>
             </div>
 
-            <div className="lg:col-span-1 md:col-span-1">
+            <div className="lg:col-span-2 md:col-span-2">
               <label>
                 <input
                   type="radio"
@@ -358,7 +362,10 @@ export default function Reports() {
                     type="date"
                     className="ms-1 h-8 lg:w-4/6 w-full  text-labelColor  outline-green border border-grayLight px-1"
                     name="fromDateTime"
+                    placeholder="Select Date"
+                    autoComplete="off"
                     value={Ignitionreport.fromDateTime}
+                    defaultValue={currentDate}
                     onChange={(e) =>
                       handleCustomDateChange("fromDateTime", e.target.value)
                     }
