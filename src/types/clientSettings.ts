@@ -1,4 +1,4 @@
-type ClientSettings = {
+export type ClientSettings = {
   _id: string
   PropertyId: string
   clientId: string

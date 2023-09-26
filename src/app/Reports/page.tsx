@@ -311,7 +311,7 @@ export default function Reports() {
               <label>
                 <input
                   type="radio"
-                  className="w-5 h-4 form-radio text-green"
+                  className="w-5 h-4 "
                   name="period"
                   value="yesterday"
                   style={{ accentColor: "green" }}

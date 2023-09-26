@@ -14,11 +14,20 @@ import {
 } from "@/utils/API_CALLS";
 import { zonelistType } from "@/types/zoneType";
 import Link from "next/link";
-import Typography from "@mui/material/Typography";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 
+const itemList = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Alice Smith" },
+  { id: 4, name: "John" },
+];
+
 export default function Zone() {
+  const [filter, setFilter] = useState<any>("");
+  const [filteredItems, setFilteredItems] = useState([]);
+
   const { data: session } = useSession();
   const [zoneList, setZoneList] = useState<zonelistType[]>([]);
   const [filteredZones, setFilteredZones] = useState<zonelistType[]>([]);
@@ -48,7 +57,6 @@ export default function Zone() {
     setCurrentPage(input);
   };
 
-  console.log(records);
   useEffect(() => {
     (async function () {
       if (session) {
@@ -168,17 +176,39 @@ export default function Zone() {
     }
   }
 
-  const handleFilterClick = () => {
-    const filtered = zoneList.filter(
-      (item) =>
-        item.zoneShortName.toLowerCase() === searchCriteria.toLowerCase()
+  // const handleFilterClick = () => {
+  //   const filtered = zoneList.filter(
+  //     (item) =>
+  //       item.zoneShortName.toLowerCase() === searchCriteria.toLowerCase()
+  //   );
+
+  //   setFilteredZones(filtered);
+  // };
+
+  const handleFilterClicks = () => {
+    const filtered: any = zoneList.filter(
+      (item) => item.zoneName.toLowerCase() === filter.toLowerCase()
     );
-
-    setFilteredZones(filtered);
+    setFilteredItems(filtered);
   };
-
+  console.log("filter", filteredItems);
   return (
     <div className="mt-10 bg-bgLight mx-5">
+      <div>
+        <input
+          type="text"
+          placeholder="Enter name to filter"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
+        {/* <button onClick={handleFilterClicks}>Filter</button> */}
+
+        <ul>
+          {filteredItems.map((item: any) => (
+            <li key={item.id}>{item.zoneName}</li>
+          ))}
+        </ul>
+      </div>
       <form onSubmit={handleSearchClick} className="shadow-lg">
         <p className="bg-green px-4 py-1 text-black text-sm text-white font-bold">
           Zone Filter
@@ -191,13 +221,15 @@ export default function Zone() {
               name="zoneName"
               className="block py-1 mt-2 px-0 w-full text-sm text-black bg-white-10 border border-grayLight appearance-none px-3 outline-green"
               placeholder="Enter Zone Name"
-              value={searchCriteria.zoneName}
-              onChange={(e) =>
-                setSearchCriteria({
-                  ...searchCriteria,
-                  zoneName: e.target.value,
-                })
-              }
+              // value={searchCriteria.zoneName}
+              // onChange={(e) =>
+              //   setSearchCriteria({
+              //     ...searchCriteria,
+              //     zoneName: e.target.value,
+              //   })
+              // }
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
             />
           </div>
           <div className="lg:col-span-1 md:col-span-1 col-span-1">
@@ -220,7 +252,7 @@ export default function Zone() {
         <div className="grid lg:grid-cols-2 md:grid-cols-2   gap-6 pt-5 px-5 bg-green-50 ">
           <div className="lg:col-span-1">
             <label className="text-sm text-black text-labelColor">
-              Geofence
+              Geofenced
             </label>
             <select
               className="block mt-2 py-1 px-0 w-full text-sm text-black bg-white-10 border border-grayLight px-3 dark:border-gray-600 dark:focus:border-blue-500 outline-green mb-5"
@@ -296,7 +328,8 @@ export default function Zone() {
                   <button
                     className="text-white  h-10 bg-green -ms-4 text-sm"
                     type="submit"
-                    onClick={handleFilterClick}
+                    // onClick={handleFilterClick}
+                    onClick={handleFilterClicks}
                   >
                     Search
                   </button>
