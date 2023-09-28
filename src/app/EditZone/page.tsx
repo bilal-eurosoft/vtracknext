@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import dynamic from "next/dynamic";
@@ -45,9 +45,10 @@ const EditZonePage: React.FC = () => {
   const [polygondataById, setPolygondataById] = useState<[number, number][]>(
     []
   );
-  const [circleDataById, setCircleDataById] = useState({
-    radius: "",
-  });
+  const [circleDataById, setCircleDataById] = useState<{
+    radius: string;
+  } | null>(null);
+  const [drawShape, setDrawShape] = useState<boolean>(false);
   const [shapeType, setShapeType] = useState<"Polygon" | "Circle">();
   const [mapcenter, setMapcenter] = useState<LatLngTuple | null>(null);
   const [polygondata, setPolygondata] = useState<
@@ -68,25 +69,39 @@ const EditZonePage: React.FC = () => {
   });
 
   const router = useRouter();
+  const [zoom, setZoom] = useState(10);
 
   useEffect(() => {
-    const fetchZoneDataById = async () => {
-      try {
-        if (id && session) {
-          const data = await ZoneFindById({
-            token: session.accessToken,
-            id: id,
-          });
+    if (typeof window !== "undefined") {
+      const fetchZoneDataById = async () => {
+        try {
+          if (id && session) {
+            const data = await ZoneFindById({
+              token: session.accessToken,
+              id: id,
+            });
 
-          setZoneDataById(data);
+            setZoneDataById(data);
+          }
+        } catch (error) {
+          console.error("Error fetching zone data:", error);
         }
-      } catch (error) {
-        console.error("Error fetching zone data:", error);
-      }
-    };
+      };
 
-    fetchZoneDataById();
+      fetchZoneDataById();
+    }
   }, []);
+  function calculateZoomLevel(circleRadius: number) {
+    let zoomLevel = 20;
+    const radiusStep = 230;
+
+    while (circleRadius > 0 && zoomLevel > 8) {
+      circleRadius -= radiusStep;
+      zoomLevel--;
+    }
+
+    return Math.max(zoomLevel, 8);
+  }
 
   useEffect(() => {
     if (zoneDataById?.zoneType === "Polygon") {
@@ -101,11 +116,18 @@ const EditZonePage: React.FC = () => {
         if (formattedCoordinates) {
           const lats = formattedCoordinates.map((coord: any[]) => coord[0]);
           const lngs = formattedCoordinates.map((coord: any[]) => coord[1]);
-
           const minLat = Math.min(...lats);
           const maxLat = Math.max(...lats);
           const minLng = Math.min(...lngs);
           const maxLng = Math.max(...lngs);
+
+          const latDistance = maxLat - minLat;
+          const lngDistance = maxLng - minLng;
+
+          const latZoom = Math.floor(Math.log2(360 / (0.5 * latDistance)));
+          const lngZoom = Math.floor(Math.log2(360 / (0.5 * lngDistance)));
+
+          setZoom(Math.min(latZoom, lngZoom));
 
           setMapcenter([
             ((minLat + maxLat) / 2) as number,
@@ -116,8 +138,12 @@ const EditZonePage: React.FC = () => {
     } else {
       let circledata = Number(zoneDataById?.latlngCordinates);
       const newcenterPoints = zoneDataById?.centerPoints;
-
       const latlng = newcenterPoints?.split(",").map(Number);
+
+      const integerPart = Math.floor(circledata);
+      const zoomLevel = calculateZoomLevel(integerPart);
+
+      setZoom(Math.min(Math.max(Math.floor(zoomLevel), 2), 16));
 
       if (latlng && latlng.length === 2) {
         setMapcenter([latlng[0], latlng[1]]);
@@ -166,14 +192,24 @@ const EditZonePage: React.FC = () => {
       }));
     }
   }, [polygondata, circleData]);
-
   const handlePolygonSave = (coordinates: [number, number][]) => {
     const zoneCoords = coordinates.slice(0, -1).map(([lat, lng]) => ({
       latitude: lat,
       longitude: lng,
     }));
 
-    setPolygondata(zoneCoords);
+    if (drawShape == true) {
+      const formattedCoordinate: [number, number][] = zoneCoords.map(
+        (coord: { latitude: number; longitude: number }) => [
+          coord.latitude,
+          coord.longitude,
+        ]
+      );
+
+      setPolygondataById(formattedCoordinate);
+      setPolygondata(zoneCoords);
+      setDrawShape(!drawShape);
+    }
   };
 
   const handleCircleSave = (latlng: any, radius: string) => {
@@ -185,14 +221,21 @@ const EditZonePage: React.FC = () => {
     };
 
     let circlePoint = formatCenterPoints(latlng.lat, latlng.lng);
+    const newlatlng = circlePoint?.split(",").map(Number);
+    if (drawShape == true) {
+      setCircleDataById({ radius: radius });
+      const updateCircleData = (newLatlng: string, newRadius: string): void => {
+        setCircleData({
+          latlng: newLatlng,
+          radius: newRadius,
+        });
+      };
+      updateCircleData(circlePoint, radius);
 
-    const updateCircleData = (newLatlng: string, newRadius: string): void => {
-      setCircleData({
-        latlng: newLatlng,
-        radius: newRadius,
-      });
-    };
-    updateCircleData(circlePoint, radius);
+      setMapcenter([newlatlng[0], newlatlng[1]]);
+
+      setDrawShape(!drawShape);
+    }
   };
 
   const handleChange = (
@@ -204,6 +247,14 @@ const EditZonePage: React.FC = () => {
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!Form.latlngCordinates) {
+      toast.error("Please Draw a Zone");
+      return;
+    } else if (polygondataById.length == 0 && circleDataById?.radius == null) {
+      toast.error("Please Draw a Zone");
+      return;
+    }
 
     try {
       if (session) {
@@ -257,8 +308,8 @@ const EditZonePage: React.FC = () => {
   };
 
   const handleEdited = (e: any) => {
-    const layers = e.layers;
-    layers.eachLayer((layer: any) => {
+    const layer = e.layers;
+    layer.eachLayer((layer: any) => {
       if (layer instanceof L.Polygon) {
         const coordinates: [number, number][] = (
           layer.getLatLngs()[0] as L.LatLng[]
@@ -274,6 +325,45 @@ const EditZonePage: React.FC = () => {
         handleCircleSave(latlng, radius.toString());
       }
     });
+  };
+
+  const handleredraw = (e: any) => {
+    if (polygondataById.length > 0) {
+      setDrawShape(true);
+      setPolygondataById([]);
+      setPolygondata([]);
+      setForm({ ...Form, zoneType: "" });
+    } else if (circleDataById !== null) {
+      setCircleDataById(null);
+      setCircleData({ radius: "", latlng: "" });
+
+      setForm({ ...Form, zoneType: "" });
+      setDrawShape(true);
+    } else {
+      setDrawShape(drawShape);
+    }
+  };
+
+  const handleCreated = (e: any) => {
+    const createdLayer = e.layer;
+    const type = e.layerType;
+
+    if (type === "polygon") {
+      setShapeType("Polygon");
+
+      const coordinates = e.layer
+        .toGeoJSON()
+        .geometry.coordinates[0].map((coord: any[]) => [coord[1], coord[0]]);
+      handlePolygonSave(coordinates);
+
+      e.target.removeLayer(e.layer);
+    } else if (type === "circle") {
+      setShapeType("Circle");
+      const latlng = e.layer.getLatLng();
+      const radius = e.layer.getRadius();
+      handleCircleSave(latlng, radius);
+      e.target.removeLayer(createdLayer);
+    }
   };
 
   return (
@@ -366,62 +456,99 @@ const EditZonePage: React.FC = () => {
               placeholder="Search"
               required
             />
+            <button
+              className="text-white px-30px h-10 bg-[#00B56C] "
+              type="submit"
+              onClick={handleredraw}
+            >
+              Redraw
+            </button>
 
             <div className="flex justify-start"></div>
             <div className="lg:col-span-5  md:col-span-4  sm:col-span-5 col-span-4 mx-3">
               <div className="flex justify-start"></div>
               <div className="w-full  mt-4 overflow-hidden">
-                {mapcenter !== null && isBrowser && (
+                {mapcenter !== null && zoom >= 0 && zoom <= 18 && (
                   <MapContainer
-                    zoom={15}
+                    zoom={zoom}
                     center={mapcenter}
                     className="z-10 "
-                    style={{ height: "52em" }}
+                    style={{ height: "35em" }}
                   >
                     <TileLayer
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'
                     />
-                    <FeatureGroup>
-                      <EditControl
-                        position="topright"
-                        onEdited={handleEdited}
-                        onCreated={(e) => {
-                          const type = e.layerType;
-                          console.log("type", e);
-                          if (type === "polygon") {
-                            const coordinates = e.layer
-                              .toGeoJSON()
-                              .geometry.coordinates[0].map((coord: any[]) => [
-                                coord[1],
-                                coord[0],
-                              ]);
-                            handlePolygonSave(coordinates);
-                          } else if (type === "circle") {
-                            const latlng = e.layer.getLatLng();
-                            const radius = e.layer.getRadius();
-                            handleCircleSave(latlng, radius);
-                          }
-                        }}
-                        draw={{
-                          polyline: false,
-                          polygon: true,
-                          circle: true,
-                          marker: false,
-                          circlemarker: false,
-                          rectangle: false,
-                        }}
-                      />
-                      {shapeType === "Polygon" ? (
-                        <Polygon positions={polygondataById} color="#97009c" />
-                      ) : shapeType === "Circle" ? ( // Check for "Circle" here
-                        <Circle
-                          radius={Number(circleDataById.radius)}
-                          center={mapcenter}
-                          color="#97009c"
+                    {drawShape == false && (
+                      <FeatureGroup>
+                        <EditControl
+                          position="topright"
+                          onEdited={handleEdited}
+                          onCreated={handleCreated}
+                          draw={{
+                            polyline: false,
+                            polygon: drawShape,
+                            circle: drawShape,
+                            marker: false,
+                            circlemarker: false,
+                            rectangle: false,
+                          }}
                         />
-                      ) : null}
-                    </FeatureGroup>
+                        {shapeType === "Polygon" &&
+                        polygondataById.length > 0 ? (
+                          <Polygon
+                            positions={polygondataById}
+                            color="#97009c"
+                          />
+                        ) : null}
+
+                        {shapeType === "Circle" &&
+                        !isNaN(mapcenter[0]) &&
+                        !isNaN(mapcenter[1]) &&
+                        !isNaN(Number(circleDataById?.radius)) ? (
+                          <Circle
+                            radius={Number(circleDataById?.radius)}
+                            center={mapcenter}
+                            color="#97009c"
+                          />
+                        ) : null}
+                      </FeatureGroup>
+                    )}
+                    {drawShape == true && (
+                      <FeatureGroup>
+                        <EditControl
+                          position="topright"
+                          onEdited={handleEdited}
+                          onCreated={handleCreated}
+                          draw={{
+                            polyline: false,
+                            polygon: true,
+                            circle: true,
+                            marker: false,
+                            circlemarker: false,
+                            rectangle: false,
+                          }}
+                        />
+                        {shapeType === "Polygon" &&
+                        polygondataById.length > 0 ? (
+                          <Polygon
+                            positions={polygondataById}
+                            color="#97009c"
+                          />
+                        ) : null}
+
+                        {shapeType === "Circle" &&
+                        !isNaN(mapcenter[0]) &&
+                        !isNaN(mapcenter[1]) &&
+                        !isNaN(Number(circleDataById?.radius)) ? (
+                          <Circle
+                            radius={Number(circleDataById?.radius)}
+                            center={mapcenter}
+                            color="#97009c"
+                          />
+                        ) : null}
+                      </FeatureGroup>
+                    )}
                   </MapContainer>
                 )}
               </div>

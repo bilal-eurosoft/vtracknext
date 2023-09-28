@@ -7,5 +7,5 @@ export type zonelistType = {
   zoneName: string;
   zoneShortName: string;
   zoneType: string;
-  toLowerCase: any;
+
 };
