@@ -497,7 +497,7 @@ export async function postZoneDataByClientId({
   newformdata: zonelistType;
 }) {
   try {
-    console.log("before send data to api", newformdata);
+    
     const response = await fetch("https://backend.vtracksolutions.com/zone", {
       method: "POST",
       headers: {
@@ -573,6 +573,35 @@ export async function zonenamesearch({
     return data;
   } catch (error) {
     console.log("Error fetching data:", error);
+    return [];
+  }
+}
+
+
+export async function locationsearch({
+  token,
+searchparams,
+}: {
+  token: string;
+  searchparams: string;
+}) {
+  try {
+    const response = await fetch(`https://eurosofttechosm.com/nominatim/search.php?q=${searchparams}+Pakistan&format=json`, {
+      headers: {
+        accept: "application/json, text/plain, */*",
+        authorization: `Bearer ${token}`,
+        "content-type": "application/json",
+      },
+      //body: JSON.stringify({ clientId: clientId, Filters: [filter] }), // Pass filter as an array inside Filters
+      method: "GET",
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the API');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log('Error fetching data:', error);
     return [];
   }
 }

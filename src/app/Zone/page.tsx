@@ -1,6 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-//zone
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -11,19 +9,44 @@ import {
   zoneRuleDeleteByZoneId,
   zoneDelete,
   alertSettingCountZone,
+  zonenamesearch,
 } from "@/utils/API_CALLS";
 import { zonelistType } from "@/types/zoneType";
 import Link from "next/link";
-import Typography from "@mui/material/Typography";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
+import { Toaster, toast } from "react-hot-toast";
+
+const itemList = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Alice Smith" },
+  { id: 4, name: "John" },
+];
 
 export default function Zone() {
+  const [filter, setFilter] = useState<any>("");
+  const [filteredItems, setFilteredItems] = useState([]);
+
   const { data: session } = useSession();
   const [zoneList, setZoneList] = useState<zonelistType[]>([]);
+
+  // pagination work
+  const [input, setInput] = useState<any>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 6;
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+  var records = zoneList.slice(firstIndex, lastIndex);
+  const totalCount: any = Math.ceil(zoneList.length / recordsPerPage);
+
   const [filteredZones, setFilteredZones] = useState<zonelistType[]>([]);
   const [selectedZoneType, setSelectedZoneType] = useState("");
   const [selectedZones, setSelectedZones] = useState<zonelistType[]>([]);
+  const [liveSearchZoneName, setLiveSearchZoneName] = useState<
+    string[] | undefined
+  >([]);
+  const [zoneNames, setZoneNames] = useState<string[]>([]);
 
   const [searchCriteria, setSearchCriteria] = useState<any>({
     zoneName: "",
@@ -32,15 +55,6 @@ export default function Zone() {
     zoneType: "",
   });
 
-  // pagination work
-  const [input, setInput] = useState<any>("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 6;
-  const lastIndex = currentPage * recordsPerPage;
-  const firstIndex = lastIndex - recordsPerPage;
-  const records = zoneList.slice(firstIndex, lastIndex);
-  const totalCount = Math.ceil(zoneList.length / recordsPerPage);
-
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);
   };
@@ -48,7 +62,6 @@ export default function Zone() {
     setCurrentPage(input);
   };
 
-  console.log(records);
   useEffect(() => {
     (async function () {
       if (session) {
@@ -68,7 +81,22 @@ export default function Zone() {
 
     const { zoneName, zoneShortName, GeoFenceType } = searchCriteria;
 
-    // Filter the zones based on user input and selected zone type
+    const filteredZone = zoneList.filter((zone) => {
+      return (
+        (zoneName === "" ||
+          zone.zoneName.toLowerCase().includes(zoneName.toLowerCase())) &&
+        (zoneShortName === "" ||
+          zone.zoneShortName
+            .toLowerCase()
+            .includes(zoneShortName.toLowerCase())) &&
+        (GeoFenceType === "" ||
+          zone.GeoFenceType.toLowerCase() === GeoFenceType.toLowerCase()) &&
+        (selectedZoneType === "" ||
+          zone.zoneType.toLowerCase() === selectedZoneType.toLowerCase())
+      );
+    });
+
+    setFilteredZones(filteredZone);
   }
 
   const handleClick = () => {
@@ -76,19 +104,16 @@ export default function Zone() {
   };
 
   const handleClear = () => {
-    // Reset all input values to an empty string
     setSearchCriteria({
       zoneName: "",
       zoneShortName: "",
       GeoFenceType: "",
-      zoneType: "", // Clear the zoneType as well
+      zoneType: "",
     });
 
-    // Clear the selectedZoneType state
     setSelectedZoneType("");
-
-    // Show all zones by setting filteredZones to the entire zoneList
     setFilteredZones(zoneList);
+    setZoneList(records);
   };
 
   function handleCheckboxChange(zone: zonelistType) {
@@ -97,100 +122,164 @@ export default function Zone() {
     );
 
     if (isChecked) {
-      // If the zone is already selected, remove it
       setSelectedZones((prevSelectedZones) =>
         prevSelectedZones.filter((selectedZone) => selectedZone.id !== zone.id)
       );
     } else {
-      // If the zone is not selected, add it
       setSelectedZones((prevSelectedZones) => [...prevSelectedZones, zone]);
+    }
+  }
+  async function handleLiveSearchChange(
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
+    setSearchCriteria({
+      ...searchCriteria,
+      zoneName: e.target.value,
+    });
+    let searchTerm = e.target.value;
+
+    let query = searchTerm.toUpperCase();
+    let filter = { zoneName: { $regex: query } };
+
+    if (session) {
+      try {
+        let filterByZoneName = await zonenamesearch({
+          token: session.accessToken,
+          clientId: session.clientId,
+          filter: filter,
+        });
+
+        if (Array.isArray(filterByZoneName)) {
+          const zoneNames = filterByZoneName.map(
+            (zone: { zoneName: string }) => zone.zoneName
+          );
+          setLiveSearchZoneName(zoneNames);
+        } else {
+          console.error("Invalid API response:", filterByZoneName);
+          setLiveSearchZoneName([]);
+        }
+      } catch (error) {
+        console.error("Error fetching live search results:", error);
+        setLiveSearchZoneName([]);
+      }
     }
   }
 
   async function deleteSelectedZones() {
     try {
       if (session) {
-        // Prepare an array of zone IDs to delete
         const zoneIdsToDelete = selectedZones.map((zone) => zone.id);
-        console.log("deleting zones", zoneIdsToDelete);
-
-        // Iterate through the selected zones and delete each one
+        const deletePromises = [];
         for (const zoneId of zoneIdsToDelete) {
-          // Delete the zone
-          await zoneDelete({ token: session?.accessToken, id: zoneId });
-
-          // Delete zone rules
-          await zoneRuleDeleteByZoneId({
-            token: session?.accessToken,
-            id: zoneId,
-          });
-
-          // Delete zone vehicles
-          await zonevehicleByZoneId({ token: session?.accessToken, zoneId });
-          await alertSettingCountZone({
-            token: session?.accessToken,
+          const alertPromise = await alertSettingCountZone({
+            token: session.accessToken,
             clientId: session.clientId,
             zoneId: zoneId,
           });
-          /* for (const vehicle of zoneVehicles) {
-          // Assuming vehicle.id is the ID of the associated vehicle
-          // You may need to adjust this based on your API structure
-          await modifyCollectionStatus({ token: session?.accessToken, collectionName: `vehicle-${vehicle.id}` });
-        } */
 
-          // Modify other collections if needed
+          const zoneDeletePromise = await zoneDelete({
+            token: session.accessToken,
+            id: zoneId,
+          });
+          const zoneRuleDeletePromise = await zoneRuleDeleteByZoneId({
+            token: session.accessToken,
+            id: zoneId,
+          });
+
+          const zoneVehicleDeletePromise = await zonevehicleByZoneId({
+            token: session.accessToken,
+            zoneId,
+          });
+
+          const modifyCollectionStatusPromise = await modifyCollectionStatus({
+            token: session.accessToken,
+            collectionName: "zones",
+          });
+
+          deletePromises.push(
+            alertPromise,
+            zoneDeletePromise,
+            zoneRuleDeletePromise,
+            zoneVehicleDeletePromise,
+            modifyCollectionStatusPromise
+          );
         }
 
-        // Static collection name
-        await modifyCollectionStatus({
-          token: session?.accessToken,
-          collectionName: "zones",
-        });
+        const loadingToast = await toast.loading("Deleting zones...");
 
-        console.log("Selected zones and associated data have been deleted.");
+        const responses = await Promise.all(deletePromises);
+
+        toast.dismiss(loadingToast);
+
+        const allSuccess = responses.every((response) => response.id !== null);
+
+        if (allSuccess) {
+          toast.success("Zones deleted successfully!");
+        } else {
+          toast.error("Error deleting zones. Please try again.");
+        }
+
         const newZoneList = await getZoneListByClientId({
-          token: session?.accessToken,
-          clientId: session?.clientId,
+          token: session.accessToken,
+          clientId: session.clientId,
         });
 
-        // Update the zoneList state with the new list
         setZoneList(newZoneList);
-        // After successful deletion, update your UI
-        setZoneList((prevZoneList) =>
-          prevZoneList.filter((zone) => !zoneIdsToDelete.includes(zone.id))
-        );
+        setFilteredZones(newZoneList);
+        setSelectedZones([]);
       }
-      // Clear the selectedZones state
-      setSelectedZones([]);
     } catch (error) {
-      // Handle errors here
       console.error("Error deleting selected zones:", error);
+      toast.error("An error occurred while deleting zones.");
     }
   }
 
-  const handleFilterClick = () => {
-    const filtered = zoneList.filter(
-      (item) =>
-        item.zoneShortName.toLowerCase() === searchCriteria.toLowerCase()
+  // const handleFilterClick = () => {
+  //   const filtered = zoneList.filter(
+  //     (item) =>
+  //       item.zoneShortName.toLowerCase() === searchCriteria.toLowerCase()
+  //   );
+
+  //   setFilteredZones(filtered);
+  // };
+
+  const handleFilterClicks = () => {
+    const filtered: any = zoneList.filter(
+      (item) => item.zoneName.toLowerCase() === filter.toLowerCase()
     );
-
-    setFilteredZones(filtered);
+    setFilteredItems(filtered);
   };
-
+  console.log("filter", filteredItems);
   return (
     <div className="mt-10 bg-bgLight mx-5">
-      <form onSubmit={handleSearchClick} className="shadow-lg">
+      {/* <div>
+        <input
+          type="text"
+          placeholder="Enter name to filter"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
+        <button onClick={handleFilterClicks}>Filter</button>
+
+        <ul>
+          {filteredItems.map((item: any) => (
+            <li key={item.id}>{item.zoneName}</li>
+          ))}
+        </ul>
+      </div> */}
+      <form
+        onSubmit={handleSearchClick}
+        className="shadow-lg lg:w-full w-screen bg-bgLight lg:-ms-0 -ms-1"
+      >
         <p className="bg-green px-4 py-1 text-black text-sm text-white font-bold">
           Zone Filter
         </p>
-        <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5 bg-green-50 ">
+        <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5  ">
           <div className="lg:col-span-1">
             <label className="text-sm text-labelColor">Zone Name</label>
-            <input
-              type="text"
-              name="zoneName"
-              className="block py-1 mt-2 px-0 w-full text-sm text-black bg-white-10 border border-grayLight appearance-none px-3 outline-green"
-              placeholder="Enter Zone Name"
+
+            <select
+              className=" px-0 w-full text-sm text-black bg-white-10 border border-grayLight appearance-none px-3 outline-green"
               value={searchCriteria.zoneName}
               onChange={(e) =>
                 setSearchCriteria({
@@ -198,7 +287,14 @@ export default function Zone() {
                   zoneName: e.target.value,
                 })
               }
-            />
+            >
+              <option value=""></option>
+              {liveSearchZoneName?.map((zoneName, index) => (
+                <option key={index} value={zoneName}>
+                  {zoneName}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="lg:col-span-1 md:col-span-1 col-span-1">
             <label className="text-sm text-labelColor">Zone Short Name</label>
@@ -220,7 +316,7 @@ export default function Zone() {
         <div className="grid lg:grid-cols-2 md:grid-cols-2   gap-6 pt-5 px-5 bg-green-50 ">
           <div className="lg:col-span-1">
             <label className="text-sm text-black text-labelColor">
-              Geofence
+              Geofenced
             </label>
             <select
               className="block mt-2 py-1 px-0 w-full text-sm text-black bg-white-10 border border-grayLight px-3 dark:border-gray-600 dark:focus:border-blue-500 outline-green mb-5"
@@ -270,11 +366,11 @@ export default function Zone() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 px-5">
-          <div className="col-span-1">
-            <div className="grid grid-cols-8">
-              <div className="grid lg:grid-cols-2 grid-cols-3 bg-green shadow-md hover:shadow-gray transition duration-500 cursor-pointer">
-                <div className="col-span-1">
+        <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 grid-cols-2 px-5 lg:mt-0 mt-5">
+          <div className="lg:col-span-1 md:col-span-1 sm:col-span-1   col-span-2">
+            <div className="grid lg:grid-cols-8 md:grid-cols-3 grid-cols-2">
+              <div className="grid lg:grid-cols-2 md:grid-cols-4 grid-cols-5 bg-green shadow-md hover:shadow-gray transition duration-500 cursor-pointer">
+                <div className="lg:col-span-1 md:col-span-2  col-span-3">
                   <svg
                     className="h-10 py-3 w-full text-white"
                     width="24"
@@ -292,19 +388,19 @@ export default function Zone() {
                     <line x1="21" y1="21" x2="15" y2="15" />
                   </svg>
                 </div>
-                <div className="col-span-1">
+                <div className="lg:col-span-1 md:col-span-1  text-center">
                   <button
-                    className="text-white  h-10 bg-green -ms-4 text-sm"
+                    className="text-white  h-10 bg-green lg:-ms-5 -ms-10 text-sm "
                     type="submit"
-                    onClick={handleFilterClick}
+                    onClick={handleFilterClicks}
                   >
                     Search
                   </button>
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-2 grid-cols-3 bg-zonebtnColor shadow-md ms-3 hover:shadow-gray transition duration-500 cursor-pointer">
-                <div className="col-span-1">
+              <div className="grid lg:grid-cols-2 lg:grid-cols-4 grid-cols-5 bg-zonebtnColor shadow-md ms-3 hover:shadow-gray transition duration-500 cursor-pointer">
+                <div className="lg:col-span-2   md:col-span-3 col-span-3">
                   <svg
                     className="h-10 py-3 w-full text-labelColor"
                     viewBox="0 0 24 24"
@@ -322,9 +418,9 @@ export default function Zone() {
                     />
                   </svg>
                 </div>
-                <div className="col-span-1">
+                <div className="lg:col-span-1 md:col-span-1 col-span-1">
                   <button
-                    className="text-labelColor text-sm  h-10 -ms-2"
+                    className="text-labelColor text-sm  h-10 lg:-ms-2 -ms-6"
                     onClick={handleClear}
                   >
                     clear
@@ -334,13 +430,13 @@ export default function Zone() {
             </div>
           </div>
 
-          <div className="col-span-1 flex justify-end mb-5">
-            <div className="grid grid-cols-2 cursor-pointer">
+          <div className="lg:col-span-1 md:col-span-1  col-span-2 lg:mt-0 md:mt-0 mt-3  flex justify-end mb-5">
+            <div className="grid lg:grid-cols-2 md:grid-cols-3  grid-cols-2 cursor-pointer">
               <div
-                className="grid lg:grid-cols-2 grid-cols-3 bg-green shadow-md hover:shadow-gray transition duration-500"
+                className="grid lg:grid-cols-2 md:grid-cols-4 grid-cols-5 bg-green shadow-md hover:shadow-gray transition duration-500"
                 onClick={handleClick}
               >
-                <div className="col-span-1">
+                <div className="lg:col-span-1 md:col-span-2 col-span-3">
                   <svg
                     className="h-10 py-3 w-full text-white"
                     width="24"
@@ -366,8 +462,8 @@ export default function Zone() {
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-2 grid-cols-3 bg-zonebtnColor shadow-md hover:shadow-gray transition duration-500 ms-3 cursor-pointer">
-                <div className="col-span-1">
+              <div className="grid lg:grid-cols-2 md:grid-cols-4  grid-cols-5 bg-zonebtnColor shadow-md hover:shadow-gray transition duration-500 ms-3 cursor-pointer">
+                <div className="lg:col-span-1 md:col-span-2 col-span-3">
                   <svg
                     className="h-10 py-3 w-full text-labelColor"
                     viewBox="0 0 24 24"
@@ -387,7 +483,7 @@ export default function Zone() {
                     className="text-labelColor text-sm h-10 -ms-5 mr-4"
                     onClick={deleteSelectedZones}
                   >
-                    Delete Zone
+                    DeleteZone
                   </button>
                 </div>
               </div>
@@ -396,8 +492,10 @@ export default function Zone() {
         </div>
       </form>
 
-      <div className="bg-gray-100  ">
-        <p className="bg-green px-4 py-1 text-white font-bold">ZoneTitle</p>
+      <div className="bg-gray-100    ">
+        <p className="bg-green px-4 py-1 text-white font-bold lg:w-full w-screen ">
+          ZoneTitle
+        </p>
         <div className="relative shadow-md sm:rounded-lg ">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
             <thead className="text-xs text-gray-700 uppercase bg-zoneTabelBg dark:bg-gray-700 dark:text-gray-400 ">
@@ -476,7 +574,7 @@ export default function Zone() {
                       <td className="flex items-center px-6 py-4 space-x-3">
                         <Link
                           className="font-medium text-green dark:text-blue-500 hover:underline"
-                          href={`/AddZone?id=${item.id}`}
+                          href={`/EditZone?id=${item.id}`}
                         >
                           Edit
                         </Link>
@@ -506,20 +604,20 @@ export default function Zone() {
                       </td>
                       <th
                         scope="row"
-                        className="px-6 py-4  text-labelColor text-md font-normal border-r border-grayLight"
+                        className="lg:px-6  py-4  text-labelColor lg:text-start sm:text-center text-center text-md font-normal border-r border-grayLight"
                       >
                         {item.zoneName}
                       </th>
-                      <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">
+                      <td className="lg:px-6 py-4 text-labelColor lg:text-start sm:text-center text-center text-md font-normal border-r border-grayLight">
                         {item.zoneShortName}
                       </td>
-                      <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">
+                      <td className="lg:px-6 py-4 text-labelColor lg:text-start  sm:text-center text-center text-md font-normal border-r border-grayLight">
                         {item.zoneType}
                       </td>
-                      <td className="flex items-center px-6 py-4 space-x-3">
+                      <td className="flex items-center  text-center  px-6 py-4 space-x-3">
                         <Link
-                          className="font-medium text-green dark:text-blue-500 hover:underline"
-                          href={`/AddZone?id=${item.id}`}
+                          className="font-medium text-green text-center dark:text-blue-500 hover:underline"
+                          href={`/EditZone?id=${item.id}`}
                         >
                           Edit
                         </Link>
@@ -528,25 +626,17 @@ export default function Zone() {
                   ))}
             </tbody>
           </table>
-          <div
-            // style={{
-            //   display: "flex",
-            //   justifyContent: "end",
-            //   alignItems: "end",
-            // }}
-
-            className="flex  justify-end"
-          >
-            <div className="grid lg:grid-cols-4 my-4 ">
-              <div className="col-span-1">
+          <div className="flex  justify-end lg:w-full w-screen bg-bgLight">
+            <div className="grid lg:grid-cols-4 grid-cols-4  my-4 ">
+              <div className="lg:col-span-1 col-span-1">
                 <p className="mt-1 text-labelColor text-end">
                   Total {zoneList.length} items
                 </p>
               </div>
 
               <div
-                className="col-span-2 "
-                style={{ width: "22em", height: "4vh", overflow: "hidden" }}
+                className="lg:col-span-2 col-span-2 "
+                style={{ height: "4vh", overflow: "hidden" }}
               >
                 <Stack spacing={2}>
                   <Pagination
@@ -556,15 +646,15 @@ export default function Zone() {
                   />
                 </Stack>
               </div>
-              <div className="col-lg-1 mt-1">
-                <span>Go To</span>
+              <div className="lg:col-lg-1 col-lg-1  mt-1 ">
+                <span className="lg:inline-block hidden">Go To</span>
                 <input
                   type="text"
-                  className="w-10 border border-grayLight outline-green mx-2 px-2"
+                  className="lg:w-10 w-5  border border-grayLight outline-green mx-2 px-2"
                   onChange={(e: any) => setInput(e.target.value)}
                 />
                 <span
-                  className="text-labelColor cursor-pointer"
+                  className="text-labelColor cursor-pointer "
                   onClick={handleClickPagination}
                 >
                   page &nbsp;&nbsp;
@@ -574,6 +664,7 @@ export default function Zone() {
           </div>
         </div>
       </div>
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 }

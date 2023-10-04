@@ -149,14 +149,12 @@ export default function RootLayout({
                   </svg>
                 </PopoverHandler>
               </Tooltip>
-              <PopoverContent className="border-none  cursor-pointer">
-                <span className="hover:bg-bgLight w-full">
-                  Get Image And Video
-                </span>
+              <PopoverContent className="border-none  cursor-pointer bg-green">
+                <span className=" w-full text-white">Get Image And Video</span>
                 <br></br>
                 <br></br>
                 <span
-                  className="hover:bg-bgLight w-full"
+                  className=" w-full text-white"
                   onClick={() => router.push("/DualCam")}
                 >
                   View Image And Video
