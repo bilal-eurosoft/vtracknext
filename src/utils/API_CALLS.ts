@@ -1,4 +1,4 @@
-import { IgnitionReport } from "@/types/IgnitionReport";
+import { IgnitionReport, replayreport } from "@/types/IgnitionReport";
 import { zonelistType } from "@/types/zoneType";
 
 export async function getVehicleDataByClientId(clientId: string) {
@@ -497,7 +497,6 @@ export async function postZoneDataByClientId({
   newformdata: zonelistType;
 }) {
   try {
-    
     const response = await fetch("https://backend.vtracksolutions.com/zone", {
       method: "POST",
       headers: {
@@ -577,31 +576,33 @@ export async function zonenamesearch({
   }
 }
 
-
 export async function locationsearch({
   token,
-searchparams,
+  searchparams,
 }: {
   token: string;
   searchparams: string;
 }) {
   try {
-    const response = await fetch(`https://eurosofttechosm.com/nominatim/search.php?q=${searchparams}+Pakistan&format=json`, {
-      headers: {
-        accept: "application/json, text/plain, */*",
-        authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
-      //body: JSON.stringify({ clientId: clientId, Filters: [filter] }), // Pass filter as an array inside Filters
-      method: "GET",
-    });
+    const response = await fetch(
+      `https://eurosofttechosm.com/nominatim/search.php?q=${searchparams}+Pakistan&format=json`,
+      {
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        //body: JSON.stringify({ clientId: clientId, Filters: [filter] }), // Pass filter as an array inside Filters
+        method: "GET",
+      }
+    );
     if (!response.ok) {
-      throw new Error('Failed to fetch data from the API');
+      throw new Error("Failed to fetch data from the API");
     }
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log('Error fetching data:', error);
+    console.log("Error fetching data:", error);
     return [];
   }
 }
