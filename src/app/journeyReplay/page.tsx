@@ -17,7 +17,7 @@ import { zonelistType } from "@/types/zoneType";
 import { ClientSettings } from "@/types/clientSettings";
 import { replayreport } from "@/types/IgnitionReport";
 import TripsByBucket, { TravelHistoryData } from "@/types/TripsByBucket";
-import L, { LatLng, LatLngTuple, map } from "leaflet";
+import L, { LatLng, LatLngTuple } from "leaflet";
 import { Marker } from "react-leaflet/Marker";
 import { Toaster, toast } from "react-hot-toast";
 import { useMap } from "react-leaflet";
@@ -27,6 +27,9 @@ import {
   createMarkerIcon,
 } from "@/utils/JourneyReplayFunctions";
 import { StopAddressData } from "@/types/StopDetails";
+import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
+import { Tooltip, Button } from "@material-tailwind/react";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((module) => module.MapContainer),
@@ -89,7 +92,10 @@ export default function JourneyReplay() {
   const [TripAddressData, setTripAddressData] = useState("");
   const [stopDetails, setStopDetails] = useState<StopAddressData[]>([]);
   const [progressWidth, setProgressWidth] = useState(0);
-
+  const [getShowRadioButton, setShowRadioButton] = useState(false);
+  const [getShowdetails, setShowDetails] = useState(false);
+  const [getShowICon, setShowIcon] = useState(false);
+  const [getCheckedInput, setCheckedInput] = useState<any>(false);
   const SetViewOnClick = ({ coords }: { coords: any }) => {
     if (isPaused) {
       setMapcenterToFly(null);
@@ -445,7 +451,9 @@ export default function JourneyReplay() {
       }
     }
   };
-
+  const handleClick = () => {
+    setShowRadioButton(!getShowRadioButton);
+  };
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -619,42 +627,86 @@ export default function JourneyReplay() {
     }
   };
 
+  const handleShowDetails = () => {
+    setShowDetails(!getShowdetails);
+    setShowIcon(!getShowICon);
+  };
+
+  const handleChangeChecked = () => {
+    setCheckedInput(!getCheckedInput);
+  };
+
   return (
     <>
       <div style={{ height: "90vh" }}>
         <p className="bg-[#00B56C] px-4 py-1 text-white">JourneyReplay</p>
-        <div className="w-full bg-gray-200 rounded-full h-2.5">
-          <div
-            className="bg-blue-600 h-2.5 rounded-full"
-            style={{
-              width: `${Math.round(progressWidth)}%`,
-            }}
-          >
-            {Math.round(progressWidth)}%
-          </div>
-        </div>
-        <div className="grid lg:grid-cols-2  md:grid-cols-4  px-4 text-start">
-          <div className="lg:col-span-1 md:col-span-3  py-5">
-            <div className="grid lg:grid-cols-12 md:grid-cols-12 gap-5">
-              <div className="lg:col-span-2 md:col-span-3">
-                <select
-                  className=" w-full bg-transparent border-2 p-1 outline-none border-[#00B56C]-600"
-                  onChange={handleInputChange}
-                  name="VehicleReg"
-                  value={Ignitionreport.VehicleReg}
-                >
-                  <option>Select Vehicle</option>
-                  {vehicleList.map((item: DeviceAttach) => (
-                    <option key={item.id} value={item.vehicleReg}>
-                      {item.vehicleReg}
-                    </option>
-                  ))}
-                </select>
-              </div>
 
-              <div className=" grid lg:grid-cols-8  mb-5 md:grid-cols-6 sm:grid-cols-5 gap-5 lg:text-center lg:mx-52 md:mx-24 sm:mx-10  flex justify-center">
+        <div className="grid lg:grid-cols-10  md:grid-cols-4  gap-5 px-4 text-start pt-4 bg-bgLight">
+          <div className="lg:col-span-1 md:col-span-3">
+            <select
+              className=" h-8  w-full  text-labelColor  outline-green border border-grayLight px-1"
+              onChange={handleInputChange}
+              name="VehicleReg"
+              value={Ignitionreport.VehicleReg}
+            >
+              <option value="" disabled selected hidden>
+                Select Vehicle
+              </option>
+              {vehicleList.map((item: DeviceAttach) => (
+                <option key={item.id} value={item.vehicleReg}>
+                  {item.vehicleReg}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="lg:col-span-3 md:col-span-3  pt-2">
+            {getShowRadioButton ? (
+              <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2  -mt-5  grid-cols-2  px-10 gap-5 flex justify-center ">
+                <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0  ">
+                  <label className="text-green">
+                    From
+                    <input
+                      type="date"
+                      className="ms-1  w-full  text-labelColor  outline-green border-b border-gray px-1"
+                      name="fromDateTime"
+                      placeholder="Select Date"
+                      autoComplete="off"
+                      value={Ignitionreport.fromDateTime}
+                      defaultValue={currentDate}
+                      onChange={(e) =>
+                        handleCustomDateChange("fromDateTime", e.target.value)
+                      }
+                    />
+                  </label>
+                </div>
+                <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2  ">
+                  <label className="text-green">
+                    To
+                    <br></br>
+                    <input
+                      type="date"
+                      className=" w-full  text-labelColor  outline-green border-b border-gray px-1"
+                      name="toDateTime"
+                      value={Ignitionreport.toDateTime}
+                      onChange={(e) =>
+                        handleCustomDateChange("toDateTime", e.target.value)
+                      }
+                    />
+                  </label>
+                </div>
+                <div className="lg:col-span-1">
+                  <button
+                    className="text-green ms-5  text-2xl "
+                    onClick={() => setShowRadioButton(false)}
+                  >
+                    x
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid lg:grid-cols-12 md:grid-cols-12 gap-5">
                 <div className="lg:col-span-2 md:col-span-2 sm:col-span-2">
-                  <label>
+                  <label className="text-sm color-labelColor ">
                     <input
                       type="radio"
                       className="w-5 h-4 form-radio  "
@@ -664,11 +716,12 @@ export default function JourneyReplay() {
                       checked={Ignitionreport.period === "today"}
                       onChange={handleInputChange}
                     />
-                    &nbsp;&nbsp;Today
+                    &nbsp;Today
                   </label>
                 </div>
-                <div className="lg:col-span-2 md:col-span-2 sm:col-span-2">
-                  <label>
+
+                <div className="lg:col-span-2  md:col-span-2 sm:col-span-2  lg:-ms-4 ">
+                  <label className="text-sm color-labelColor w-full ">
                     <input
                       type="radio"
                       className="w-5 h-4 form-radio text-green"
@@ -682,8 +735,8 @@ export default function JourneyReplay() {
                   </label>
                 </div>
 
-                <div className="lg:col-span-2 md:col-span-2">
-                  <label>
+                <div className="lg:col-span-2 md:col-span-2 ">
+                  <label className="text-sm color-labelColor ">
                     <input
                       type="radio"
                       className="w-5 h-4"
@@ -697,8 +750,8 @@ export default function JourneyReplay() {
                   </label>
                 </div>
 
-                <div className="lg:col-span-2 md:col-span-2">
-                  <label>
+                <div className="lg:col-span-3 md:col-span-2 ">
+                  <label className="text-sm color-labelColor ">
                     <input
                       type="radio"
                       className="w-5 h-4"
@@ -707,156 +760,162 @@ export default function JourneyReplay() {
                       style={{ accentColor: "green" }}
                       checked={Ignitionreport.period === "custom"}
                       onChange={handleInputChange}
+                      onClick={handleClick}
                     />
                     &nbsp;&nbsp;Custom
                   </label>
                 </div>
               </div>
-            </div>
-            {isCustomPeriod && (
-              <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 mt-5 mb-8  grid-cols-2 pt-5 px-10 gap-2 flex justify-center ">
-                <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0 mt-4 ">
-                  <label className="text-labelColor">
-                    From Date: &nbsp;&nbsp;
-                    <input
-                      type="date"
-                      className="ms-1 h-8 lg:w-4/6 w-full  text-labelColor  outline-green border border-grayLight px-1"
-                      name="fromDateTime"
-                      placeholder="Select Date"
-                      autoComplete="off"
-                      value={Ignitionreport.fromDateTime}
-                      defaultValue={currentDate}
-                      onChange={(e) =>
-                        handleCustomDateChange("fromDateTime", e.target.value)
-                      }
-                    />
-                  </label>
-                </div>
-                <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0 mt-4 ">
-                  <label className="text-labelColor">
-                    To Date: &nbsp;&nbsp;
-                    <input
-                      type="date"
-                      className="h-8 lg:w-4/6 w-full  text-labelColor  outline-green border border-grayLight px-1"
-                      name="toDateTime"
-                      value={Ignitionreport.toDateTime}
-                      onChange={(e) =>
-                        handleCustomDateChange("toDateTime", e.target.value)
-                      }
-                    />
-                  </label>
-                </div>
-              </div>
             )}
-            <div className="text-white h-20 flex justify-center items-center">
-              <button
-                onClick={handleSubmit}
-                className={`bg-green py-2 px-5 mb-5`}
-              >
-                Submits
-              </button>
-            </div>
-            <div>
-              {" "}
-              stop details{stopDetails.length}
-              {stopDetails.map((item: StopAddressData) => (
-                <div key={item.place_id}>
-                  <p className="text-black bg-[#00B56C]">{item.display_name}</p>
-                </div>
-              ))}
-            </div>
+          </div>
+          <div className=" col-span-1 text-white h-16 flex justify-center items-center">
+            <button
+              onClick={handleSubmit}
+              className={`bg-green py-2 px-8 mb-5`}
+            >
+              Search
+            </button>
           </div>
           <div className="col-span-1"></div>
         </div>
+        <div className="grid lg:grid-cols-5  sm:grid-cols-5 md:grid-cols-12 sm:grid-cols-12 grid-cols-1">
+          <div className="lg:col-span-1 md:col-span-3 sm:col-span-12 col-span-4 ">
+            <p className="bg-green px-4 py-1 text-white">
+              Trips ({dataresponse?.length})
+            </p>
+            <div
+              style={{ height: "44.4em" }}
+              className="overflow-y-scroll overflow-x-hidden bg-bgLight "
+            >
+              {dataresponse?.map((item: TripsByBucket, index: number) => (
+                <button
+                  key={index}
+                  className=" my-2 "
+                  onClick={() => handleDivClick(item.TripStart, item.TripEnd)}
+                >
+                  {/* <h2 className="text-xl font-semibold">Trip {index + 1}</h2> */}
+                  <div className="py-5 hover:bg-tripBg px-5 cursor-pointer">
+                    <div className="grid grid-cols-12 gap-10">
+                      <div className="col-span-1">
+                        <svg
+                          className="h-8 w-8 text-green"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          stroke-width="2"
+                          stroke="currentColor"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          {" "}
+                          <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                          <circle cx="7" cy="17" r="2" />{" "}
+                          <circle cx="17" cy="17" r="2" />{" "}
+                          <path d="M5 17h-2v-6l2-5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" />
+                        </svg>
+                      </div>
+                      <div className="col-span-10 ">
+                        <p className="text-start font-bold text-sm text-gray">
+                          Duration: {item.TripDurationHr} Hour(s){" "}
+                          {item.TripDurationMins} Minute(s)
+                        </p>
+                        <p className=" text-green text-start font-bold text-sm">
+                          {" "}
+                          Distance: {item.TotalDistance}
+                        </p>
+                      </div>
+                    </div>
 
-        <button className={`bg-green py-2 px-5 mb-5`} onClick={tick}>
-          Play
-        </button>
-        <button className={`bg-red py-2 px-5 mb-5`} onClick={stopTick}>
-          Stop
-        </button>
-        <button className={`bg-yellow py-2 px-5 mb-5`} onClick={pauseTick}>
-          Pause
-        </button>
+                    <div className="grid grid-cols-12 gap-10 mt-5">
+                      <div className="col-span-1">
+                        <svg
+                          className="h-8 w-8 text-green"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                        <div className=" border-l-2 h-10 border-green  mx-4 my-3"></div>
+                      </div>
+                      <div className="col-span-8 ">
+                        <p className="text-start font-bold text-sm text-labelColor">
+                          <span className="text-green"> Location Start:</span>{" "}
+                          <br></br>{" "}
+                          <span className="text-gray">
+                            {item.StartingPoint}
+                          </span>
+                        </p>
+                        <p className=" text-gray text-start font-bold text-sm">
+                          {" "}
+                          Trip Start: {item.TripStart}
+                        </p>
+                      </div>
+                    </div>
 
-        {isPlaying && (
-          <select
-            className={`bg-blue py-2 px-5 mb-5`}
-            value={speedFactor}
-            onChange={(e) => setSpeedFactor(Number(e.target.value))}
+                    <div className="grid grid-cols-12 gap-10">
+                      <div className="col-span-1">
+                        <svg
+                          className="h-8 w-8 text-green"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div className="col-span-8 ">
+                        <p className="text-start font-bold text-sm text-labelColor">
+                          <span className="text-green"> Location End:</span>{" "}
+                          <br></br>
+                          <span className="text-gray"> {item.EndingPoint}</span>
+                        </p>
+                        <p className=" text-gray text-start font-bold text-sm">
+                          {" "}
+                          Trip End: {item.TripEnd}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div
+            className="lg:col-span-4 md:col-span-9 sm:col-span-12 col-span-4"
+            style={{ position: "relative" }}
           >
-            <option value={1}>1X Speed</option>
-            <option value={2}>2X Speed</option>
-            <option value={4}>4X Speed</option>
-            <option value={6}>6X Speed</option>
-          </select>
-        )}
-        {isPaused && (
-          <p className={`bg-yellow py-2 px-5 mb-5`}>{TripAddressData}</p>
-        )}
-        {isPlaying || isPaused ? (
-          <div>
-            <p className="text-black bg-[#00B56C]">
-              Speed: {getSpeedAndDistance()?.speed} Distance Covered:{" "}
-              {getSpeedAndDistance()?.distanceCovered}
-            </p>
-          </div>
-        ) : null}
-        <button className={`bg-blue py-2 px-5 mb-5`} onClick={handleZoneClick}>
-          Show all zones
-        </button>
-
-        <div className="grid lg:grid-cols-5  sm:grid-cols-5 md:grid-cols-5 grid-cols-1">
-          <div className="lg:col-span-1 md:col-span-1 sm:col-span-4 col-span-4 bg-gray-200">
-            <p className="bg-[#00B56C] px-4 py-1 text-white">
-              Tips{dataresponse?.length}
-            </p>
-            {dataresponse?.map((item: TripsByBucket, index: number) => (
-              <button
-                key={index}
-                className="border p-4 my-4 rounded-md"
-                onClick={() => handleDivClick(item.TripStart, item.TripEnd)}
-              >
-                <h2 className="text-xl font-semibold">Trip {index + 1}</h2>
-                <div className="flex items-center mt-2">
-                  <label className="mr-2">Duration:</label>
-
-                  <span className="mx-2">{item.TripDurationHr} Hours</span>
-
-                  <span className="mx-2">{item.TripDurationMins} Min</span>
-                </div>
-                <div className="mt-2">
-                  <label>Distance:</label>
-                  <span>{item.TotalDistance}</span>
-                </div>
-                <div className="mt-2">
-                  <label>Location Start:</label>
-                  <span>{item.StartingPoint}</span>
-                </div>
-                <div className="mt-2">
-                  <label>Trip Start:</label>
-                  <span>{item.TripStart}</span>
-                </div>
-                <div className="mt-2">
-                  <label>Location End:</label>
-                  <span>{item.EndingPoint}</span>
-                </div>
-                <div className="mt-2">
-                  <label>Trip End:</label>
-                  <span>{item.TripEnd}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-          <div className="lg:col-span-4 md:col-span-4 sm:col-span-5 col-span-4">
-            <div style={{ height: "48em" }} className="w-full overflow-hidden">
+            <div>
               {mapcenter !== null && (
                 <MapContainer
                   id="map"
                   zoom={zoom}
                   center={mapcenter}
-                  className="z-10 "
-                  style={{ height: "75em" }}
+                  className=" "
+                  style={{ height: "80vh", zIndex: "-1" }}
                 >
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -937,6 +996,272 @@ export default function JourneyReplay() {
                   )}
                 </MapContainer>
               )}
+            </div>
+
+            <div
+              className="absolute lg:top-4 lg:left-20 lg:right-5 top-4 left-2 right-2 grid lg:grid-cols-10 md:grid-cols-10 sm:grid-cols-10 grid-cols-10 lg:mt-0  mt-20 "
+              // style={{
+              //   position: "absolute",
+              //   top: "2%",
+              //   left: "5%",
+              //   right: "2%",
+              // }}
+
+              // className="absolute lg:left-56 lg:right-20 lg:bottom-0 bottom-2  left-1 right-3"
+            >
+              <div className="lg:col-span-2 md:col-span-4 sm:col-span-3 col-span-5  ">
+                <div className="grid lg:grid-cols-12 md:grid-cols-12 sm:grid-cols-12 grid-cols-12 bg-green py-2 shadow-lg">
+                  <div className="lg:col-span-10  md:col-span-10 sm:col-span-10 col-span-10">
+                    <p className="text-white px-3 text-lg">
+                      Stop Details ({stopDetails.length})
+                    </p>
+                  </div>
+                  <div className="col-span-1 mt-1">
+                    {getShowICon ? (
+                      <svg
+                        className="h-5 w-5 text-white"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        onClick={handleShowDetails}
+                      >
+                        {" "}
+                        <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="h-5 w-5 text-white"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        onClick={handleShowDetails}
+                      >
+                        {" "}
+                        <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                        <path d="M4 8v-2a2 2 0 0 1 2 -2h2" />{" "}
+                        <path d="M4 16v2a2 2 0 0 0 2 2h2" />{" "}
+                        <path d="M16 4h2a2 2 0 0 1 2 2v2" />{" "}
+                        <path d="M16 20h2a2 2 0 0 0 2 -2v-2" />{" "}
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+
+                {getShowdetails ? (
+                  <div className="bg-white h-60 overflow-y-scroll">
+                    {stopDetails.map((item: StopAddressData) => (
+                      <div key={item.place_id}>
+                        <p className="text-gray px-3 py-3 text-sm">
+                          {item.display_name}
+                        </p>
+                        <hr className="text-gray"></hr>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
+
+              <div className="lg:col-span-7 md:col-span-4 sm:col-span-4  col-span-2"></div>
+
+              <div className="lg:col-span-1  md:col-span-2 sm-col-span-2 col-span-3 text-end  ">
+                <div
+                  className="grid lg:grid-cols-3  grid-cols-5 sm:grid-cols-3 bg-bgLight  py-3 shadow-lg"
+                  onClick={handleZoneClick}
+                >
+                  <div className="col-span-1  text-center ">
+                    <input
+                      type="checkbox"
+                      className=""
+                      onChange={handleChangeChecked}
+                      checked={getCheckedInput}
+                      style={{ accentColor: "green" }}
+                    />
+                  </div>
+                  <div className="lg:col-span-2 sm:col-span-2 col-span-4 lg:-ms-5">
+                    <button className="text-sm" onClick={handleChangeChecked}>
+                      <h1 className="lg:-ms-32  sm:-ms-32 -ms-24">
+                        {" "}
+                        Show zones
+                      </h1>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  className="grid grid-cols-11 mt-3"
+                  style={{ justifyContent: "center", display: "flex" }}
+                >
+                  <div className="col-span-9 bg-bgPlatBtn w-20 h-10 rounded-tr-full rounded-tl-full"></div>
+                </div>
+              </div>
+            </div>
+            <div
+              className="grid lg:grid-cols-10 grid-cols-10"
+              style={{
+                position: "absolute",
+                top: "15%",
+                left: "5%",
+                right: "2%",
+                display: "flex",
+                justifyContent: "end",
+              }}
+            >
+              <div className="col-span-2  lg:w-48 md:w-44 sm:w-44 w-36 rounded-md lg:mt-3 mt-28">
+                {isPlaying || isPaused ? (
+                  <div>
+                    <p className="text-white px-2 py-3 mt-3 bg-bgPlatBtn rounded-md">
+                      Speed: {getSpeedAndDistance()?.speed}
+                      <br></br> Distance:{" "}
+                      {getSpeedAndDistance()?.distanceCovered}
+                    </p>
+                  </div>
+                ) : null}
+
+                {isPaused && (
+                  <p className="bg-bgPlatBtn text-white mt-3 px-2 py-3 rounded-md">
+                    {TripAddressData}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div
+              // style={{
+              //   position: "absolute",
+              //   left: "0%",
+              //   right: "5%",
+              //   bottom: "0%",
+              // }}
+              className="absolute lg:left-56 lg:right-20 lg:bottom-0 md:bottom-8 bottom-2  left-1 right-3"
+            >
+              <div className="grid lg:grid-cols-7 md:grid-12 grid-cols-12 lg:gap-5 gap-2 ">
+                <div className="lg:col-span-1 md:col-span-3 col-span-3  ">
+                  <div className="bg-bgPlatBtn rounded-md">
+                    <p className="lg:text-xl text-white text-center font-extralight py-2 text-md mx-1">
+                      09:37 AM
+                    </p>
+                    <p className="text-white text-xs text-center">
+                      {" "}
+                      Oct 5, 2023
+                    </p>
+                    <div className=" border-t border-white my-1 lg:w-32 mx-2"></div>
+                    <div className="mt-3 pb-3">
+                      <Tooltip content="Pause" className="bg-black">
+                        <button onClick={stopTick}>
+                          <svg
+                            className="h-5 w-5 text-white lg:mx-2 lg:ms-5  md:mx-3 sm:mx-3 md:ms-4 sm:ms-6  mx-1 "
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor"
+                            fill="none"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            {" "}
+                            <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                            <line x1="4" y1="4" x2="4" y2="20" />{" "}
+                            <line x1="20" y1="4" x2="20" y2="20" />{" "}
+                            <rect x="9" y="6" width="6" height="12" rx="2" />
+                          </svg>
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Play" className="bg-black">
+                        <button onClick={tick}>
+                          <svg
+                            className="h-5 w-5 text-white lg:mx-2  md:mx-3 sm:mx-3 mx-1"
+                            viewBox="0 0 24 24"
+                            fill="white"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            {" "}
+                            <polygon points="5 3 19 12 5 21 5 3" />
+                          </svg>
+                        </button>
+                      </Tooltip>
+                      <Tooltip content="Stop" className="bg-black">
+                        <button onClick={pauseTick}>
+                          <svg
+                            className="h-4 w-4 text-white lg:mx-2 md:mx-3 sm:mx-3 mx-1"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor"
+                            fill="white"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            {" "}
+                            <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                            <rect x="4" y="4" width="16" height="16" rx="2" />
+                          </svg>
+                        </button>
+                      </Tooltip>
+                    </div>
+                  </div>
+                </div>
+                <div className="lg:col-span-4 col-span-9   ">
+                  <div className="grid lg:grid-cols-12 grid-cols-12 gap-1 lg:py-5 py-2 mt-6 pt-4 lg:pt-8 rounded-md  mx-2 px-5 bg-white">
+                    <div className="lg:col-span-11 col-span-10">
+                      <Box sx={{ width: "100%", color: "red!important" }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={progressWidth}
+                          style={{
+                            backgroundColor: "lightgreen",
+                            color: "red !important",
+                            height: "0.6vh",
+                          }}
+                        />
+                      </Box>
+                      <div className="grid grid-cols-12 mt-2">
+                        <div className="col-span-11">
+                          <p className="text-sm color-labelColor"> 11:20pm</p>
+                        </div>
+                        <div className="col-span-1">
+                          <p className="text-sm color-labelColor text-start">
+                            10:50pm
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="lg:col-span-1 col-span-1 -my-2">
+                      {isPlaying && (
+                        <select
+                          className="text-labelColo outline-green border border-grayLight px-1"
+                          value={speedFactor}
+                          onChange={(e) =>
+                            setSpeedFactor(Number(e.target.value))
+                          }
+                        >
+                          <option value={1}>1x</option>
+                          <option value={2}>2x</option>
+                          <option value={4}>4x </option>
+                          <option value={6}>6x</option>
+                        </select>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
