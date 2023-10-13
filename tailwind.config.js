@@ -17,6 +17,8 @@ module.exports = {
       zoneTabelBg: "#FAFAFA",
       black: "#000000",
       liveTrackingGrayColor: "#A9A9A9",
+      tripBg: "#f3fcf2",
+      bgPlatBtn: "#29303b",
     },
   },
   plugins: [],

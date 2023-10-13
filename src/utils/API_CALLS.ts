@@ -576,33 +576,141 @@ export async function zonenamesearch({
   }
 }
 
-export async function locationsearch({
+export async function TripsByBucketAndVehicle({
   token,
-  searchparams,
+  payload,
 }: {
   token: string;
-  searchparams: string;
+  payload: replayreport;
 }) {
   try {
     const response = await fetch(
-      `https://eurosofttechosm.com/nominatim/search.php?q=${searchparams}+Pakistan&format=json`,
+      "https://backend.vtracksolutions.com/v2/TripsByBucketAndVehicleV2",
       {
+        method: "POST",
         headers: {
           accept: "application/json, text/plain, */*",
           authorization: `Bearer ${token}`,
           "content-type": "application/json",
         },
-        //body: JSON.stringify({ clientId: clientId, Filters: [filter] }), // Pass filter as an array inside Filters
-        method: "GET",
+        body: JSON.stringify(payload),
       }
     );
+
     if (!response.ok) {
       throw new Error("Failed to fetch data from the API");
     }
+
     const data = await response.json();
+    console.log("data", data);
     return data;
   } catch (error) {
-    console.log("Error fetching data:", error);
+    console.error("Error fetching data", error);
+    return [];
+  }
+}
+
+export async function TravelHistoryByBucketV2({
+  token,
+  payload,
+}: {
+  token: string;
+  payload: replayreport;
+}) {
+  try {
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/v2/TravelHistoryByBucketV2",
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching data", error);
+    return [];
+  }
+}
+
+export async function TripAddress({
+  lat,
+  lng,
+  token,
+}: {
+  lat: number;
+  lng: number;
+  token: string;
+}) {
+  try {
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/NotificationCenter/tripAddress",
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ latitude: lat, longitude: lng }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+
+    const data = await response.json();
+    console.log("data", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching data", error);
+    return [];
+  }
+}
+
+export async function getCurrentAddress({
+  lat,
+  lon,
+  token,
+}: {
+  lat: number;
+  lon: number;
+  token: string;
+}) {
+  try {
+    const response = await fetch(
+      `https://eurosofttechosm.com/nominatim/reverse.php?lat=${lat}&lon=${lon}&zoom=19&format=jsonv2`,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching data", error);
     return [];
   }
 }

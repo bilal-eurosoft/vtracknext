@@ -96,9 +96,11 @@ export default function DualCam() {
   }, [session]);
 
   const handleCustom = () => {
-    setCustomDate(!CustomDate);
+    setCustomDate(true);
   };
-
+  const handleWeekend = () => {
+    setCustomDate(false);
+  };
   const handleClickCustom = () => {
     setCustomDateField(!CustomDateField);
   };
@@ -220,6 +222,7 @@ export default function DualCam() {
               name="period"
               value="yesterday"
               style={{ accentColor: "green" }}
+              onClick={handleWeekend}
             />
             Today
           </label>
@@ -230,6 +233,7 @@ export default function DualCam() {
               name="period"
               value="yesterday"
               style={{ accentColor: "green" }}
+              onClick={handleWeekend}
             />
             &nbsp;Yesterday
           </label>
@@ -240,6 +244,7 @@ export default function DualCam() {
               name="period"
               value="yesterday"
               style={{ accentColor: "green" }}
+              onClick={handleWeekend}
             />
             Week
           </label>
@@ -255,7 +260,7 @@ export default function DualCam() {
             />
             &nbsp;Custom
           </label>
-          {CustomDate ? (
+          {CustomDate && (
             <div className="text-end lg:-mt-6 sm:-mt-8">
               {" "}
               <label className="text-sm -mr-2">To Date</label>
@@ -275,8 +280,6 @@ export default function DualCam() {
                 style={{ accentColor: "green" }}
               />
             </div>
-          ) : (
-            ""
           )}
         </div>
 
