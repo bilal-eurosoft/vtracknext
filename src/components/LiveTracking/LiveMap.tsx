@@ -1,11 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { VehicleData } from "@/types/vehicle";
 
 import LiveCars from "./LiveCars";
+import { zonelistType } from "@/types/zoneType";
+import dynamic from "next/dynamic";
+import { ClientSettings } from "@/types/clientSettings";
+import { useSession } from "next-auth/react";
+import { getZoneListByClientId } from "@/utils/API_CALLS";
+const Polygon = dynamic(
+  () => import("react-leaflet/Polygon").then((module) => module.Polygon),
+  { ssr: false }
+);
+const Circle = dynamic(
+  () => import("react-leaflet/Circle").then((module) => module.Circle),
+  { ssr: false }
+);
 
 const DynamicCarMap = ({
   carData,
@@ -23,6 +36,22 @@ const DynamicCarMap = ({
   const clientZoomSettings = clientSettings?.filter(
     (el) => el?.PropertDesc === "Zoom"
   )[0]?.PropertyValue;
+
+  const { data: session } = useSession();
+  const [showZones, setShowZones] = useState(false);
+  const [zoneList, setZoneList] = useState<zonelistType[]>([]);
+
+  useEffect(() => {
+    (async function () {
+      if (session) {
+        const allzoneList = await getZoneListByClientId({
+          token: session?.accessToken,
+          clientId: session?.clientId,
+        });
+        setZoneList(allzoneList);
+      }
+    })();
+  }, []);
 
   if (!clientMapSettings) {
     return <>Map Loading...</>;
@@ -48,12 +77,37 @@ const DynamicCarMap = ({
             center={mapCoordinates}
             zoom={zoom}
             className="z-10 "
-            style={{ height: '71.5em' }}
+            style={{ height: "71.5em" }}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'
             />
+
+            {showZones &&
+              zoneList.map(function (singleRecord) {
+                return singleRecord.zoneType == "Circle" ? (
+                  <>
+                    <Circle
+                      center={[
+                        Number(singleRecord.centerPoints.split(",")[0]),
+                        Number(singleRecord.centerPoints.split(",")[1]),
+                      ]}
+                      radius={Number(singleRecord.latlngCordinates)}
+                    />
+                  </>
+                ) : (
+                  <Polygon
+                    positions={JSON.parse(singleRecord.latlngCordinates)}
+                  />
+                );
+              })}
+            <button
+              className="bg-[#00B56C] text-white"
+              onClick={() => {
+                setShowZones(!showZones);
+              }}
+            ></button>
             <LiveCars
               carData={carData}
               clientSettings={clientSettings}
@@ -61,6 +115,14 @@ const DynamicCarMap = ({
             />
           </MapContainer>
         </div>
+        <button
+          className="bg-[#00B56C] px-4 py-1 text-white"
+          onClick={() => {
+            setShowZones(!showZones);
+          }}
+        >
+          show zones
+        </button>
       </div>
     </>
   );
