@@ -7,11 +7,14 @@ import { VehicleData } from "@/types/vehicle";
 import {
   getClientSettingByClinetIdAndToken,
   getVehicleDataByClientId,
+  getZoneListByClientId,
 } from "@/utils/API_CALLS";
 import { useSession } from "next-auth/react";
 import { socket } from "@/utils/socket";
 import countCars from "@/utils/countCars";
 import LiveSidebar from "@/components/LiveTracking/LiveSidebar";
+import { ClientSettings } from "@/types/clientSettings";
+import { zonelistType } from "@/types/zoneType";
 
 const LiveMap = dynamic(() => import("@/components/LiveTracking/LiveMap"), {
   loading: () => (
