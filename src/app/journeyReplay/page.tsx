@@ -724,14 +724,14 @@ export default function JourneyReplay() {
                   <label className="text-sm color-labelColor w-full ">
                     <input
                       type="radio"
-                      className="w-5 h-4 form-radio text-green"
+                      className="w-4   h-4 form-radio text-green"
                       name="period"
                       value="yesterday"
                       style={{ accentColor: "green" }}
                       checked={Ignitionreport.period === "yesterday"}
                       onChange={handleInputChange}
                     />
-                    &nbsp;&nbsp;Yesterday
+                    &nbsp;Yesterday
                   </label>
                 </div>
 
@@ -1158,7 +1158,7 @@ export default function JourneyReplay() {
                       Oct 5, 2023
                     </p>
                     <div className=" border-t border-white my-1 lg:w-32 mx-2"></div>
-                    <div className="mt-3 pb-3">
+                    <div className="mt-3 pb-3 ms-1">
                       <Tooltip content="Pause" className="bg-black">
                         <button onClick={stopTick}>
                           <svg
@@ -1199,7 +1199,7 @@ export default function JourneyReplay() {
                       <Tooltip content="Stop" className="bg-black">
                         <button onClick={pauseTick}>
                           <svg
-                            className="h-4 w-4 text-white lg:mx-2 md:mx-3 sm:mx-3 mx-1"
+                            className="h-4   w-4 text-white lg:mx-2 md:mx-3 sm:mx-3 mx-1"
                             width="24"
                             height="24"
                             viewBox="0 0 24 24"

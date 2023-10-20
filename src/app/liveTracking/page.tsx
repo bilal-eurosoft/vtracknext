@@ -3,7 +3,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import uniqueDataByIMEIAndLatestTimestamp from "@/utils/uniqueDataByIMEIAndLatestTimestamp";
+import { zonelistType } from "@/types/zoneType";
 import { VehicleData } from "@/types/vehicle";
+import {ClientSettings} from "@/types/clientSettings"
 import {
   getClientSettingByClinetIdAndToken,
   getVehicleDataByClientId,
@@ -42,6 +44,8 @@ const LiveTracking = () => {
   const { data: session } = useSession();
   const carData = useRef<VehicleData[]>([]);
   const [clientSettings, setClientSettings] = useState<ClientSettings[]>([]);
+const [zoneList, setZoneList] = useState<zonelistType[]>([]);
+
   const [isOnline, setIsOnline] = useState(false);
   const [isFirstTimeFetchedFromGraphQL, setIsFirstTimeFetchedFromGraphQL] =
     useState(false);

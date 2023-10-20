@@ -60,7 +60,7 @@ export default function LoginPage() {
           <span className="sr-only">Loading...</span>
         </div>
       ) : (
-        <div className="block w-100 h-screen h-auto justify-center flex items-center">
+        <div className="block  flex w-100 h-screen justify-center items-center">
           <div className="bg-white mx-5 sm:mx-auto mt-20 mb-20 w-full sm:max-w-lg lg:px-5">
             <Image
               className=" mt-9 mx-auto h-14 w-auto"
