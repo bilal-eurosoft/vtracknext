@@ -336,6 +336,10 @@ export default function JourneyReplay() {
   let currentTime = new Date().toLocaleString("en-US", {
     timeZone: session?.timezone,
   });
+  const currentTimeasia = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Karachi",
+  });
+  const [date, time] = currentTimeasia.split(", ");
 
   let timeOnly = currentTime.split(",")[1].trim();
   timeOnly = timeOnly.replace(/\s+[APap][Mm]\s*$/, "");
@@ -343,11 +347,18 @@ export default function JourneyReplay() {
   const [hours, minutes, seconds] = timeOnly
     .split(":")
     .map((part) => part.trim());
+  let stopDetailsHour = Number(hours);
+
+  stopDetailsHour = (stopDetailsHour - 7 + 12) % 12;
+
+  const newAmPm = stopDetailsHour >= 12 ? "AM" : "PM";
+  let stopDetailTime = `${stopDetailsHour}:${minutes}:${seconds} ${newAmPm}`;
 
   const formattedHours = hours.padStart(2, "0");
   const formattedMinutes = minutes.padStart(2, "0");
   const formattedSeconds = seconds.padStart(2, "0");
   const currentDate = new Date().toISOString().split("T")[0];
+
   const formattedTime = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   const parsedDateTime = new Date(currentTime);
   const formattedDateTime = `${parsedDateTime
@@ -1064,7 +1075,7 @@ export default function JourneyReplay() {
                     {stopDetails.map((item: StopAddressData) => (
                       <div key={item.place_id}>
                         <p className="text-gray px-3 py-3 text-sm">
-                          {item.display_name}
+                          {item.display_name} {stopDetailTime}
                         </p>
                         <hr className="text-gray"></hr>
                       </div>
@@ -1151,16 +1162,13 @@ export default function JourneyReplay() {
                 <div className="lg:col-span-1 md:col-span-3 col-span-3  ">
                   <div className="bg-bgPlatBtn rounded-md">
                     <p className="lg:text-xl text-white text-center font-extralight py-2 text-md mx-1">
-                      09:37 AM
+                      {time}
                     </p>
-                    <p className="text-white text-xs text-center">
-                      {" "}
-                      Oct 5, 2023
-                    </p>
+                    <p className="text-white text-xs text-center"> {date}</p>
                     <div className=" border-t border-white my-1 lg:w-32 mx-2"></div>
                     <div className="mt-3 pb-3 ms-1">
                       <Tooltip content="Pause" className="bg-black">
-                        <button onClick={stopTick}>
+                        <button onClick={pauseTick}>
                           <svg
                             className="h-5 w-5 text-white lg:mx-2 lg:ms-5  md:mx-3 sm:mx-3 md:ms-4 sm:ms-6  mx-1 "
                             width="24"
@@ -1197,7 +1205,7 @@ export default function JourneyReplay() {
                         </button>
                       </Tooltip>
                       <Tooltip content="Stop" className="bg-black">
-                        <button onClick={pauseTick}>
+                        <button onClick={stopTick}>
                           <svg
                             className="h-4   w-4 text-white lg:mx-2 md:mx-3 sm:mx-3 mx-1"
                             width="24"
