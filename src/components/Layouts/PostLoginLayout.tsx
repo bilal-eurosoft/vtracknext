@@ -214,30 +214,19 @@ export default function RootLayout({
             </Link>
           </div>
           <hr></hr>
-          <div className="basis-1/1 w-screen">
-            <nav className="flex items-center justify-between flex-wrap bg-gray-50 p-4">
-              <div className="flex items-center flex-shrink-0 text-white mr-6">
-                <Image src={logo} className="h-9 w-32" alt="" />
+          <div className="basis-1/1 w-screen ">
+            <nav className="flex items-center justify-between flex-wrap bg-bgLight p-4">
+              <div className="flex items-center flex-shrink-0 text-white">
+                <Image src={logo} className="lg:h-9 lg:w-32 w-20 h-6" alt="" />
               </div>
-              <div className="block lg:hidden">
-                {/* <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
-                  <svg
-                    className="fill-current h-3 w-3"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <title>Menu</title>
-                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-                  </svg>
-                </button> */}
-              </div>
-              <div className="w-full block flex-grow lg:flex lg:items-center text-end lg:w-auto">
+
+              <div className="w-full block lg:flex-grow lg:flex sm:flex md:flex md:items-center flex lg:items-center lg:text-end text-start lg:mt-0 mt-3  md:w-auto lg:w-auto sm:w-auto">
                 <div className="text-sm lg:flex-grow">
-                  <a className="block mt-4 lg:inline-block lg:mt-0 text-[#00B56C]  ">
+                  <a className="block lg:mt-4 inline-block lg:mt-0 text-[#00B56C]  ">
                     <span className="text-black">
                       {" "}
                       &nbsp;
-                      <span className="text-1xl">
+                      <span className="lg:text-1xl text-sm">
                         {" "}
                         <span className="text-[#00B56C] ">
                           {session?.clientName}
@@ -245,19 +234,15 @@ export default function RootLayout({
                       </span>
                     </span>
                   </a>
-                  <a className="block mt-4 lg:inline-block lg:mt-0 text-black-500  w-44 mr-8">
+                  <a className="block mt-3 lg:inline-block lg:mt-0 text-black-500  w-44 mr-8">
                     <BlinkingTime timezone={session?.timezone} />
                   </a>
                 </div>
                 <div>
-                  <a
-                    href="#"
-                    className="inline-block text-sm px-6 py-2 leading-none lg:mt-0"
-                  ></a>
                   <Popover open={openPopover} handler={setOpenPopover}>
                     <PopoverHandler {...triggers}>
                       <img
-                        className=" cursor-pointer -mt-6 w-10 h-10 rounded-full"
+                        className=" cursor-pointer lg:mt-0 -mt-3 lg:ms-0 ms-20    w-10 h-10 rounded-full"
                         src="https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg"
                         alt="Rounded avatar"
                       />

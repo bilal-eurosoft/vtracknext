@@ -6,7 +6,6 @@ import "leaflet/dist/leaflet.css";
 
 import { VehicleData } from "@/types/vehicle";
 
-
 import LiveCars from "./LiveCars";
 import { zonelistType } from "@/types/zoneType";
 import dynamic from "next/dynamic";
@@ -92,13 +91,13 @@ const DynamicCarMap = ({
   return (
     <>
       <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ">
-        <div>
+        <div className="relative">
           <MapContainer
             id="map"
             center={mapCoordinates}
+            className="z-0"
             zoom={zoom}
-            className="z-10 "
-            style={{ height: "71.5em" }}
+            style={{ height: "70.5em" }}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -135,15 +134,22 @@ const DynamicCarMap = ({
               selectedVehicle={selectedVehicle}
             />
           </MapContainer>
+          <div className="grid grid-cols-3 absolute top-24 right-12 bg-bgLight py-2 px-2">
+            <div className="col-span-1" style={{ color: "green" }}>
+              <input
+                type="checkbox"
+                onClick={() => {
+                  setShowZones(!showZones);
+                }}
+                className="ms-3 mt-1"
+                style={{ accentColor: "green" }}
+              />
+            </div>
+            <div className="col-span-2 ">
+              <button className="text-labelColor">show zones</button>
+            </div>
+          </div>
         </div>
-        <button
-          className="bg-[#00B56C] px-4 py-1 text-white"
-          onClick={() => {
-            setShowZones(!showZones);
-          }}
-        >
-          show zones
-        </button>
       </div>
     </>
   );
