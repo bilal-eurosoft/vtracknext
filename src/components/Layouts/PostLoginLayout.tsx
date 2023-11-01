@@ -212,6 +212,50 @@ export default function RootLayout({
                 </svg>
               </Tooltip>
             </Link>
+            <Popover placement="right-start">
+              <Tooltip
+                className="bg-white text-green shadow-lg rounded border-none"
+                placement="right"
+                content="Driver"
+              >
+                <PopoverHandler>
+                  <svg
+                    className="w-20 h-14 py-3 border-b-2 text-[white] text-white-10  dark:text-white"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    {" "}
+                    <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                    <circle cx="7" cy="17" r="2" />{" "}
+                    <circle cx="17" cy="17" r="2" />{" "}
+                    <path d="M5 17h-2v-6l2-5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" />
+                  </svg>
+                </PopoverHandler>
+              </Tooltip>
+              <PopoverContent className="border-none  cursor-pointer bg-green">
+                <span
+                  className=" w-full text-white"
+                  onClick={() => router.push("/DriverProfile")}
+                >
+                  Driver Profile
+                </span>
+                <br></br>
+                <br></br>
+                <span
+                  className=" w-full text-white"
+                  onClick={() => router.push("/DriverAssign")}
+                >
+                  Assign Driver
+                </span>
+                <br></br>
+              </PopoverContent>
+            </Popover>
           </div>
           <hr></hr>
           <div className="basis-1/1 w-screen ">

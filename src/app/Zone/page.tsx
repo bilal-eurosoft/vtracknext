@@ -2,6 +2,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import TablePagination from "@mui/material/TablePagination";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableRow from "@mui/material/TableRow";
+import TableHead from "@mui/material/TableHead";
+import TableFooter from "@mui/material/TableFooter";
+
+import "./zone.css";
 import {
   getZoneListByClientId,
   modifyCollectionStatus,
@@ -23,6 +34,25 @@ const itemList = [
   { id: 3, name: "Alice Smith" },
   { id: 4, name: "John" },
 ];
+function createData(name: any, calories: any, fat: any) {
+  return { name, calories, fat };
+}
+
+const rows = [
+  createData("Cupcake", 305, 3.7),
+  createData("Donut", 452, 25.0),
+  createData("Eclair", 262, 16.0),
+  createData("Frozen yoghurt", 159, 6.0),
+  createData("Gingerbread", 356, 16.0),
+  createData("Honeycomb", 408, 3.2),
+  createData("Ice cream sandwich", 237, 9.0),
+  createData("Jelly Bean", 375, 0.0),
+  createData("KitKat", 518, 26.0),
+  createData("Lollipop", 392, 0.2),
+  createData("Marshmallow", 318, 0),
+  createData("Nougat", 360, 19.0),
+  createData("Oreo", 437, 18.0),
+].sort((a, b) => (a.calories < b.calories ? -1 : 1));
 
 export default function Zone() {
   const [filter, setFilter] = useState<any>("");
@@ -33,12 +63,14 @@ export default function Zone() {
 
   // pagination work
   const [input, setInput] = useState<any>("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 6;
+  const [currentPage, setCurrentPage] = useState<any>(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(6);
+  const [pages, setPages] = useState<any>(0);
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
   var records = zoneList.slice(firstIndex, lastIndex);
   const totalCount: any = Math.ceil(zoneList.length / recordsPerPage);
+  const perPage = currentPage.length / 5;
 
   const [filteredZones, setFilteredZones] = useState<zonelistType[]>([]);
   const [selectedZoneType, setSelectedZoneType] = useState("");
@@ -55,8 +87,8 @@ export default function Zone() {
     zoneType: "",
   });
 
-  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    setCurrentPage(value);
+  const handleChanges = (event: any, newPage: any) => {
+    setCurrentPage(newPage);
   };
   const handleClickPagination = () => {
     setCurrentPage(input);
@@ -98,6 +130,34 @@ export default function Zone() {
 
     setFilteredZones(filteredZone);
   }
+  const [filterZonepage, setFilterZonePage] = useState(1);
+  const filterZonePerPage = 5;
+  const lastIndexFilter = filterZonePerPage * filterZonepage;
+  const firstIndexFilter = lastIndexFilter - filterZonePerPage;
+  const filterZoneResult = filteredZones.slice(
+    firstIndexFilter,
+    lastIndexFilter
+  );
+
+  const [rowsPerPage, setRowsPerPage] = useState<any>(5);
+  const totalPages = Math.ceil(zoneList.length / rowsPerPage);
+
+  const handlePageChange = (event: any, newPage: any) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleChangePages = (event: any, newPage: any) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: any) => {
+    setRowsPerPage(event.target.value);
+    setCurrentPage(1);
+  };
+
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const displayedData = zoneList.slice(startIndex, endIndex);
 
   const handleClick = () => {
     router.push("/AddZone");
@@ -111,7 +171,7 @@ export default function Zone() {
       zoneType: "",
     });
 
-    setSelectedZoneType("");
+    // setSelectedZoneType("");
     setFilteredZones(zoneList);
     setZoneList(records);
   };
@@ -249,24 +309,9 @@ export default function Zone() {
     );
     setFilteredItems(filtered);
   };
-  console.log("filter", filteredItems);
+
   return (
     <div className="mt-10 bg-bgLight mx-5">
-      {/* <div>
-        <input
-          type="text"
-          placeholder="Enter name to filter"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
-        <button onClick={handleFilterClicks}>Filter</button>
-
-        <ul>
-          {filteredItems.map((item: any) => (
-            <li key={item.id}>{item.zoneName}</li>
-          ))}
-        </ul>
-      </div> */}
       <form
         onSubmit={handleSearchClick}
         className="shadow-lg lg:w-full w-screen bg-bgLight lg:-ms-0 -ms-1"
@@ -279,7 +324,7 @@ export default function Zone() {
             <label className="text-sm text-labelColor">Zone Name</label>
 
             <select
-              className=" px-0 w-full text-sm text-black bg-white-10 border border-grayLight appearance-none px-3 outline-green"
+              className=" px-2 py-1 mt-2 w-full text-sm text-black bg-white-10  border border-grayLight appearance-none px-3 outline-green"
               value={searchCriteria.zoneName}
               onChange={(e) =>
                 setSearchCriteria({
@@ -288,7 +333,10 @@ export default function Zone() {
                 })
               }
             >
-              <option value=""></option>
+              <option value="" disabled selected hidden>
+                {" "}
+                select Sort Name
+              </option>
               {liveSearchZoneName?.map((zoneName, index) => (
                 <option key={index} value={zoneName}>
                   {zoneName}
@@ -330,7 +378,9 @@ export default function Zone() {
               }
               value={searchCriteria.GeoFenceType}
             >
-              <option value="">Select Geofence Type</option>
+              <option value="" disabled selected hidden>
+                Select Geofence Type
+              </option>
               <option value="On-Site">On-Site</option>
               <option value="Off-Site">Off-Site</option>
               <option value="City-Area">City-Area</option>
@@ -340,7 +390,7 @@ export default function Zone() {
           <div className="lg:col-span-1 md:col-span-1 col-span-1 text-sm text-black text-labelColor">
             <label className="">Zone Type</label>
             <br></br>
-            {/* <span onClick={toggleBtn}  > */}
+
             <button
               className={`mt-3 border border-grayLight px-4 h-8 text-sm  ${
                 selectedZoneType === "Circle"
@@ -362,7 +412,6 @@ export default function Zone() {
             >
               Polygon
             </button>
-            {/* </span> */}
           </div>
         </div>
 
@@ -492,178 +541,370 @@ export default function Zone() {
         </div>
       </form>
 
-      <div className="bg-gray-100    ">
-        <p className="bg-green px-4 py-1 text-white font-bold lg:w-full w-screen ">
-          ZoneTitle
-        </p>
-        <div className="relative shadow-md sm:rounded-lg ">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-            <thead className="text-xs text-gray-700 uppercase bg-zoneTabelBg dark:bg-gray-700 dark:text-gray-400 ">
-              <tr>
-                <th scope="col" className="p-4 border-r border-grayLight">
-                  <div className="flex items-center ">
-                    <input
-                      id="checkbox-all-search"
-                      type="checkbox"
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 border-r border-grayLight "
-                    />
-                    <label className="sr-only text-labelColor">checkbox</label>
-                  </div>
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-labelColor text-md font-bold  font-normal border-r border-grayLight "
-                >
-                  zone Name
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-labelColor font-bold text-md font-normal border-r border-grayLight"
-                >
-                  zone Short Name
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-labelColor font-bold text-md font-normal border-r border-grayLight"
-                >
-                  zone Type
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-labelColor font-bold text-md font-normal"
-                >
+      <div className="shadow-md">
+        <TableContainer component={Paper}>
+          <p className="bg-green px-4 py-1 text-white font-bold lg:w-full w-screen ">
+            ZoneTitle
+          </p>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow className="bg-zoneTabelBg  ">
+                <TableCell className="w-4 h-4 border-r border-grayLight">
+                  <input
+                    id="checkbox-all-search"
+                    type="checkbox"
+                    style={{ accentColor: "green", boxShadow: "none" }}
+                    className="w-4 h-4 text-blue-600 border-r border-grayLight bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 border-r border-grayLight "
+                  />
+                </TableCell>
+                <TableCell align="left" className="border-r border-grayLight">
+                  Zone Name
+                </TableCell>
+                <TableCell align="left" className="border-r border-grayLight">
+                  Zone Sort Name
+                </TableCell>
+                <TableCell align="left" className="border-r border-grayLight">
+                  Zone Type
+                </TableCell>
+                <TableCell align="left" className="border-r border-grayLight">
                   Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredZones.length > 0
-                ? filteredZones.map((item: zonelistType) => (
-                    <tr
-                      key={item.id}
-                      className="bg-white border-b border-t  border-grayLight  hover:bg-zoneTabelBg"
-                    >
-                      <td className="w-4 p-4  border-r border-grayLight ">
-                        <div className="flex items-center">
-                          <input
-                            id={`checkbox-table-search-${item.id}`}
-                            type="checkbox"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            checked={selectedZones.some(
-                              (selectedZone) => selectedZone.id === item.id
-                            )}
-                            onChange={() => handleCheckboxChange(item)}
-                          />
-                          <label className="sr-only  text-labelColor text-md font-normal">
-                            checkbox
-                          </label>
-                        </div>
-                      </td>
-                      <th
-                        scope="row"
-                        className="px-6 py-4  text-labelColor text-md font-normal border-r border-grayLight"
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filterZoneResult.length > 0
+                ? filterZoneResult.map((item: zonelistType) => (
+                    <TableRow>
+                      <TableCell
+                        align="left"
+                        className="w-4 h-4 border-r border-grayLight"
+                      >
+                        <input
+                          id={`checkbox-table-search-${item.id}`}
+                          style={{ accentColor: "green", boxShadow: "none" }}
+                          type="checkbox"
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          checked={selectedZones.some(
+                            (selectedZone) => selectedZone.id === item.id
+                          )}
+                          onChange={() => handleCheckboxChange(item)}
+                        />
+                        <label className="sr-only  text-labelColor text-md font-normal">
+                          checkbox
+                        </label>
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        className="border-r border-grayLight"
                       >
                         {item.zoneName}
-                      </th>
-                      <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        className="border-r border-grayLight"
+                      >
                         {item.zoneShortName}
-                      </td>
-                      <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        className="border-r border-grayLight"
+                      >
                         {item.zoneType}
-                      </td>
-                      <td className="flex items-center px-6 py-4 space-x-3">
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        className="border-r border-grayLight"
+                      >
+                        {" "}
                         <Link
                           className="font-medium text-green dark:text-blue-500 hover:underline"
                           href={`/EditZone?id=${item.id}`}
                         >
                           Edit
                         </Link>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))
-                : records.map((item: zonelistType) => (
-                    <tr
-                      key={item.id}
-                      className="bg-white border-b border-t  border-grayLight  hover:bg-zoneTabelBg"
-                    >
-                      <td className="w-4 p-4  border-r border-grayLight ">
-                        <div className="flex items-center">
-                          <input
-                            id={`checkbox-table-search-${item.id}`}
-                            type="checkbox"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            checked={selectedZones.some(
-                              (selectedZone) => selectedZone.id === item.id
-                            )}
-                            onChange={() => handleCheckboxChange(item)}
-                          />
-                          <label className="sr-only  text-labelColor text-md font-normal">
-                            checkbox
-                          </label>
-                        </div>
-                      </td>
-                      <th
-                        scope="row"
-                        className="lg:px-6  py-4  text-labelColor lg:text-start sm:text-center text-center text-md font-normal border-r border-grayLight"
+                : displayedData.map((item: any) => (
+                    <TableRow>
+                      <TableCell
+                        align="left"
+                        className="w-4 h-4 border-r border-grayLight"
+                      >
+                        <input
+                          id="checkbox-all-search"
+                          type="checkbox"
+                          style={{ accentColor: "green", boxShadow: "none" }}
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 border-r border-grayLight "
+                          checked={selectedZones.some(
+                            (selectedZone) => selectedZone.id === item.id
+                          )}
+                          onChange={() => handleCheckboxChange(item)}
+                        />
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        className="border-r border-grayLight"
                       >
                         {item.zoneName}
-                      </th>
-                      <td className="lg:px-6 py-4 text-labelColor lg:text-start sm:text-center text-center text-md font-normal border-r border-grayLight">
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        className="border-r border-grayLight"
+                      >
                         {item.zoneShortName}
-                      </td>
-                      <td className="lg:px-6 py-4 text-labelColor lg:text-start  sm:text-center text-center text-md font-normal border-r border-grayLight">
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        className="border-r border-grayLight"
+                      >
                         {item.zoneType}
-                      </td>
-                      <td className="flex items-center  text-center  px-6 py-4 space-x-3">
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        className="border-r border-grayLight"
+                      >
                         <Link
                           className="font-medium text-green text-center dark:text-blue-500 hover:underline"
                           href={`/EditZone?id=${item.id}`}
                         >
                           Edit
                         </Link>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-            </tbody>
-          </table>
-          <div className="flex  justify-end lg:w-full w-screen bg-bgLight">
-            <div className="grid lg:grid-cols-4 grid-cols-4  my-4 ">
-              <div className="lg:col-span-1 col-span-1">
-                <p className="mt-1 text-labelColor text-end">
-                  Total {zoneList.length} items
-                </p>
-              </div>
-
-              <div
-                className="lg:col-span-2 col-span-2 "
-                style={{ height: "4vh", overflow: "hidden" }}
-              >
-                <Stack spacing={2}>
-                  <Pagination
-                    count={totalCount}
-                    page={currentPage}
-                    onChange={handleChange}
-                  />
-                </Stack>
-              </div>
-              <div className="lg:col-lg-1 col-lg-1  mt-1 ">
-                <span className="lg:inline-block hidden">Go To</span>
-                <input
-                  type="text"
-                  className="lg:w-10 w-5  border border-grayLight outline-green mx-2 px-2"
-                  onChange={(e: any) => setInput(e.target.value)}
-                />
-                <span
-                  className="text-labelColor cursor-pointer "
-                  onClick={handleClickPagination}
-                >
-                  page &nbsp;&nbsp;
-                </span>
-              </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <div className="flex  justify-end lg:w-full w-screen bg-bgLight">
+          <div className="grid lg:grid-cols-4 grid-cols-4  my-4 ">
+            <div className="lg:col-span-1 col-span-1">
+              <p className="mt-1 text-labelColor text-end">
+                Total {zoneList.length} items
+              </p>
             </div>
+
+            <div
+              className="lg:col-span-2 col-span-2 "
+              style={{
+                height: "4vh",
+                overflow: "hidden",
+                justifyContent: "end",
+              }}
+            >
+              <Stack spacing={2}>
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  sx={{ color: "green" }}
+                />
+              </Stack>
+            </div>
+            <div className="lg:col-lg-1 col-lg-1  mt-1 ">
+              <span className="lg:inline-block hidden">Go To</span>
+              <input
+                type="text"
+                className="lg:w-10 w-5  border border-grayLight outline-green mx-2 px-2"
+                onChange={(e: any) => setInput(e.target.value)}
+              />
+              <span
+                className="text-labelColor cursor-pointer "
+                onClick={handleClickPagination}
+              >
+                page &nbsp;&nbsp;
+              </span>
+            </div>
+          </div>
+          <div className="mt-2">
+            <TablePagination
+              component="div"
+              rowsPerPageOptions={[5, 10, 25, 45, 75, 100]}
+              count={zoneList.length}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </div>
         </div>
       </div>
+
+      {/* <div className="bg-gray-100    ">
+          <p className="bg-green px-4 py-1 text-white font-bold lg:w-full w-screen ">
+            ZoneTitle
+          </p>
+          <div className="relative shadow-md sm:rounded-lg ">
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+              <thead className="text-xs text-gray-700 uppercase bg-zoneTabelBg dark:bg-gray-700 dark:text-gray-400 ">
+                <tr>
+                  <th scope="col" className="p-4 border-r border-grayLight">
+                    <div className="flex items-center ">
+                      <input
+                        id="checkbox-all-search"
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 border-r border-grayLight "
+                      />
+                      <label className="sr-only text-labelColor">checkbox</label>
+                    </div>
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-labelColor text-md font-bold  font-normal border-r border-grayLight "
+                  >
+                    zone Name
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-labelColor font-bold text-md font-normal border-r border-grayLight"
+                  >
+                    zone Short Name
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-labelColor font-bold text-md font-normal border-r border-grayLight"
+                  >
+                    zone Type
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-labelColor font-bold text-md font-normal"
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredZones.length > 0
+                  ? filteredZones.map((item: zonelistType) => (
+                      <tr
+                        key={item.id}
+                        className="bg-white border-b border-t  border-grayLight  hover:bg-zoneTabelBg"
+                      >
+                        <td className="w-4 p-4  border-r border-grayLight ">
+                          <div className="flex items-center">
+                            <input
+                              id={`checkbox-table-search-${item.id}`}
+                              type="checkbox"
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                              checked={selectedZones.some(
+                                (selectedZone) => selectedZone.id === item.id
+                              )}
+                              onChange={() => handleCheckboxChange(item)}
+                            />
+                            <label className="sr-only  text-labelColor text-md font-normal">
+                              checkbox
+                            </label>
+                          </div>
+                        </td>
+                        <th
+                          scope="row"
+                          className="px-6 py-4  text-labelColor text-md font-normal border-r border-grayLight"
+                        >
+                          {item.zoneName}
+                        </th>
+                        <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">
+                          {item.zoneShortName}
+                        </td>
+                        <td className="px-6 py-4 text-labelColor text-md font-normal border-r border-grayLight">
+                          {item.zoneType}
+                        </td>
+                        <td className="flex items-center px-6 py-4 space-x-3">
+                          <Link
+                            className="font-medium text-green dark:text-blue-500 hover:underline"
+                            href={`/EditZone?id=${item.id}`}
+                          >
+                            Edit
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  : records.map((item: zonelistType) => (
+                      <tr
+                        key={item.id}
+                        className="bg-white border-b border-t  border-grayLight  hover:bg-zoneTabelBg"
+                      >
+                        <td className="w-4 p-4  border-r border-grayLight ">
+                          <div className="flex items-center">
+                            <input
+                              id={`checkbox-table-search-${item.id}`}
+                              type="checkbox"
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                              checked={selectedZones.some(
+                                (selectedZone) => selectedZone.id === item.id
+                              )}
+                              onChange={() => handleCheckboxChange(item)}
+                            />
+                            <label className="sr-only  text-labelColor text-md font-normal">
+                              checkbox
+                            </label>
+                          </div>
+                        </td>
+                        <th
+                          scope="row"
+                          className="lg:px-6  py-4  text-labelColor lg:text-start sm:text-center text-center text-md font-normal border-r border-grayLight"
+                        >
+                          {item.zoneName}
+                        </th>
+                        <td className="lg:px-6 py-4 text-labelColor lg:text-start sm:text-center text-center text-md font-normal border-r border-grayLight">
+                          {item.zoneShortName}
+                        </td>
+                        <td className="lg:px-6 py-4 text-labelColor lg:text-start  sm:text-center text-center text-md font-normal border-r border-grayLight">
+                          {item.zoneType}
+                        </td>
+                        <td className="flex items-center  text-center  px-6 py-4 space-x-3">
+                          <Link
+                            className="font-medium text-green text-center dark:text-blue-500 hover:underline"
+                            href={`/EditZone?id=${item.id}`}
+                          >
+                            Edit
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+              </tbody>
+            </table>
+            <div className="flex  justify-end lg:w-full w-screen bg-bgLight">
+              <div className="grid lg:grid-cols-4 grid-cols-4  my-4 ">
+                <div className="lg:col-span-1 col-span-1">
+                  <p className="mt-1 text-labelColor text-end">
+                    Total {zoneList.length} items
+                  </p>
+                </div>
+
+                <div
+                  className="lg:col-span-2 col-span-2 "
+                  style={{
+                    height: "4vh",
+                    overflow: "hidden",
+                    justifyContent: "end",
+                  }}
+                >
+                  <Stack spacing={2}>
+                    <Pagination
+                      count={totalPages}
+                      page={currentPage}
+                      onChange={handlePageChange}
+                    />
+                  </Stack>
+                </div>
+                <div className="lg:col-lg-1 col-lg-1  mt-1 ">
+                  <span className="lg:inline-block hidden">Go To</span>
+                  <input
+                    type="text"
+                    className="lg:w-10 w-5  border border-grayLight outline-green mx-2 px-2"
+                    onChange={(e: any) => setInput(e.target.value)}
+                  />
+                  <span
+                    className="text-labelColor cursor-pointer "
+                    onClick={handleClickPagination}
+                  >
+                    page &nbsp;&nbsp;
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> */}
+
       <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
