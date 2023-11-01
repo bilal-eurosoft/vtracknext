@@ -1,90 +1,90 @@
-'use client'
-import * as React from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Button from '@mui/material/Button';
+"use client";
+import * as React from "react";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import Button from "@mui/material/Button";
 
-import Backdrop from '@mui/material/Backdrop';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Fade from '@mui/material/Fade';
-import Typography from '@mui/material/Typography';
-
+import Backdrop from "@mui/material/Backdrop";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Fade from "@mui/material/Fade";
+import Typography from "@mui/material/Typography";
+import { useState } from "react";
 interface Column {
-  id: 'name' | 'code' | 'population' | 'size' | 'density';
+  id: "name" | "code" | "population" | "size" | "density";
   label: string;
   minWidth?: number;
-  align?: 'right';
+  align?: "right";
   format?: (value: number) => string;
 }
 
 const columns: readonly Column[] = [
-  { id: 'name', label: 'Driver Number', minWidth: 170 },
-  { id: 'code', label: 'Fisrt Name', minWidth: 100 },
+  { id: "name", label: "Driver Number", minWidth: 170 },
+  { id: "code", label: "Fisrt Name", minWidth: 100 },
   {
-    id: 'population',
-    label: 'Middle Name',
+    id: "population",
+    label: "Middle Name",
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    align: "right",
+    format: (value: number) => value.toLocaleString("en-US"),
   },
   {
-    id: 'size',
-    label: 'Last Name',
+    id: "size",
+    label: "Last Name",
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    align: "right",
+    format: (value: number) => value.toLocaleString("en-US"),
   },
   {
-    id: 'density',
-    label: 'Driver Id',
+    id: "density",
+    label: "Driver Id",
     minWidth: 170,
-    align: 'right',
+    align: "right",
     format: (value: number) => value.toFixed(2),
   },
   {
-    id: 'density',
-    label: 'Driver Contact',
+    id: "density",
+    label: "Driver Contact",
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
-  },
-
-  {
-    id: 'density',
-    label: 'Driver Card',
-    minWidth: 170,
-    align: 'right',
+    align: "right",
     format: (value: number) => value.toFixed(2),
   },
 
   {
-    id: 'density',
-    label: 'Driver Address 1',
+    id: "density",
+    label: "Driver Card",
     minWidth: 170,
-    align: 'right',
+    align: "right",
     format: (value: number) => value.toFixed(2),
   },
 
   {
-    id: 'density',
-    label: 'Driver Address 2',
+    id: "density",
+    label: "Driver Address 1",
     minWidth: 170,
-    align: 'right',
+    align: "right",
     format: (value: number) => value.toFixed(2),
   },
 
   {
-    id: 'density',
-    label: 'Driver Aviability',
+    id: "density",
+    label: "Driver Address 2",
     minWidth: 170,
-    align: 'right',
+    align: "right",
+    format: (value: number) => value.toFixed(2),
+  },
+
+  {
+    id: "density",
+    label: "Driver Aviability",
+    minWidth: 170,
+    align: "right",
     format: (value: number) => value.toFixed(2),
   },
 ];
@@ -101,14 +101,14 @@ function createData(
   name: string,
   code: string,
   population: number,
-  size: number,
+  size: number
 ): Data {
   const density = population / size;
   return { name, code, population, size, density };
 }
 
 const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
+  createData("India", "IN", 1324171354, 3287263),
   // createData('China', 'CN', 1403500365, 9596961),
   // createData('Italy', 'IT', 60483973, 301340),
   // createData('United States', 'US', 327167434, 9833520),
@@ -125,18 +125,18 @@ const rows = [
   // createData('Brazil', 'BR', 210147125, 8515767),
 ];
 
-
 const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%,-100%)',
+  position: "absolute" as "absolute",
+  top: "70%",
+  left: "50%",
+  transform: "translate(-50%,-100%)",
   width: 680,
-  bgcolor: 'background.paper',
+  bgcolor: "background.paper",
   boxShadow: 24,
 };
 
 export default function DriverProfile() {
+  const [showCardNumber, setShowCardNumber] = useState(false);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -144,7 +144,9 @@ export default function DriverProfile() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
@@ -152,117 +154,284 @@ export default function DriverProfile() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  return <div >
+  return (
+    <div>
+      <Paper sx={{ width: "98%" }} className="bg-green ms-3 mr-3 mt-3">
+        <div className="grid lg:grid-cols-12 md:grid-cols-2  sm:grid-cols-2  p-4  bg-bgLight">
+          <div className=" lg:col-span-10 md:grid-col-span-1 sm:grid-col-span-1 lg:mb-0 flex lg: justify-center sm:justify-start mb-4 ">
+            <button
+              onClick={handleOpen}
+              className="bg-green px-4 py-1  text-white rounded-md"
+            >
+              Add New Driver
+            </button>
+          </div>
 
-    <Paper sx={{ width: '98%' }} className='bg-green-50 ms-3 mr-3 mt-3'>
-
-      {/* <Button>Add New Driver</Button> */}
-
-      <div className='grid lg:grid-cols-2 md:grid-cols-2  sm:grid-cols-2    p-4'>
-
-        <div className=' lg:grid-col-span-1 md:grid-col-span-1 sm:grid-col-span-1 lg:mb-0 flex lg: justify-center sm:justify-start mb-4 '>
-          <button onClick={handleOpen} className="bg-[#00B56C] px-4 py-1  text-white rounded-md">Add To A Vehicle</button>
-        </div>
-
-        <div className='lg:grid-col-span-1 md:grid-col-span-1 sm:grid-col-span-1  text-end  flex lg: justify-center sm:justify-end'>
-          <input type="text" className='px-4 py-2 shadow-lg border-none outline-none' placeholder='Seacrch' />
-        </div>
-
-      </div>
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-          },
-        }}
-      >
-        <Fade in={open}>
-          <Box sx={style}>
-            <Typography id="transition-modal-title" variant="h6" component="h2" className='text-black'>
-              <p className='bg-[#00B56C]  p-3 text-white w-full '>Add New Driver</p>
-            </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              <div className='grid grid-cols-3 m-6 mt-8'>
-                <div className="lg:col-span-2 col-span-1 ">
-                  <label className='text-gray-700 '><i className='text-red-500 mt-5'>*</i> Drives:
-                    <select className="h-8 w-10/12 border-2 boder-gray-100 bg-white outline-none">
-                      <option>Uk</option>
-                      <option>Uk</option>
-                    </select>
-                  </label>
-                </div>
-
-                <div className="lg:col-span-1 col-span-1 ">
-                  <label> <i className='text-red-500 mt-5'>*</i> Vehicles:
-                    <select className="h-8 w-7/12 border-2 boder-gray-100 bg-white outline-none">
-                      <option>Uk</option>
-                      <option>Uk</option>
-                    </select>
-                  </label>
-                  <br></br>
-                  <p className="bg-[#00B56C]    px-4 py-1 mx-12 mt-10  text-center text-white rounded-md " >Submit</p>
-                </div>
-              </div>
-
-            </Typography>
-          </Box>
-        </Fade>
-      </Modal>
-      <TableContainer sx={{ height: 640 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
+          <div className="lg:col-span-2 md:grid-col-span-1 sm:grid-col-span-1 border-b border-grayLight  text-center ">
+            <div className="grid grid-cols-12">
+              <div className="col-span-1">
+                <svg
+                  className="h-5  w-5 text-gray mt-1"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number'
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
+                  {" "}
+                  <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                  <circle cx="10" cy="10" r="7" />{" "}
+                  <line x1="21" y1="21" x2="15" y2="15" />
+                </svg>
+              </div>
+              <div className="col-span-10">
+                <input
+                  type="text"
+                  className=" border-none outline-none bg-transparent"
+                  placeholder="Seacrch"
+                />
+              </div>
+              <div className="col-span-1">
+                <svg
+                  className="h-5 w-5 text-gray mt-1"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  {" "}
+                  <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                  <line x1="18" y1="6" x2="6" y2="18" />{" "}
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          open={open}
+          onClose={handleClose}
+          closeAfterTransition
+          slots={{ backdrop: Backdrop }}
+          slotProps={{
+            backdrop: {
+              timeout: 500,
+            },
+          }}
+        >
+          <Fade in={open}>
+            <Box sx={style}>
+              <Typography
+                id="transition-modal-title"
+                variant="h6"
+                component="h2"
+                className="text-black"
+              >
+                <div className="grid grid-cols-12 bg-green">
+                  <div className="col-span-11">
+                    <p className="  p-3 text-white w-full ">Add Driver</p>
+                  </div>
+                  <div className="col-span-1">
+                    <svg
+                      className="h-6 w-6 text-labelColor mt-3"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      {" "}
+                      <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                      <line x1="18" y1="6" x2="6" y2="18" />{" "}
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </div>
+                </div>
+              </Typography>
+              <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+                <div
+                  className="grid grid-cols-12 m-6 mt-8 gap-8 "
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <div className="lg:col-span-3 col-span-1 ">
+                    <label className="text-sm text-labelColor">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                    />
+                  </div>
+                  <div className="lg:col-span-3 col-span-1 ">
+                    <label className="text-sm text-labelColor">
+                      Middle Name
+                    </label>
+                    <input
+                      type="text"
+                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                    />
+                  </div>
+                  <div className="lg:col-span-3 col-span-1 ">
+                    <label className="text-sm text-labelColor">
+                      <span className="text-red">*</span> Last Name
+                    </label>
+                    <input
+                      type="text"
+                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                    />
+                  </div>
+                </div>
 
-  </div >
+                <div
+                  className="grid grid-cols-12 m-6 mt-8 gap-8 "
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <div className="lg:col-span-3 col-span-1 ">
+                    <label className="text-sm text-labelColor">
+                      Driver Number
+                    </label>
+                    <input
+                      type="text"
+                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                    />
+                  </div>
+                  <div className="lg:col-span-3 col-span-1 ">
+                    <label className="text-sm text-labelColor">
+                      Contact Number
+                    </label>
+                    <input
+                      type="text"
+                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                    />
+                  </div>
+                  <div className="lg:col-span-3 col-span-1 ">
+                    <label className="text-sm text-labelColor">ID Number</label>
+                    <input
+                      type="text"
+                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                    />
+                  </div>
+                </div>
+
+                <div
+                  className="grid grid-cols-12 m-6 mt-8 gap-8 "
+                  style={{ display: "flex", justifyContent: "start" }}
+                >
+                  <div className="lg:col-span-2 col-span-1 ">
+                    <label className="text-sm text-labelColor ">
+                      RFID
+                      <input
+                        type="checkbox"
+                        onClick={() => setShowCardNumber(!showCardNumber)}
+                        style={{ accentColor: "green" }}
+                        className="border border-green  outline-green  cursor-pointer ms-4  "
+                      />
+                    </label>
+                  </div>
+                  {showCardNumber ? (
+                    <div className="lg:col-span-3 col-span-1 ">
+                      <label className="text-sm text-labelColor">
+                        Card Number
+                      </label>
+                      <br></br>
+                      <input
+                        type="text"
+                        className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                      />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
+
+                <div className="grid grid-cols-12 m-6 mt-8 gap-8 ">
+                  <div className="col-span-6 col-span-1 ">
+                    <label className="text-sm text-labelColor">
+                      Driver Number
+                    </label>
+                    <br></br>
+                    <textarea className="w-full border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out h-20 "></textarea>
+                    <button className="bg-green text-white px-10 mt-8 py-2 rounded-sm">
+                      Submit
+                    </button>
+                  </div>
+                  <div className="col-span-6 col-span-1 ">
+                    <label className="text-sm text-labelColor">
+                      Contact Number
+                    </label>
+                    <br></br>
+                    <textarea className="w-full border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out h-20 "></textarea>
+                  </div>
+                </div>
+              </Typography>
+            </Box>
+          </Fade>
+        </Modal>
+        <TableContainer sx={{ height: 640 }} className="bg-bgLight">
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{ minWidth: "100%" }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => {
+                  return (
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={row.code}
+                    >
+                      {columns.map((column) => {
+                        const value = row[column.id];
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {column.format && typeof value === "number"
+                              ? column.format(value)
+                              : value}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          className="bg-bgLight"
+        />
+      </Paper>
+    </div>
+  );
 }
-
-
