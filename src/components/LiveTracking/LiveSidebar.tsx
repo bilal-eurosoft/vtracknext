@@ -34,6 +34,14 @@ const LiveSidebar = ({
     );
     setFilteredData(filtered);
   }, [searchData.search, carData]);
+  const toggleLiveCars = () => {
+
+    setSelectedVehicle(null)
+
+    };
+   
+  
+
 
   return (
     <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4  ">
@@ -68,9 +76,9 @@ const LiveSidebar = ({
           </div>
         </div>
         <div className="lg:col-span-1 col-span-1 ">
-          <p className="text-center text-sm font-bold text-white mt-1">
-            Show({carData?.length}) Vehicles
-          </p>
+        <button className="text-center text-sm font-bold text-white mt-1 " onClick={toggleLiveCars}>
+    Show({carData?.length}) Vehicles
+  </button>
         </div>
       </div>
 
