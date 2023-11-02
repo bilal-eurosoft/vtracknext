@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { Marker, Tooltip, useMap } from "react-leaflet";
 import { VehicleData } from "@/types/vehicle";
 import L from "leaflet";
+import { ClientSettings } from "@/types/clientSettings";
 
 const LiveCars = ({
   carData,

@@ -57,6 +57,7 @@ const LiveTracking = () => {
     null
   );
 
+
   // This useEffect is responsible for checking internet connection in the browser.
   useEffect(() => {
     setIsOnline(navigator.onLine);
@@ -193,3 +194,4 @@ const LiveTracking = () => {
 };
 
 export default LiveTracking;
+

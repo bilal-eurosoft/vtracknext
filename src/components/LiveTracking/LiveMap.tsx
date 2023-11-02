@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 import { VehicleData } from "@/types/vehicle";
@@ -12,14 +11,6 @@ import dynamic from "next/dynamic";
 import { ClientSettings } from "@/types/clientSettings";
 import { useSession } from "next-auth/react";
 import { getZoneListByClientId } from "@/utils/API_CALLS";
-const Polygon = dynamic(
-  () => import("react-leaflet/Polygon").then((module) => module.Polygon),
-  { ssr: false }
-);
-const Circle = dynamic(
-  () => import("react-leaflet/Circle").then((module) => module.Circle),
-  { ssr: false }
-);
 
 const DynamicCarMap = ({
   carData,
@@ -37,9 +28,10 @@ const DynamicCarMap = ({
   const clientZoomSettings = clientSettings?.filter(
     (el) => el?.PropertDesc === "Zoom"
   )[0]?.PropertyValue;
-
+  let mapCoordinates: [number, number] = [0, 0];
   const { data: session } = useSession();
-
+  const [zoneList, setZoneList] = useState<zonelistType[]>([]);
+  const [showZones, setShowZones] = useState(false);
   useEffect(() => {
     (async function () {
       if (session) {
@@ -49,13 +41,16 @@ const DynamicCarMap = ({
         });
         setZoneList(allzoneList);
       }
-    })();
+    
+    }
+    
+    )();
   }, []);
 
   if (!clientMapSettings) {
     return <>Map Loading...</>;
   }
-  let mapCoordinates: [number, number] = [0, 0];
+
 
   const regex = /lat:([^,]+),lng:([^}]+)/;
   const match = clientMapSettings.match(regex);
@@ -66,8 +61,7 @@ const DynamicCarMap = ({
     mapCoordinates = [lat, lng];
   }
   const zoom = clientZoomSettings ? parseInt(clientZoomSettings) : 11;
-  const [zoneList, setZoneList] = useState<zonelistType[]>([]);
-  const [showZones, setShowZones] = useState(false);
+ 
   const MapContainer = dynamic(
     () => import("react-leaflet").then((module) => module.MapContainer),
     { ssr: false }
@@ -76,10 +70,7 @@ const DynamicCarMap = ({
     () => import("react-leaflet").then((module) => module.TileLayer),
     { ssr: false }
   );
-  const Polyline = dynamic(
-    () => import("react-leaflet").then((module) => module.Polyline),
-    { ssr: false }
-  );
+
   const Polygon = dynamic(
     () => import("react-leaflet/Polygon").then((module) => module.Polygon),
     { ssr: false }
@@ -88,6 +79,7 @@ const DynamicCarMap = ({
     () => import("react-leaflet/Circle").then((module) => module.Circle),
     { ssr: false }
   );
+ 
   return (
     <>
       <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ">
