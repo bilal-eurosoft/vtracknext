@@ -35,13 +35,8 @@ const LiveSidebar = ({
     setFilteredData(filtered);
   }, [searchData.search, carData]);
   const toggleLiveCars = () => {
-
-    setSelectedVehicle(null)
-
-    };
-   
-  
-
+    setSelectedVehicle(null);
+  };
 
   return (
     <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4  ">
@@ -76,9 +71,12 @@ const LiveSidebar = ({
           </div>
         </div>
         <div className="lg:col-span-1 col-span-1 ">
-        <button className="text-center text-sm font-bold text-white mt-1 " onClick={toggleLiveCars}>
-    Show({carData?.length}) Vehicles
-  </button>
+          <button
+            className="text-center text-sm font-bold text-white mt-1 "
+            onClick={toggleLiveCars}
+          >
+            Show({carData?.length}) Vehicles
+          </button>
         </div>
       </div>
 
@@ -145,13 +143,15 @@ const LiveSidebar = ({
       <div className="overflow-y-scroll " style={{ height: "46.8em" }}>
         {filteredData?.map((item: VehicleData) => {
           return (
-            <div className="hover:bg-bgLight cursor-pointer pt-2">
+            <div
+              className="hover:bg-bgLight cursor-pointer pt-2"
+              onClick={() => {
+                setSelectedVehicle(item);
+              }}
+            >
               <div
                 key={item?.IMEI}
                 className="grid lg:grid-cols-3 grid-cols-3 text-center py-5      "
-                onClick={() => {
-                  setSelectedVehicle(item);
-                }}
               >
                 <div className="lg:col-span-1 col-span-1">
                   <p style={{ fontSize: "1.3em" }}>
