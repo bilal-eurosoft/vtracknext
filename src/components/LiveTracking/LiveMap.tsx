@@ -62,7 +62,7 @@ const DynamicCarMap = ({
   }, []);
 
   if (!clientMapSettings) {
-    return <>Map Loading...</>;
+    return <>Map Loadidsng...</>;
   }
 
   const regex = /lat:([^,]+),lng:([^}]+)/;
