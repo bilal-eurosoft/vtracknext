@@ -488,7 +488,7 @@ const EditZonePage: React.FC = () => {
             <div className="lg:col-span-5  md:col-span-4  sm:col-span-5 col-span-4 mx-3">
               <div className="flex justify-start"></div>
               <div className="w-full  mt-4 overflow-hidden">
-                {mapcenter !== null && zoom >= 0 && zoom <= 18 && (
+                {mapcenter !== null && zoom >= 0  && (
                   <MapContainer
                     zoom={zoom}
                     center={mapcenter}
