@@ -377,7 +377,7 @@ const ZonePage: React.FC = () => {
 
                 <div className="col-span-2 ">
                   <button
-                    className="ms-14 text-white  h-10 bg-green shadow-md px-6"
+                    className="ms-14   h-10 bg-white text-labelColor shadow-md px-6"
                     onClick={() => router.push("/Zone")}
                   >
                     Cancel

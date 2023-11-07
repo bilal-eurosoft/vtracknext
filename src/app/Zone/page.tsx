@@ -52,11 +52,11 @@ export default function Zone() {
     GeoFenceType: "",
     zoneType: "",
   });
-  const [rowsPerPage, setRowsPerPage] = useState<any>(5);
+  const [rowsPerPage, setRowsPerPage] = useState<any>(10);
   const totalPages = Math.ceil(zoneList.length / rowsPerPage);
 
   const [filterZonepage, setFilterZonePage] = useState(1);
-  const [filterZonePerPage, setfilterZonePerPage] = useState(5);
+  const [filterZonePerPage, setfilterZonePerPage] = useState(10);
   const lastIndexFilter = filterZonePerPage * filterZonepage;
   const firstIndexFilter = lastIndexFilter - filterZonePerPage;
   const filterZoneResult = filteredZones.slice(

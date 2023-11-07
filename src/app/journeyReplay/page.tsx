@@ -514,9 +514,13 @@ export default function JourneyReplay() {
     //   [fieldName]: date,
     // }));
     const selectedaDate: any = date;
-    if (new Date(selectedaDate) > new Date()) {
-      return;
+    if (Ignitionreport.fromDateTime > Ignitionreport.toDateTime) {
+      if (new Date(selectedaDate) > new Date()) {
+        return;
+      }
+      alert("Please");
     }
+
     setIgnitionreport({ ...Ignitionreport, [fieldName]: selectedaDate });
   };
 
@@ -688,9 +692,9 @@ export default function JourneyReplay() {
         <p className="bg-[#00B56C] px-4 py-1 text-white">JourneyReplay</p>
 
         <div className="grid lg:grid-cols-10  md:grid-cols-4  gap-5 px-4 text-start pt-4 bg-bgLight">
-          <div className="lg:col-span-1 md:col-span-3">
+          <div className="lg:col-span-1 md:col-span-3 mt-2">
             <select
-              className=" h-8  w-full  text-labelColor  outline-green border border-grayLight px-1"
+              className=" h-8 text-gray  w-full   outline-green border border-grayLight px-1"
               onChange={handleInputChange}
               name="VehicleReg"
               value={Ignitionreport.VehicleReg}

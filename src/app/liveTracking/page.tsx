@@ -35,7 +35,7 @@ const LiveMap = dynamic(() => import("@/components/LiveTracking/LiveMap"), {
           fill="currentFill"
         />
       </svg>
-      <span className="sr-only text-3xl">Loading...</span>
+      <span className="sr-only text-3xl"></span>
     </div>
   ),
   ssr: false,

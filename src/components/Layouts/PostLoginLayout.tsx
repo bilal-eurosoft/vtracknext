@@ -7,6 +7,7 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+
 import {
   Popover,
   PopoverHandler,
@@ -42,7 +43,7 @@ export default function RootLayout({
     <div>
       <div>
         <div className="flex flex-row">
-          <div className="basis-20 py-6 bg-[#29303b] h-screen hidden md:block">
+          <div className="basis-20 py-6 bg-[#29303b] h-screen hidden md:block sticky top-0">
             <Link href="/liveTracking">
               <Tooltip
                 className="bg-white text-[#00B56C] shadow-lg rounded"
@@ -258,8 +259,8 @@ export default function RootLayout({
             </Popover>
           </div>
           <hr></hr>
-          <div className="basis-1/1 w-screen ">
-            <nav className="flex items-center justify-between flex-wrap bg-bgLight p-4">
+          <div className="basis-1/1 w-screen  ">
+            <nav className="flex items-center justify-between flex-wrap bg-bgLight p-4 shadow-md sticky top-0">
               <div className="flex items-center flex-shrink-0 text-white">
                 <Image src={logo} className="lg:h-9 lg:w-32 w-20 h-6" alt="" />
               </div>
@@ -278,7 +279,7 @@ export default function RootLayout({
                       </span>
                     </span>
                   </a>
-                  <a className="block mt-3 lg:inline-block lg:mt-0 text-black-500  w-44 mr-8">
+                  <a className="block mt-3 lg:inline-block lg:mt-0 font-bold  text-black-500  w-44 mr-8">
                     <BlinkingTime timezone={session?.timezone} />
                   </a>
                 </div>
