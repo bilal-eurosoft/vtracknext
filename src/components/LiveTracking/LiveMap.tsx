@@ -10,6 +10,25 @@ import { ClientSettings } from "@/types/clientSettings";
 import { useSession } from "next-auth/react";
 import { getZoneListByClientId } from "@/utils/API_CALLS";
 
+
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((module) => module.MapContainer),
+  { ssr: false }
+);
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((module) => module.TileLayer),
+  { ssr: false }
+);
+
+const Polygon = dynamic(
+  () => import("react-leaflet/Polygon").then((module) => module.Polygon),
+  { ssr: false }
+);
+const Circle = dynamic(
+  () => import("react-leaflet/Circle").then((module) => module.Circle),
+  { ssr: false }
+);
+
 const DynamicCarMap = ({
   carData,
   clientSettings,
@@ -55,30 +74,14 @@ const DynamicCarMap = ({
     mapCoordinates = [lat, lng];
   }
   const zoom = clientZoomSettings ? parseInt(clientZoomSettings) : 11;
-
-  const MapContainer = dynamic(
-    () => import("react-leaflet").then((module) => module.MapContainer),
-    { ssr: false }
-  );
-  const TileLayer = dynamic(
-    () => import("react-leaflet").then((module) => module.TileLayer),
-    { ssr: false }
-  );
-
-  const Polygon = dynamic(
-    () => import("react-leaflet/Polygon").then((module) => module.Polygon),
-    { ssr: false }
-  );
-  const Circle = dynamic(
-    () => import("react-leaflet/Circle").then((module) => module.Circle),
-    { ssr: false }
-  );
-
-  console.log(zoneList);
+ 
+ 
   return (
     <>
       <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ">
         <div className="relative">
+
+        {mapCoordinates !== null && zoom !== null && (
           <MapContainer
             id="map"
             center={mapCoordinates}
@@ -93,22 +96,26 @@ const DynamicCarMap = ({
 
             {showZones &&
               zoneList.map(function (singleRecord) {
-                return singleRecord.zoneType == "Circle" ? (
-                  <>
-                    <Circle
-                      center={[
-                        Number(singleRecord.centerPoints.split(",")[0]),
-                        Number(singleRecord.centerPoints.split(",")[1]),
-                      ]}
-                      radius={Number(singleRecord.latlngCordinates)}
-                    />
-                  </>
-                ) : (
-                  <Polygon
-                    positions={JSON.parse(singleRecord.latlngCordinates)}
-                  />
-                );
-              })}
+               
+                const radius = Number(singleRecord.latlngCordinates);
+ 
+    
+    return (singleRecord.zoneType === "Circle" && !isNaN(radius)) ? (
+      <>
+        <Circle
+          center={[
+            Number(singleRecord.centerPoints.split(",")[0]),
+            Number(singleRecord.centerPoints.split(",")[1]),
+          ]}
+          radius={radius}
+        />
+      </>
+    ) : (
+      <Polygon
+        positions={JSON.parse(singleRecord.latlngCordinates)}
+      />
+    );
+  })}
             <button
               className="bg-[#00B56C] text-white"
               onClick={() => {
@@ -121,8 +128,9 @@ const DynamicCarMap = ({
               selectedVehicle={selectedVehicle}
             />
           </MapContainer>
-          <div className="grid grid-cols-1 absolute top-10 right-12 bg-bgLight py-2 px-2">
-            <div className="col-span-2 ">
+                )}
+          <div className="grid grid-cols-3 absolute top-24 right-12 bg-bgLight py-2 px-2">
+            <div className="col-span-1" style={{ color: "green" }}>
               <input
                 type="checkbox"
                 onClick={() => {
