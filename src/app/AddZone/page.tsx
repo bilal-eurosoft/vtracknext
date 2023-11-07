@@ -352,9 +352,9 @@ const ZonePage: React.FC = () => {
               placeholder="Enter Zone Name "
               required
             />
-            <div className="flex justify-center">
-              <div className="grid lg:grid-cols-2 grid-cols-2 bg-green w-24">
-                <div className="col-span-1">
+            <div className="flex justify-start">
+              <div className="grid lg:grid-cols-6 grid-cols-2 bg-green shadow-md  w-24 ">
+                <div className="col-span-2">
                   <svg
                     className="h-10 py-3 w-full text-white"
                     viewBox="0 0 24 24"
@@ -370,11 +370,17 @@ const ZonePage: React.FC = () => {
                   </svg>
                 </div>
                 <div className="col-span-1">
-                  <button
-                    className="text-white  h-10 bg-[#00B56C] -ms-2"
-                    type="submit"
-                  >
+                  <button className="text-white  h-10 bg-green " type="submit">
                     Save
+                  </button>
+                </div>
+
+                <div className="col-span-2 ">
+                  <button
+                    className="ms-14 text-white  h-10 bg-green shadow-md px-6"
+                    onClick={() => router.push("/Zone")}
+                  >
+                    Cancel
                   </button>
                 </div>
               </div>

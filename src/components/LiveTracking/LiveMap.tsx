@@ -2,9 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
-
 import { VehicleData } from "@/types/vehicle";
-
 import LiveCars from "./LiveCars";
 import { zonelistType } from "@/types/zoneType";
 import dynamic from "next/dynamic";
@@ -41,16 +39,12 @@ const DynamicCarMap = ({
         });
         setZoneList(allzoneList);
       }
-    
-    }
-    
-    )();
+    })();
   }, []);
 
   if (!clientMapSettings) {
     return <>Map Loading...</>;
   }
-
 
   const regex = /lat:([^,]+),lng:([^}]+)/;
   const match = clientMapSettings.match(regex);
@@ -61,7 +55,7 @@ const DynamicCarMap = ({
     mapCoordinates = [lat, lng];
   }
   const zoom = clientZoomSettings ? parseInt(clientZoomSettings) : 11;
- 
+
   const MapContainer = dynamic(
     () => import("react-leaflet").then((module) => module.MapContainer),
     { ssr: false }
@@ -79,7 +73,8 @@ const DynamicCarMap = ({
     () => import("react-leaflet/Circle").then((module) => module.Circle),
     { ssr: false }
   );
- 
+
+  console.log(zoneList);
   return (
     <>
       <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ">
@@ -126,19 +121,17 @@ const DynamicCarMap = ({
               selectedVehicle={selectedVehicle}
             />
           </MapContainer>
-          <div className="grid grid-cols-3 absolute top-24 right-12 bg-bgLight py-2 px-2">
-            <div className="col-span-1" style={{ color: "green" }}>
+          <div className="grid grid-cols-1 absolute top-10 right-12 bg-bgLight py-2 px-2">
+            <div className="col-span-2 ">
               <input
                 type="checkbox"
                 onClick={() => {
                   setShowZones(!showZones);
                 }}
-                className="ms-3 mt-1"
+                className="mx-2  mt-1"
                 style={{ accentColor: "green" }}
               />
-            </div>
-            <div className="col-span-2 ">
-              <button className="text-labelColor">show zones</button>
+              <button className="text-labelColor">Show Zones</button>
             </div>
           </div>
         </div>

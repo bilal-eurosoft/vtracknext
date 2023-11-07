@@ -10,9 +10,10 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import TableHead from "@mui/material/TableHead";
-import TableFooter from "@mui/material/TableFooter";
-
-import "./zone.css";
+import Link from "next/link";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
+import { Toaster, toast } from "react-hot-toast";
 import {
   getZoneListByClientId,
   modifyCollectionStatus,
@@ -23,62 +24,27 @@ import {
   zonenamesearch,
 } from "@/utils/API_CALLS";
 import { zonelistType } from "@/types/zoneType";
-import Link from "next/link";
-import Pagination from "@mui/material/Pagination";
-import Stack from "@mui/material/Stack";
-import { Toaster, toast } from "react-hot-toast";
-
-const itemList = [
-  { id: 1, name: "Alice" },
-  { id: 2, name: "Bob" },
-  { id: 3, name: "Alice Smith" },
-  { id: 4, name: "John" },
-];
-function createData(name: any, calories: any, fat: any) {
-  return { name, calories, fat };
-}
-
-const rows = [
-  createData("Cupcake", 305, 3.7),
-  createData("Donut", 452, 25.0),
-  createData("Eclair", 262, 16.0),
-  createData("Frozen yoghurt", 159, 6.0),
-  createData("Gingerbread", 356, 16.0),
-  createData("Honeycomb", 408, 3.2),
-  createData("Ice cream sandwich", 237, 9.0),
-  createData("Jelly Bean", 375, 0.0),
-  createData("KitKat", 518, 26.0),
-  createData("Lollipop", 392, 0.2),
-  createData("Marshmallow", 318, 0),
-  createData("Nougat", 360, 19.0),
-  createData("Oreo", 437, 18.0),
-].sort((a, b) => (a.calories < b.calories ? -1 : 1));
+import "./zone.css";
 
 export default function Zone() {
   const [filter, setFilter] = useState<any>("");
   const [filteredItems, setFilteredItems] = useState([]);
-
   const { data: session } = useSession();
   const [zoneList, setZoneList] = useState<zonelistType[]>([]);
+  const [selectedZoneTypeCircle, setselectedZoneTypeCircle] =
+    useState<any>(false);
+  const [selectedZoneTypPolyGone, setselectedZoneTypePolyGone] =
+    useState<any>(false);
 
   // pagination work
   const [input, setInput] = useState<any>("");
   const [currentPage, setCurrentPage] = useState<any>(1);
-  const [recordsPerPage, setRecordsPerPage] = useState(6);
-  const [pages, setPages] = useState<any>(0);
-  const lastIndex = currentPage * recordsPerPage;
-  const firstIndex = lastIndex - recordsPerPage;
-  var records = zoneList.slice(firstIndex, lastIndex);
-  const totalCount: any = Math.ceil(zoneList.length / recordsPerPage);
-  const perPage = currentPage.length / 5;
-
   const [filteredZones, setFilteredZones] = useState<zonelistType[]>([]);
-  const [selectedZoneType, setSelectedZoneType] = useState("");
+  const [selectedZoneType, setSelectedZoneType] = useState<any>("");
   const [selectedZones, setSelectedZones] = useState<zonelistType[]>([]);
   const [liveSearchZoneName, setLiveSearchZoneName] = useState<
     string[] | undefined
   >([]);
-  const [zoneNames, setZoneNames] = useState<string[]>([]);
 
   const [searchCriteria, setSearchCriteria] = useState<any>({
     zoneName: "",
@@ -86,10 +52,19 @@ export default function Zone() {
     GeoFenceType: "",
     zoneType: "",
   });
+  const [rowsPerPage, setRowsPerPage] = useState<any>(5);
+  const totalPages = Math.ceil(zoneList.length / rowsPerPage);
 
-  const handleChanges = (event: any, newPage: any) => {
-    setCurrentPage(newPage);
-  };
+  const [filterZonepage, setFilterZonePage] = useState(1);
+  const [filterZonePerPage, setfilterZonePerPage] = useState(5);
+  const lastIndexFilter = filterZonePerPage * filterZonepage;
+  const firstIndexFilter = lastIndexFilter - filterZonePerPage;
+  const filterZoneResult = filteredZones.slice(
+    firstIndexFilter,
+    lastIndexFilter
+  );
+  const totalPagesFilter = Math.ceil(filteredZones.length / filterZonePerPage);
+
   const handleClickPagination = () => {
     setCurrentPage(input);
   };
@@ -130,23 +105,20 @@ export default function Zone() {
 
     setFilteredZones(filteredZone);
   }
-  const [filterZonepage, setFilterZonePage] = useState(1);
-  const filterZonePerPage = 5;
-  const lastIndexFilter = filterZonePerPage * filterZonepage;
-  const firstIndexFilter = lastIndexFilter - filterZonePerPage;
-  const filterZoneResult = filteredZones.slice(
-    firstIndexFilter,
-    lastIndexFilter
-  );
 
-  const [rowsPerPage, setRowsPerPage] = useState<any>(5);
-  const totalPages = Math.ceil(zoneList.length / rowsPerPage);
-
-  const handlePageChange = (event: any, newPage: any) => {
-    setCurrentPage(newPage);
+  const handlePageChangeFiter = (event: any, newPage: any) => {
+    setFilterZonePage(newPage);
   };
 
-  const handleChangePages = (event: any, newPage: any) => {
+  const handleClickPaginationFilter = () => {
+    setFilterZonePage(input);
+  };
+
+  const handleChangeRowsPerPageFilter = (event: any) => {
+    setfilterZonePerPage(event.target.value);
+    setFilterZonePage(1);
+  };
+  const handlePageChange = (event: any, newPage: any) => {
     setCurrentPage(newPage);
   };
 
@@ -163,17 +135,38 @@ export default function Zone() {
     router.push("/AddZone");
   };
 
-  const handleClear = () => {
+  const zoneTypeCircle = () => {
+    zoneList.map((item) => {
+      if (item.zoneType === "Circle") {
+        setSelectedZoneType("Circle");
+        setselectedZoneTypeCircle(true);
+        setselectedZoneTypePolyGone(false);
+      }
+    });
+  };
+
+  const zoneTypePolygone = () => {
+    zoneList.map((item) => {
+      if (item.zoneType === "Polygon") {
+        setSelectedZoneType("Polygon");
+        setselectedZoneTypePolyGone(true);
+        setselectedZoneTypeCircle(false);
+      }
+    });
+  };
+
+  const handleClear = (item: any) => {
     setSearchCriteria({
       zoneName: "",
       zoneShortName: "",
       GeoFenceType: "",
       zoneType: "",
     });
-
-    // setSelectedZoneType("");
-    setFilteredZones(zoneList);
-    setZoneList(records);
+    // setSelectedZoneType(item);
+    // setFilteredZones(filterZoneResult);
+    setselectedZoneTypeCircle(false);
+    setselectedZoneTypePolyGone(false);
+    setZoneList(displayedData);
   };
 
   function handleCheckboxChange(zone: zonelistType) {
@@ -294,15 +287,6 @@ export default function Zone() {
     }
   }
 
-  // const handleFilterClick = () => {
-  //   const filtered = zoneList.filter(
-  //     (item) =>
-  //       item.zoneShortName.toLowerCase() === searchCriteria.toLowerCase()
-  //   );
-
-  //   setFilteredZones(filtered);
-  // };
-
   const handleFilterClicks = () => {
     const filtered: any = zoneList.filter(
       (item) => item.zoneName.toLowerCase() === filter.toLowerCase()
@@ -322,9 +306,9 @@ export default function Zone() {
         <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5  ">
           <div className="lg:col-span-1">
             <label className="text-sm text-labelColor">Zone Name</label>
-
             <select
-              className=" px-2 py-1 mt-2 w-full text-sm text-black bg-white-10  border border-grayLight appearance-none px-3 outline-green"
+              className=" px-2 py-1 mt-2 w-full text-sm text-black bg-white-10  border border-grayLight px-3 outline-green text-gray"
+              id="selectBox"
               value={searchCriteria.zoneName}
               onChange={(e) =>
                 setSearchCriteria({
@@ -333,13 +317,10 @@ export default function Zone() {
                 })
               }
             >
-              <option value="" disabled selected hidden>
-                {" "}
-                select Sort Name
-              </option>
-              {liveSearchZoneName?.map((zoneName, index) => (
-                <option key={index} value={zoneName}>
-                  {zoneName}
+              <option value=""> select Sort Name</option>
+              {zoneList?.map((item, index) => (
+                <option className="hover:bg-green" key={index}>
+                  {item.zoneName}
                 </option>
               ))}
             </select>
@@ -349,7 +330,7 @@ export default function Zone() {
             <input
               type="text"
               name="zoneShortName"
-              className="block py-1 mt-2 px-0 w-full text-sm text-black bg-white-10 border border-grayLight appearance-none px-3 dark:border-gray-600 dark:focus:border-blue-500 outline-green"
+              className="block py-1 mt-2 px-0 w-full text-sm text-black bg-white-10 border border-grayLight appearance-none px-3 text-gray dark:border-gray-600 dark:focus:border-blue-500 outline-green"
               placeholder="Enter Zone Short Name"
               value={searchCriteria.zoneShortName}
               onChange={(e) =>
@@ -364,10 +345,10 @@ export default function Zone() {
         <div className="grid lg:grid-cols-2 md:grid-cols-2   gap-6 pt-5 px-5 bg-green-50 ">
           <div className="lg:col-span-1">
             <label className="text-sm text-black text-labelColor">
-              Geofenced
+              Geofence
             </label>
             <select
-              className="block mt-2 py-1 px-0 w-full text-sm text-black bg-white-10 border border-grayLight px-3 dark:border-gray-600 dark:focus:border-blue-500 outline-green mb-5"
+              className="block mt-2 py-1 px-0 w-full text-sm text-gray bg-white-10 border border-grayLight px-3 dark:border-gray-600 dark:focus:border-blue-500 outline-green mb-5"
               name="GeoFenceType"
               style={{ fontSize: "1em" }}
               onChange={(e) =>
@@ -390,25 +371,20 @@ export default function Zone() {
           <div className="lg:col-span-1 md:col-span-1 col-span-1 text-sm text-black text-labelColor">
             <label className="">Zone Type</label>
             <br></br>
-
             <button
-              className={`mt-3 border border-grayLight px-4 h-8 text-sm  ${
-                selectedZoneType === "Circle"
-                  ? "bg-green text-white"
-                  : "bg-white text-black"
+              className={`mt-3 border border-grayLight px-4 h-8 text-sm text-gray   ${
+                selectedZoneTypeCircle && "bg-green text-white"
               } transition duration-300`}
-              onClick={() => setSelectedZoneType("Circle")}
+              onClick={zoneTypeCircle}
             >
               Circle
             </button>
 
             <button
-              className={`mt-3 border border-grayLight px-4 h-8 text-sm   ${
-                selectedZoneType === "Polygon"
-                  ? "bg-green text-white"
-                  : "bg-white text-black"
+              className={`mt-3 border border-grayLight px-4 h-8 text-sm text-gray   ${
+                selectedZoneTypPolyGone && "bg-green text-white"
               } transition duration-300`}
-              onClick={() => setSelectedZoneType("Polygon")}
+              onClick={zoneTypePolygone}
             >
               Polygon
             </button>
@@ -418,7 +394,7 @@ export default function Zone() {
         <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 grid-cols-2 px-5 lg:mt-0 mt-5">
           <div className="lg:col-span-1 md:col-span-1 sm:col-span-1   col-span-2">
             <div className="grid lg:grid-cols-8 md:grid-cols-3 grid-cols-2">
-              <div className="grid lg:grid-cols-2 md:grid-cols-4 grid-cols-5 bg-green shadow-md hover:shadow-gray transition duration-500 cursor-pointer">
+              <div className="grid lg:grid-cols-3 md:grid-cols-4 grid-cols-5 bg-green shadow-md hover:shadow-gray transition duration-500 cursor-pointer">
                 <div className="lg:col-span-1 md:col-span-2  col-span-3">
                   <svg
                     className="h-10 py-3 w-full text-white"
@@ -439,7 +415,7 @@ export default function Zone() {
                 </div>
                 <div className="lg:col-span-1 md:col-span-1  text-center">
                   <button
-                    className="text-white  h-10 bg-green lg:-ms-5 -ms-10 text-sm "
+                    className="text-white text-start  h-10 bg-green  text-sm "
                     type="submit"
                     onClick={handleFilterClicks}
                   >
@@ -472,7 +448,7 @@ export default function Zone() {
                     className="text-labelColor text-sm  h-10 lg:-ms-2 -ms-6"
                     onClick={handleClear}
                   >
-                    clear
+                    Clear
                   </button>
                 </div>
               </div>
@@ -542,6 +518,143 @@ export default function Zone() {
       </form>
 
       <div className="shadow-md">
+        {/* <TableContainer component={Paper}>
+          <p className="bg-green px-4 py-1 text-white font-bold lg:w-full w-screen ">
+            ZoneTitle
+          </p>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow className="bg-zoneTabelBg  ">
+                <TableCell className="w-4 h-4 border-r border-grayLight">
+                  <input
+                    id="checkbox-all-search"
+                    type="checkbox"
+                    style={{ accentColor: "green", boxShadow: "none" }}
+                    className="w-4 h-4 text-blue-600 border-r border-grayLight bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 border-r border-grayLight "
+                  />
+                </TableCell>
+                <TableCell align="left" className="border-r border-grayLight">
+                  Zone Name
+                </TableCell>
+                <TableCell align="left" className="border-r border-grayLight">
+                  Zone Sort Name
+                </TableCell>
+                <TableCell align="left" className="border-r border-grayLight">
+                  Zone Type
+                </TableCell>
+                <TableCell align="left" className="border-r border-grayLight">
+                  Action
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filterZoneResult.length > 0 &&
+                filterZoneResult.map((item: zonelistType) => (
+                  <TableRow>
+                    <TableCell
+                      align="left"
+                      className="w-4 h-4 border-r border-grayLight"
+                    >
+                      <input
+                        id={`checkbox-table-search-${item.id}`}
+                        style={{ accentColor: "green", boxShadow: "none" }}
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        checked={selectedZones.some(
+                          (selectedZone) => selectedZone.id === item.id
+                        )}
+                        onChange={() => handleCheckboxChange(item)}
+                      />
+                      <label className="sr-only  text-labelColor text-md font-normal">
+                        checkbox
+                      </label>
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      className="border-r border-grayLight"
+                    >
+                      {item.zoneName}
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      className="border-r border-grayLight"
+                    >
+                      {item.zoneShortName}
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      className="border-r border-grayLight"
+                    >
+                      {item.zoneType}
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      className="border-r border-grayLight"
+                    >
+                      {" "}
+                      <Link
+                        className="font-medium text-green dark:text-blue-500 hover:underline"
+                        href={`/EditZone?id=${item.id}`}
+                      >
+                        Edit
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer> */}
+
+        {/* <div className="flex  justify-end lg:w-full w-screen bg-bgLight">
+          <div className="grid lg:grid-cols-4 grid-cols-4  my-4 ">
+            <div className="lg:col-span-1 col-span-1">
+              <p className="mt-1 text-labelColor text-end">
+                Total {filteredZones.length} items
+              </p>
+            </div>
+
+            <div
+              className="lg:col-span-2 col-span-2 "
+              style={{
+                height: "4vh",
+                overflow: "hidden",
+                justifyContent: "end",
+              }}
+            >
+              <Stack spacing={2}>
+                <Pagination
+                  count={totalPagesFilter}
+                  page={filterZonepage}
+                  onChange={handlePageChangeFiter}
+                  sx={{ color: "green" }}
+                />
+              </Stack>
+            </div>
+            <div className="lg:col-lg-1 col-lg-1  mt-1 ">
+              <span className="lg:inline-block hidden">Go To</span>
+              <input
+                type="text"
+                className="lg:w-10 w-5  border border-grayLight outline-green mx-2 px-2"
+                onChange={(e: any) => setInput(e.target.value)}
+              />
+              <span
+                className="text-labelColor cursor-pointer "
+                onClick={handleClickPaginationFilter}
+              >
+                page &nbsp;&nbsp;
+              </span>
+            </div>
+          </div>
+          <div className="mt-2">
+            <TablePagination
+              component="div"
+              rowsPerPageOptions={[5, 10, 20, 30, 40, 50, 100]}
+              count={filteredZones.length}
+              rowsPerPage={filterZonePerPage}
+              onRowsPerPageChange={handleChangeRowsPerPageFilter}
+            />
+          </div>
+        </div> */}
         <TableContainer component={Paper}>
           <p className="bg-green px-4 py-1 text-white font-bold lg:w-full w-screen ">
             ZoneTitle
@@ -572,8 +685,10 @@ export default function Zone() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filterZoneResult.length > 0
-                ? filterZoneResult.map((item: zonelistType) => (
+              {filterZoneResult.length > 0 ? (
+                <>
+                  {" "}
+                  {filterZoneResult.map((item: zonelistType) => (
                     <TableRow>
                       <TableCell
                         align="left"
@@ -624,8 +739,11 @@ export default function Zone() {
                         </Link>
                       </TableCell>
                     </TableRow>
-                  ))
-                : displayedData.map((item: any) => (
+                  ))}
+                </>
+              ) : (
+                <>
+                  {displayedData.map((item: any) => (
                     <TableRow>
                       <TableCell
                         align="left"
@@ -673,59 +791,114 @@ export default function Zone() {
                       </TableCell>
                     </TableRow>
                   ))}
+                </>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
-        <div className="flex  justify-end lg:w-full w-screen bg-bgLight">
-          <div className="grid lg:grid-cols-4 grid-cols-4  my-4 ">
-            <div className="lg:col-span-1 col-span-1">
-              <p className="mt-1 text-labelColor text-end">
-                Total {zoneList.length} items
-              </p>
-            </div>
+        {filterZoneResult.length > 0 ? (
+          <div className="flex  justify-end lg:w-full w-screen bg-bgLight">
+            <div className="grid lg:grid-cols-4 grid-cols-4  my-4 ">
+              <div className="lg:col-span-1 col-span-1">
+                <p className="mt-1 text-labelColor text-end">
+                  Total {filteredZones.length} items
+                </p>
+              </div>
 
-            <div
-              className="lg:col-span-2 col-span-2 "
-              style={{
-                height: "4vh",
-                overflow: "hidden",
-                justifyContent: "end",
-              }}
-            >
-              <Stack spacing={2}>
-                <Pagination
-                  count={totalPages}
-                  page={currentPage}
-                  onChange={handlePageChange}
-                  sx={{ color: "green" }}
-                />
-              </Stack>
-            </div>
-            <div className="lg:col-lg-1 col-lg-1  mt-1 ">
-              <span className="lg:inline-block hidden">Go To</span>
-              <input
-                type="text"
-                className="lg:w-10 w-5  border border-grayLight outline-green mx-2 px-2"
-                onChange={(e: any) => setInput(e.target.value)}
-              />
-              <span
-                className="text-labelColor cursor-pointer "
-                onClick={handleClickPagination}
+              <div
+                className="lg:col-span-2 col-span-2 "
+                style={{
+                  height: "4vh",
+                  overflow: "hidden",
+                  justifyContent: "end",
+                }}
               >
-                page &nbsp;&nbsp;
-              </span>
+                <Stack spacing={2}>
+                  <Pagination
+                    count={totalPagesFilter}
+                    page={filterZonepage}
+                    onChange={handlePageChangeFiter}
+                    sx={{ color: "green" }}
+                  />
+                </Stack>
+              </div>
+              <div className="lg:col-lg-1 col-lg-1  mt-1 ">
+                <span className="lg:inline-block hidden">Go To</span>
+                <input
+                  type="text"
+                  className="lg:w-10 w-5  border border-grayLight outline-green mx-2 px-2"
+                  onChange={(e: any) => setInput(e.target.value)}
+                />
+                <span
+                  className="text-labelColor cursor-pointer "
+                  onClick={handleClickPaginationFilter}
+                >
+                  page &nbsp;&nbsp;
+                </span>
+              </div>
+            </div>
+            <div className="mt-2">
+              <TablePagination
+                component="div"
+                rowsPerPageOptions={[10, 20, 30, 40, 50, 100]}
+                count={filteredZones.length}
+                rowsPerPage={filterZonePerPage}
+                onRowsPerPageChange={handleChangeRowsPerPageFilter}
+              />
             </div>
           </div>
-          <div className="mt-2">
-            <TablePagination
-              component="div"
-              rowsPerPageOptions={[5, 10, 25, 45, 75, 100]}
-              count={zoneList.length}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+        ) : (
+          <div className="flex  justify-end lg:w-full w-screen bg-bgLight">
+            <div className="grid lg:grid-cols-4 grid-cols-4  my-4 ">
+              <div className="lg:col-span-1 col-span-1">
+                <p className="mt-1 text-labelColor text-end">
+                  Total {zoneList.length} items
+                </p>
+              </div>
+
+              <div
+                className="lg:col-span-2 col-span-2 "
+                style={{
+                  height: "4vh",
+                  overflow: "hidden",
+                  justifyContent: "end",
+                }}
+              >
+                <Stack spacing={2}>
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    sx={{ color: "green" }}
+                  />
+                </Stack>
+              </div>
+              <div className="lg:col-lg-1 col-lg-1  mt-1 ">
+                <span className="lg:inline-block hidden">Go To</span>
+                <input
+                  type="text"
+                  className="lg:w-10 w-5  border border-grayLight outline-green mx-2 px-2"
+                  onChange={(e: any) => setInput(e.target.value)}
+                />
+                <span
+                  className="text-labelColor cursor-pointer "
+                  onClick={handleClickPagination}
+                >
+                  page &nbsp;&nbsp;
+                </span>
+              </div>
+            </div>
+            <div className="mt-2">
+              <TablePagination
+                component="div"
+                rowsPerPageOptions={[10, 20, 30, 40, 50, 100]}
+                count={zoneList.length}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* <div className="bg-gray-100    ">

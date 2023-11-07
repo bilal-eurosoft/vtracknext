@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
@@ -60,6 +61,7 @@ export default function JourneyReplay() {
     null
   );
   const [dataresponse, setDataResponse] = useState<TripsByBucket[]>();
+  console.log("data", dataresponse);
   const [TravelHistoryresponse, setTravelHistoryresponse] = useState<
     TravelHistoryData[]
   >([]);
@@ -95,6 +97,7 @@ export default function JourneyReplay() {
   const [getShowRadioButton, setShowRadioButton] = useState(false);
   const [getShowdetails, setShowDetails] = useState(false);
   const [getShowICon, setShowIcon] = useState(false);
+  const [clearMapData, setClearMapData] = useState(false);
   const [getCheckedInput, setCheckedInput] = useState<any>(false);
   const SetViewOnClick = ({ coords }: { coords: any }) => {
     if (isPaused) {
@@ -348,7 +351,19 @@ export default function JourneyReplay() {
   const formattedHours = hours.padStart(2, "0");
   const formattedMinutes = minutes.padStart(2, "0");
   const formattedSeconds = seconds.padStart(2, "0");
-  const currentDate = new Date().toISOString().split("T")[0];
+  // const currentDates = new Date();
+  // const currentDate = currentDates.toISOString().slice(0, 10);
+  // const currentDate = new Date().toISOString().slice(0, 10);
+  const [currentDate, setCurrentDate] = useState("");
+  const [currentDateDefault, setCurrentDateDefaul] = useState(false);
+  const [currentToDateDefault, setCurrentToDateDefaul] = useState(false);
+
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = date.toISOString().slice(0, 10); // Format the date as 'YYYY-MM-DD'
+    setCurrentDate(formattedDate);
+  }, []);
+
   const formattedTime = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   const parsedDateTime = new Date(currentTime);
   const formattedDateTime = `${parsedDateTime
@@ -356,7 +371,7 @@ export default function JourneyReplay() {
     .slice(0, 10)}TO${timeOnly}`;
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setClearMapData(true);
     if (session) {
       const { VehicleReg, period } = Ignitionreport;
 
@@ -376,7 +391,6 @@ export default function JourneyReplay() {
         } else {
           newdata = {
             ...newdata,
-
             fromDateTime: `${currentDate}T${timestart}Z`,
             toDateTime: `${currentDate}T${timeend}Z`,
           };
@@ -452,6 +466,14 @@ export default function JourneyReplay() {
       }
     }
   };
+
+  const handleClickClear = () => {
+    setPolylinedata([]);
+    setCarPosition(null);
+    setTravelHistoryresponse([]);
+    setIsPlaying(false);
+    setClearMapData(false);
+  };
   const handleClick = () => {
     setShowRadioButton(!getShowRadioButton);
   };
@@ -473,11 +495,34 @@ export default function JourneyReplay() {
   };
 
   const handleCustomDateChange = (fieldName: string, date: string) => {
-    setIgnitionreport((prevReport: any) => ({
-      ...prevReport,
-      [fieldName]: date,
-    }));
+    setCurrentDateDefaul(true);
+    // setIgnitionreport((prevReport: any) => ({
+    //   ...prevReport,
+    //   [fieldName]: date,
+    // }));
+    const selectedaDate: any = date;
+    if (new Date(selectedaDate) > new Date()) {
+      return;
+    }
+    setIgnitionreport({ ...Ignitionreport, [fieldName]: selectedaDate });
   };
+
+  const handleCustomToDateChange = (fieldName: string, date: string) => {
+    setCurrentToDateDefaul(true);
+    // setIgnitionreport((prevReport: any) => ({
+    //   ...prevReport,
+    //   [fieldName]: date,
+    // }));
+    const selectedaDate: any = date;
+    if (new Date(selectedaDate) > new Date()) {
+      return;
+    }
+    setIgnitionreport({ ...Ignitionreport, [fieldName]: selectedaDate });
+  };
+
+  function getFormattedDate(date: any) {
+    return date.toISOString().slice(0, 10);
+  }
 
   const handleDivClick = async (
     TripStart: TripsByBucket["TripStart"],
@@ -672,8 +717,15 @@ export default function JourneyReplay() {
                       name="fromDateTime"
                       placeholder="Select Date"
                       autoComplete="off"
-                      value={Ignitionreport.fromDateTime}
-                      defaultValue={currentDate}
+                      // value={Ignitionreport.toDateTime}
+                      // disabled={currentDate <= Ignitionreport.fromDateTime}
+                      // defaultValue={currentDate}
+                      value={
+                        currentDateDefault
+                          ? Ignitionreport.fromDateTime
+                          : currentDate
+                      }
+                      max={getFormattedDate(new Date())}
                       onChange={(e) =>
                         handleCustomDateChange("fromDateTime", e.target.value)
                       }
@@ -688,9 +740,14 @@ export default function JourneyReplay() {
                       type="date"
                       className=" w-full  text-labelColor  outline-green border-b border-gray px-1"
                       name="toDateTime"
-                      value={Ignitionreport.toDateTime}
+                      value={
+                        currentToDateDefault
+                          ? Ignitionreport.toDateTime
+                          : currentDate
+                      }
+                      max={getFormattedDate(new Date())}
                       onChange={(e) =>
-                        handleCustomDateChange("toDateTime", e.target.value)
+                        handleCustomToDateChange("toDateTime", e.target.value)
                       }
                     />
                   </label>
@@ -770,12 +827,21 @@ export default function JourneyReplay() {
             )}
           </div>
           <div className=" col-span-1 text-white h-16 flex justify-center items-center">
-            <button
-              onClick={handleSubmit}
-              className={`bg-green py-2 px-8 mb-5`}
-            >
-              Search
-            </button>
+            {clearMapData ? (
+              <button
+                onClick={handleClickClear}
+                className={`bg-green py-2 px-8 mb-5`}
+              >
+                Search
+              </button>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                className={`bg-green py-2 px-8 mb-5`}
+              >
+                Search
+              </button>
+            )}
           </div>
           <div className="col-span-1"></div>
         </div>

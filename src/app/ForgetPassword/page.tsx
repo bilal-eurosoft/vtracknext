@@ -5,11 +5,11 @@ import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function ForgetPassword() {
   const [loading, setLoading] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-
+  const [isName, setIsname] = useState("Bilal");
+  console.log(isName);
   const [formData, setFormData] = useState({
     userName: "",
     password: "",
@@ -34,9 +34,7 @@ export default function LoginPage() {
     }
     setLoading(false);
   };
-  const handleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+
   return (
     <div
       className="w-100 h-screen bg-no-repeat bg-cover bg-center"
@@ -64,18 +62,18 @@ export default function LoginPage() {
         </div>
       ) : (
         <div className="block  flex w-100 h-screen justify-center items-center">
-          <div className="bg-white mx-5 sm:mx-auto mt-20 mb-20 w-full sm:max-w-lg lg:px-5">
+          <div className="bg-white mx-5 sm:mx-auto mt-20 mb-20 w-full sm:max-w-lg lg:px-5 shadow-lg">
             <Image
               className=" mt-9 mx-auto h-14 w-auto"
               src={logo}
               alt="Your Company"
             />
-            <p className="mt-5 text-center font-serif text-5xl  leading-9 tracking-tight text-gray-900">
+            <p className="mt-5 text-start lg:mx-0 mx-5 font-serif text-2xl  leading-9 tracking-tight text-gray-900">
               Welcome Back!
             </p>
 
-            <label className=" text-center block text-sm font-seri leading-6 text-gray">
-              Login to get started{" "}
+            <label className=" text-start lg:mx-0 mx-5 block text-sm font-seri leading-6 pt-2 text-gray">
+              Not to worry, we got you! let's get you a new password{" "}
             </label>
 
             <form className="space-y-6" action="#" method="POST">
@@ -85,7 +83,7 @@ export default function LoginPage() {
                     <input
                       id="userName"
                       required
-                      placeholder="account_code@username"
+                      placeholder="Please Input Your Email Address"
                       className="outline-none w-full"
                       name="userName"
                       value={formData.userName}
@@ -94,13 +92,13 @@ export default function LoginPage() {
                   </div>
                 </div>
               </div>
-              <div className="lg:mx-0 mx-5">
+              {/* <div className="lg:mx-0 mx-5">
                 <div className="grid lg:grid-cols-12 grid-cols-12   rounded-md  py-1.5 text-gray shadow-sm border border-grayLight border hover:border-green  placeholder:text-gray-400 sm:text-sm sm:leading-6 outline-green  px-3">
                   <div className="col-span-11 ">
                     <input
                       id="password"
                       required
-                      type={showPassword ? "text" : "password"}
+                      type="password"
                       placeholder="●●●●●●●●●●"
                       name="password"
                       className="outline-none w-full"
@@ -108,57 +106,39 @@ export default function LoginPage() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="col-span-1 cursor-pointer">
-                    {showPassword ? (
-                      <svg
-                        className="h-4 lg:w-16 w-10 text-gray mt-1"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
+                  <div className="col-span-1">
+                    <svg
+                      className="h-4 lg:w-16 w-10 text-gray mt-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
                         stroke-linejoin="round"
-                        onClick={handleShowPassword}
-                      >
-                        {" "}
-                        <circle cx="12" cy="12" r="10" />{" "}
-                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-                      </svg>
-                    ) : (
-                      <svg
-                        className="h-4 lg:w-16 w-10 text-gray mt-1"
-                        onClick={handleShowPassword}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                        />
-                      </svg>
-                    )}
+                        stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      />
+                    </svg>
                   </div>
                 </div>
-              </div>
-              <label
-                className="text-green text-sm lg:mx-0 mx-5 cursor-pointer hover:text-red"
-                onClick={() => router.push("/ForgetPassword")}
-              >
-                Forgot Password
-              </label>
-              <br></br>
-              <div className="lg:mx-0 mx-5">
+              </div> */}
+              <div className="lg:mx-0 px-20">
                 <button
                   type="submit"
-                  className="flex w-full justify-center rounded-md bg-green px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mb-8"
-                  onClick={handleClick}
+                  className="flex w-full  justify-center rounded-md bg-green px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mb-8"
+                  // onClick={handleClick}
                 >
-                  Log in
+                  Reset My Password
                 </button>
               </div>
+              <p
+                className="text-green text-sm lg:mx-0 mx-5 cursor-pointer hover:text-red pb-0"
+                onClick={() => router.push("/login")}
+              >
+                Back To Sign In
+              </p>
+              <br></br>
             </form>
           </div>
         </div>
