@@ -10,7 +10,6 @@ import { ClientSettings } from "@/types/clientSettings";
 import { useSession } from "next-auth/react";
 import { getZoneListByClientId } from "@/utils/API_CALLS";
 
-
 const MapContainer = dynamic(
   () => import("react-leaflet").then((module) => module.MapContainer),
   { ssr: false }
@@ -74,62 +73,59 @@ const DynamicCarMap = ({
     mapCoordinates = [lat, lng];
   }
   const zoom = clientZoomSettings ? parseInt(clientZoomSettings) : 11;
- 
- 
+
   return (
     <>
       <div className="lg:col-span-4  md:col-span-3  sm:col-span-5 col-span-4 ">
         <div className="relative">
+          {mapCoordinates !== null && zoom !== null && (
+            <MapContainer
+              id="map"
+              center={mapCoordinates}
+              className="z-0"
+              zoom={zoom}
+              style={{ height: "70.5em" }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'
+              />
 
-        {mapCoordinates !== null && zoom !== null && (
-          <MapContainer
-            id="map"
-            center={mapCoordinates}
-            className="z-0"
-            zoom={zoom}
-            style={{ height: "70.5em" }}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright"></a>'
-            />
+              {showZones &&
+                zoneList.map(function (singleRecord) {
+                  const radius = Number(singleRecord.latlngCordinates);
 
-            {showZones &&
-              zoneList.map(function (singleRecord) {
-               
-                const radius = Number(singleRecord.latlngCordinates);
- 
-    
-    return (singleRecord.zoneType === "Circle" && !isNaN(radius)) ? (
-      <>
-        <Circle
-          center={[
-            Number(singleRecord.centerPoints.split(",")[0]),
-            Number(singleRecord.centerPoints.split(",")[1]),
-          ]}
-          radius={radius}
-        />
-      </>
-    ) : (
-      <Polygon
-        positions={JSON.parse(singleRecord.latlngCordinates)}
-      />
-    );
-  })}
-            <button
-              className="bg-[#00B56C] text-white"
-              onClick={() => {
-                setShowZones(!showZones);
-              }}
-            ></button>
-            <LiveCars
-              carData={carData}
-              clientSettings={clientSettings}
-              selectedVehicle={selectedVehicle}
-            />
-          </MapContainer>
-                )}
-          <div className="grid grid-cols-3 absolute top-24 right-12 bg-bgLight py-2 px-2">
+                  return singleRecord.zoneType === "Circle" &&
+                    !isNaN(radius) ? (
+                    <>
+                      <Circle
+                        center={[
+                          Number(singleRecord.centerPoints.split(",")[0]),
+                          Number(singleRecord.centerPoints.split(",")[1]),
+                        ]}
+                        radius={radius}
+                      />
+                    </>
+                  ) : (
+                    <Polygon
+                      positions={JSON.parse(singleRecord.latlngCordinates)}
+                    />
+                  );
+                })}
+              <button
+                className="bg-[#00B56C] text-white"
+                onClick={() => {
+                  setShowZones(!showZones);
+                }}
+              ></button>
+              <LiveCars
+                carData={carData}
+                clientSettings={clientSettings}
+                selectedVehicle={selectedVehicle}
+              />
+            </MapContainer>
+          )}
+          <div className="grid grid-cols-1 absolute top-10 right-10 bg-bgLight py-2 px-2">
             <div className="col-span-1" style={{ color: "green" }}>
               <input
                 type="checkbox"

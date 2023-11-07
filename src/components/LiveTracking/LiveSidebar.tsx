@@ -66,8 +66,8 @@ const LiveSidebar = ({
   console.log("filter", filteredData);
   return (
     <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4">
-      <div className="grid grid-cols-3 bg-green py-3 pe-1 ">
-        <div className="lg:col-span-2 sticky top-0">
+      <div className="grid grid-cols-12 bg-green py-3 pe-1 gap-8 ">
+        <div className="lg:col-span-7 sticky top-0">
           <div className="grid grid-cols-12">
             <div className="lg:col-span-1">
               <svg
@@ -84,7 +84,7 @@ const LiveSidebar = ({
               </svg>
             </div>
 
-            <div className="lg:col-span-10 col-span-5 ms-2">
+            <div className="lg:col-span-11 col-span-5 ms-2">
               <input
                 type="text"
                 name="search"
@@ -96,7 +96,7 @@ const LiveSidebar = ({
             </div>
           </div>
         </div>
-        <div className="lg:col-span-1 col-span-1 w-full">
+        <div className="lg:col-span-5 col-span-1 w-full">
           <button
             className="text-center text-sm font-bold text-white mt-1 "
             onClick={toggleLiveCars}
@@ -229,7 +229,7 @@ const LiveSidebar = ({
                 </div>
               </div>
 
-              <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-5 pb-5 text-sm border-b-2 border-green text-green">
+              <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-1 pb-5 text-sm border-b-2 border-green text-green">
                 {item.timestamp}
 
                 <br></br>
