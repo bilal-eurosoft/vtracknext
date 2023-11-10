@@ -31,6 +31,7 @@ export default function Zone() {
   const [filteredItems, setFilteredItems] = useState([]);
   const { data: session } = useSession();
   const [zoneList, setZoneList] = useState<zonelistType[]>([]);
+  const [initialzoneList, setInitialZoneList] = useState<zonelistType[]>([]);
   const [selectedZoneTypeCircle, setselectedZoneTypeCircle] =
     useState<any>(false);
   const [selectedZoneTypPolyGone, setselectedZoneTypePolyGone] =
@@ -77,6 +78,7 @@ export default function Zone() {
           clientId: session?.clientId,
         });
         setZoneList(allzoneList);
+        setInitialZoneList(allzoneList)
       }
     })();
   }, []);
@@ -108,6 +110,7 @@ export default function Zone() {
 
   const handlePageChangeFiter = (event: any, newPage: any) => {
     setFilterZonePage(newPage);
+    
   };
 
   const handleClickPaginationFilter = () => {
@@ -162,11 +165,13 @@ export default function Zone() {
       GeoFenceType: "",
       zoneType: "",
     });
-    // setSelectedZoneType(item);
-    // setFilteredZones(filterZoneResult);
+
     setselectedZoneTypeCircle(false);
     setselectedZoneTypePolyGone(false);
-    setZoneList(displayedData);
+    setFilterZonePage(1); 
+    setRowsPerPage(10);
+    setFilteredZones(initialzoneList)
+
   };
 
   function handleCheckboxChange(zone: zonelistType) {
@@ -838,13 +843,23 @@ export default function Zone() {
               </div>
             </div>
             <div className="mt-2">
+             
               <TablePagination
+  component="div"
+  rowsPerPageOptions={[10, 20, 30, 40, 50, 100]}
+  count={filterZoneResult.length} // or zoneList.length depending on the context
+  rowsPerPage={filterZonePerPage} // or rowsPerPage depending on the context
+  page={filterZonepage} // or currentPage depending on the context
+  onRowsPerPageChange={handleChangeRowsPerPageFilter} // or handleChangeRowsPerPage depending on the context
+  onPageChange={handlePageChangeFiter} // or handlePageChange depending on the context
+/>
+{/*  <TablePagination  // porana code
                 component="div"
                 rowsPerPageOptions={[10, 20, 30, 40, 50, 100]}
                 count={filteredZones.length}
                 rowsPerPage={filterZonePerPage}
                 onRowsPerPageChange={handleChangeRowsPerPageFilter}
-              />
+              /> */}
             </div>
           </div>
         ) : (
@@ -889,13 +904,23 @@ export default function Zone() {
               </div>
             </div>
             <div className="mt-2">
-              <TablePagination
+              {/* <TablePagination
                 component="div"
                 rowsPerPageOptions={[10, 20, 30, 40, 50, 100]}
                 count={zoneList.length}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
-              />
+              /> */}
+              <TablePagination
+  component="div"
+  rowsPerPageOptions={[10, 20, 30, 40, 50, 100]}
+  count={zoneList.length}
+  rowsPerPage={rowsPerPage}
+  page={currentPage} // Add this prop
+  onPageChange={handlePageChange} // Add this prop
+  onRowsPerPageChange={handleChangeRowsPerPage}
+/>
+
             </div>
           </div>
         )}
