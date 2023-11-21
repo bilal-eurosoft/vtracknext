@@ -382,7 +382,7 @@ const EditZonePage: React.FC = () => {
                 name="zoneName"
                 value={Form.zoneName}
                 className="text-black  block py-2 px-0 w-full text-sm text-labelColor bg-white-10 border border-grayLight appearance-none px-3 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-green mb-5"
-                placeholder="Enter Zone Name "
+                placeholder="Enter Zone Name"
                 required
               />
               <label className="text-gray text-sm">
@@ -466,9 +466,9 @@ const EditZonePage: React.FC = () => {
                   stroke="currentColor"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                   />
                 </svg>
@@ -488,12 +488,12 @@ const EditZonePage: React.FC = () => {
             <div className="lg:col-span-5  md:col-span-4  sm:col-span-5 col-span-4 mx-3">
               <div className="flex justify-start"></div>
               <div className="w-full  mt-4 overflow-hidden">
-                {mapcenter !== null && zoom >= 0  && (
+                {mapcenter !== null && zoom >= 0 && (
                   <MapContainer
                     zoom={zoom}
                     center={mapcenter}
                     className="z-10 "
-                    style={{ height: "35em" }}
+                    style={{ height: "45em" }}
                   >
                     <TileLayer
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

@@ -43,7 +43,6 @@ const LiveSidebar = ({
     })();
   }, []);
 
-  console.log("zonelist", zoneList);
   useEffect(() => {
     const filtered = carData.filter((data) =>
       data.vehicleReg.toLowerCase().startsWith(searchData.search.toLowerCase())
@@ -62,8 +61,7 @@ const LiveSidebar = ({
   const filterZone = zoneList.filter(
     (item) => item.zoneName === filteredData.vehicleReg
   );
-
-  console.log("filter", filteredData);
+  console.log(zoneList);
   return (
     <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4">
       <div className="grid grid-cols-12 bg-green py-3 pe-1 gap-8 ">
@@ -166,21 +164,22 @@ const LiveSidebar = ({
           </div>
         </div>
       </div>
-      <div className="overflow-y-scroll " style={{ height: "46.8em" }}>
-        {filteredData?.map((item: VehicleData) => {
+      <div className="overflow-y-scroll " style={{ height: "88vh" }}>
+        {filteredData?.map((item: VehicleData, index: any) => {
           return (
             <div
               className="hover:bg-bgLight cursor-pointer pt-2"
               onClick={() => {
                 setSelectedVehicle(item);
               }}
+              key={index}
             >
               <div
                 key={item?.IMEI}
                 className="grid lg:grid-cols-3 grid-cols-3 text-center py-5      "
               >
                 <div className="lg:col-span-1 col-span-1">
-                  <p style={{ fontSize: "1.3em" }}>
+                  <div style={{ fontSize: "1.3em" }}>
                     {item.gps.speed === 0 && item.ignition === 0 ? (
                       <p className="text-red ">{item?.vehicleReg}</p>
                     ) : item.gps.speed > 0 && item.ignition === 1 ? (
@@ -188,7 +187,7 @@ const LiveSidebar = ({
                     ) : (
                       <p className="text-yellow ">{item?.vehicleReg}</p>
                     )}
-                  </p>
+                  </div>
                 </div>
 
                 <div className="lg:col-span-1 col-span-1">
@@ -224,7 +223,6 @@ const LiveSidebar = ({
                     ) : (
                       <p>Timezone is undefined</p>
                     )}
-                    {/*  )} */}
                   </div>
                 </div>
               </div>
@@ -244,15 +242,6 @@ const LiveSidebar = ({
             </div>
           );
         })}
-        {/* {zoneList.map((item, index) => {
-          return (
-            <div>
-              {item.zoneName}
-              <br></br>
-              <button onClick={() => hanldeClick(index + 1)}>Click</button>
-            </div>
-          );
-        })} */}
       </div>
     </div>
   );

@@ -331,6 +331,36 @@ export async function getZoneListByClientId({
     return [];
   }
 }
+export async function postDriverDataByClientId({
+  token,
+  newformdata,
+}: {
+  token: string;
+  newformdata: zonelistType;
+}) {
+  try {
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/v2/Driver",
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(newformdata),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching data", error);
+    return [];
+  }
+}
 
 export async function ZoneFindById({
   token,
@@ -602,10 +632,8 @@ export async function TripsByBucketAndVehicle({
     }
 
     const data = await response.json();
-    console.log("data", data);
     return data;
   } catch (error) {
-    console.error("Error fetching data", error);
     return [];
   }
 }

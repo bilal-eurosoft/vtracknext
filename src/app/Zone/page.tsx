@@ -326,7 +326,7 @@ else {
         className="shadow-lg lg:w-full w-screen bg-bgLight lg:-ms-0 -ms-1"
       >
         <p className="bg-green px-4 py-1 text-black text-sm text-white font-bold">
-          Zone Filter
+          Zone Filtersss
         </p>
         <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5  ">
           <div className="lg:col-span-1">
@@ -377,7 +377,6 @@ else {
             <select
               className="block mt-2 py-1 px-0 w-full text-sm text-gray bg-white-10 border border-grayLight px-3 dark:border-gray-600 dark:focus:border-blue-500 outline-green mb-5"
               name="GeoFenceType"
-              style={{ fontSize: "1em" }}
               onChange={(e) =>
                 setSearchCriteria({
                   ...searchCriteria,
@@ -386,13 +385,21 @@ else {
               }
               value={searchCriteria.GeoFenceType}
             >
-              <option value="" disabled selected hidden>
+              <option value="" disabled selected hidden className="text-sm">
                 Select Geofence Type
               </option>
-              <option value="On-Site">On-Site</option>
-              <option value="Off-Site">Off-Site</option>
-              <option value="City-Area">City-Area</option>
-              <option value="Restricted-Area">Restricted-Area</option>
+              <option value="On-Site" className="text-sm">
+                On-Site
+              </option>
+              <option value="Off-Site" className="text-sm">
+                Off-Site
+              </option>
+              <option value="City-Area" className="text-sm">
+                City-Area
+              </option>
+              <option value="Restricted-Area" className="text-sm">
+                Restricted-Area
+              </option>
             </select>
           </div>
      

@@ -1,5 +1,5 @@
 "use client";
-
+import "./index.css";
 import React, { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import { VehicleData } from "@/types/vehicle";
@@ -82,9 +82,9 @@ const DynamicCarMap = ({
             <MapContainer
               id="map"
               center={mapCoordinates}
-              className="z-0"
+              className="fixed top-30 w-full z-0"
               zoom={zoom}
-              style={{ height: "70.5em" }}
+              style={{ height: "100vh" }}
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

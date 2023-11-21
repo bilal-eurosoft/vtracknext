@@ -1,6 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-
+import DateFnsMomemtUtils from "@date-io/moment";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { KeyboardDatePicker } from "@material-ui/pickers";
+import BlinkingTime from "@/components/General/BlinkingTime";
+import dayjs from "dayjs";
+// import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
@@ -31,6 +39,12 @@ import { StopAddressData } from "@/types/StopDetails";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import { Tooltip, Button } from "@material-tailwind/react";
+import Select, { ValueType, ActionMeta } from "react-select";
+import "./index.css";
+interface Option {
+  value: string;
+  label: string;
+}
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((module) => module.MapContainer),
@@ -52,6 +66,10 @@ const Circle = dynamic(
   () => import("react-leaflet/Circle").then((module) => module.Circle),
   { ssr: false }
 );
+function filterWeekends(date: any) {
+  // Return false if Saturday or Sunday
+  return date.value === 0 || date === 6;
+}
 
 export default function JourneyReplay() {
   const { data: session } = useSession();
@@ -74,6 +92,7 @@ export default function JourneyReplay() {
   const [zoom, setzoom] = useState(10);
   const [polylinedata, setPolylinedata] = useState<[number, number][]>([]);
   const [Ignitionreport, setIgnitionreport] = useState<replayreport>({
+    date: new Date(),
     TimeZone: session?.timezone || "",
     VehicleReg: "",
     clientId: session?.clientId || "",
@@ -99,6 +118,10 @@ export default function JourneyReplay() {
   const [getShowICon, setShowIcon] = useState(false);
   const [clearMapData, setClearMapData] = useState(false);
   const [getCheckedInput, setCheckedInput] = useState<any>(false);
+  const [currentDate, setCurrentDate] = useState("");
+  const [currentDateDefault, setCurrentDateDefaul] = useState(false);
+  const [currentToDateDefault, setCurrentToDateDefaul] = useState(false);
+  const [isDynamicTime, setIsDynamicTime] = useState<any>([]);
   const SetViewOnClick = ({ coords }: { coords: any }) => {
     if (isPaused) {
       setMapcenterToFly(null);
@@ -351,12 +374,6 @@ export default function JourneyReplay() {
   const formattedHours = hours.padStart(2, "0");
   const formattedMinutes = minutes.padStart(2, "0");
   const formattedSeconds = seconds.padStart(2, "0");
-  // const currentDates = new Date();
-  // const currentDate = currentDates.toISOString().slice(0, 10);
-  // const currentDate = new Date().toISOString().slice(0, 10);
-  const [currentDate, setCurrentDate] = useState("");
-  const [currentDateDefault, setCurrentDateDefaul] = useState(false);
-  const [currentToDateDefault, setCurrentToDateDefaul] = useState(false);
 
   useEffect(() => {
     const date = new Date();
@@ -476,52 +493,6 @@ export default function JourneyReplay() {
   };
   const handleClick = () => {
     setShowRadioButton(!getShowRadioButton);
-  };
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-
-    setIgnitionreport((prevReport: any) => ({
-      ...prevReport,
-      [name]: value,
-    }));
-
-    if (name === "period" && value === "custom") {
-      setIsCustomPeriod(true);
-    } else if (name === "period" && value != "custom") {
-      setIsCustomPeriod(false);
-    }
-  };
-
-  const handleCustomDateChange = (fieldName: string, date: string) => {
-    setCurrentDateDefaul(true);
-    // setIgnitionreport((prevReport: any) => ({
-    //   ...prevReport,
-    //   [fieldName]: date,
-    // }));
-    const selectedaDate: any = date;
-    if (new Date(selectedaDate) > new Date()) {
-      return;
-    }
-    setIgnitionreport({ ...Ignitionreport, [fieldName]: selectedaDate });
-  };
-
-  const handleCustomToDateChange = (fieldName: string, date: string) => {
-    setCurrentToDateDefaul(true);
-    // setIgnitionreport((prevReport: any) => ({
-    //   ...prevReport,
-    //   [fieldName]: date,
-    // }));
-    const selectedaDate: any = date;
-    if (Ignitionreport.fromDateTime > Ignitionreport.toDateTime) {
-      if (new Date(selectedaDate) > new Date()) {
-        return;
-      }
-      alert("Please");
-    }
-
-    setIgnitionreport({ ...Ignitionreport, [fieldName]: selectedaDate });
   };
 
   function getFormattedDate(date: any) {
@@ -686,15 +657,98 @@ export default function JourneyReplay() {
     setCheckedInput(!getCheckedInput);
   };
 
+  const handleCustomDateChange = (fieldName: string, date: any) => {
+    console.log("datess", Ignitionreport.fromDateTime);
+    setCurrentDateDefaul(true);
+    // setIgnitionreport((prevReport: any) => ({
+    //   ...prevReport,
+    //   [fieldName]: date,
+    // }));
+    const selectedaDate: any = date;
+    if (new Date(selectedaDate) > new Date()) {
+      return;
+    }
+    setIgnitionreport({
+      ...Ignitionreport,
+      [fieldName]: selectedaDate,
+    });
+  };
+  // const [selectedDate, handleDateChange] = useState<any>(new Date());
+  const [selectedDates, setSelectedDates] = useState(new Date());
+
+  const handleDateChange = (date: any) => {
+    setIgnitionreport({
+      ...Ignitionreport,
+      date,
+    });
+    console.log(date);
+    setSelectedDates(date);
+  };
+
+  const currenTDates = new Date();
+  const isCurrentDate = (date: any) => {
+    if (date instanceof Date) {
+      const currentDate = new Date();
+      return (
+        date.getDate() === currentDate.getDate() &&
+        date.getMonth() === currentDate.getMonth() &&
+        date.getFullYear() === currentDate.getFullYear()
+      );
+    }
+    return false;
+  };
+
+  const handleGetItem = (item: any) => {
+    setIsDynamicTime(item);
+  };
+
+  const selectOption: Option[] = vehicleList.map((item: any) => {
+    return { value: item.vehicleReg, label: item.vehicleReg };
+  });
+
+  const [selectedOption, setSelectedOption] =
+    useState<ValueType<Option, false>>(null);
+
+  const handleSelectChange = (
+    newValue: ValueType<Option, false>,
+    actionMeta: any
+  ) => {
+    const name = "period";
+    const value = "yesterday";
+    setSelectedOption(newValue);
+    // Handle select change...
+    if (actionMeta.action === "select-option" && newValue) {
+      console.log(`Selected value: ${newValue.value}`);
+    }
+  };
+
+  console.log("selectedOption", selectedOption);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const {name,value}=e.target
+    setIgnitionreport((prevReport: any) => ({
+      ...prevReport,
+      [name]:value,
+    }));
+
+    if (name === "period" && value === "custom") {
+      setIsCustomPeriod(true);
+    } else if (name === "period" && value != "custom") {
+      setIsCustomPeriod(false);
+    }
+  };
+
   return (
     <>
       <div style={{ height: "90vh" }}>
         <p className="bg-[#00B56C] px-4 py-1 text-white">JourneyReplay</p>
-
         <div className="grid lg:grid-cols-10  md:grid-cols-4  gap-5 px-4 text-start pt-4 bg-bgLight">
-          <div className="lg:col-span-1 md:col-span-3 mt-2">
+          <div className="lg:col-span-1 md:col-span-3 mt-2 hover:border:green">
             <select
-              className=" h-8 text-gray  w-full   outline-green border border-grayLight px-1"
+              id="select_box"
+              className="   h-8 text-gray  w-full  outline-green border border-grayLight px-1 hover:border-green"
               onChange={handleInputChange}
               name="VehicleReg"
               value={Ignitionreport.VehicleReg}
@@ -708,11 +762,34 @@ export default function JourneyReplay() {
                 </option>
               ))}
             </select>
+            <Select
+              onChange={handleSelectChange}
+              name="VehicleReg"
+              className="Select_box"
+              options={selectOption}
+              value={selectedOption}
+              theme={(theme) => ({
+                ...theme,
+                borderRadius: 0,
+
+                colors: {
+                  ...theme.colors,
+
+                  primary25: "#00B56C",
+                  primary: "gray",
+                },
+              })}
+            />
+
+            <p>
+              Selected option:{" "}
+              {selectedOption ? (selectedOption as Option).label : "None"}
+            </p>
           </div>
           <div className="lg:col-span-3 md:col-span-3  pt-2">
             {getShowRadioButton ? (
-              <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2  -mt-5  grid-cols-2  px-10 gap-5 flex justify-center ">
-                <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0  ">
+              <div className="grid lg:grid-cols-12 md:grid-cols-2 sm:grid-cols-2  -mt-5  grid-cols-2  px-10 gap-5 flex justify-center ">
+                <div className="lg:col-span-5 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0  ">
                   <label className="text-green">
                     From
                     <input
@@ -729,14 +806,31 @@ export default function JourneyReplay() {
                           ? Ignitionreport.fromDateTime
                           : currentDate
                       }
-                      max={getFormattedDate(new Date())}
                       onChange={(e) =>
                         handleCustomDateChange("fromDateTime", e.target.value)
                       }
                     />
                   </label>
+
+                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["MobileDatePicker"]}>
+                      <DemoItem label="Responsive variant">
+                        <DatePicker defaultValue={dayjs("2022-04-17")} />
+                      </DemoItem>
+                    </DemoContainer>
+                  </LocalizationProvider> */}
+                  <label className="text-green">Form</label>
+                  <MuiPickersUtilsProvider utils={DateFnsMomemtUtils}>
+                    <KeyboardDatePicker
+                      format="MM/DD/yyyy"
+                      value={Ignitionreport.date}
+                      onChange={handleDateChange}
+                      variant="inline"
+                      maxDate={currenTDates}
+                    />
+                  </MuiPickersUtilsProvider>
                 </div>
-                <div className="lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2  ">
+                <div className="lg:col-span-5 md:col-span-1 sm:col-span-1 col-span-2  ">
                   <label className="text-green">
                     To
                     <br></br>
@@ -749,12 +843,21 @@ export default function JourneyReplay() {
                           ? Ignitionreport.toDateTime
                           : currentDate
                       }
-                      max={getFormattedDate(new Date())}
                       onChange={(e) =>
-                        handleCustomToDateChange("toDateTime", e.target.value)
+                        handleCustomDateChange("toDateTime", e.target.value)
                       }
                     />
                   </label>
+                  <label className="text-green">To</label>
+                  <MuiPickersUtilsProvider utils={DateFnsMomemtUtils}>
+                    <KeyboardDatePicker
+                      format="MM/DD/yyyy"
+                      value={Ignitionreport.date}
+                      onChange={handleDateChange}
+                      variant="inline"
+                      shouldDisableDate={(date) => !isCurrentDate(date)}
+                    />
+                  </MuiPickersUtilsProvider>
                 </div>
                 <div className="lg:col-span-1">
                   <button
@@ -766,13 +869,16 @@ export default function JourneyReplay() {
                 </div>
               </div>
             ) : (
-              <div className="grid lg:grid-cols-12 md:grid-cols-12 gap-5">
+              <div
+                className="grid lg:grid-cols-11 md:grid-cols-12 mt-1 "
+                // style={{ display: "flex", justifyContent: "start" }}
+              >
                 <div className="lg:col-span-2 md:col-span-2 sm:col-span-2">
-                  <label className="text-sm color-labelColor ">
+                  <label className="text-sm text-gray ">
                     <input
                       type="radio"
-                      className="w-5 h-4 form-radio  "
-                      style={{ accentColor: "green" }}
+                      className="w-5  form-radio  "
+                      style={{ accentColor: "green", height: "1.5vh" }}
                       name="period"
                       value="today"
                       checked={Ignitionreport.period === "today"}
@@ -783,13 +889,13 @@ export default function JourneyReplay() {
                 </div>
 
                 <div className="lg:col-span-2  md:col-span-2 sm:col-span-2  lg:-ms-4 ">
-                  <label className="text-sm color-labelColor w-full ">
+                  <label className="text-sm  text-gray w-full pt-3 ">
                     <input
                       type="radio"
-                      className="w-4   h-4 form-radio text-green"
+                      className="w-5  form-radio text-green"
                       name="period"
                       value="yesterday"
-                      style={{ accentColor: "green" }}
+                      style={{ accentColor: "green", height: "1.5vh" }}
                       checked={Ignitionreport.period === "yesterday"}
                       onChange={handleInputChange}
                     />
@@ -797,14 +903,14 @@ export default function JourneyReplay() {
                   </label>
                 </div>
 
-                <div className="lg:col-span-2 md:col-span-2 ">
-                  <label className="text-sm color-labelColor ">
+                <div className="lg:col-span-2 md:col-span-2 lg:-ms-1">
+                  <label className="text-sm text-gray ">
                     <input
                       type="radio"
-                      className="w-5 h-4"
+                      className="w-5 "
                       name="period"
                       value="week"
-                      style={{ accentColor: "green" }}
+                      style={{ accentColor: "green", height: "1.5vh" }}
                       checked={Ignitionreport.period === "week"}
                       onChange={handleInputChange}
                     />
@@ -812,14 +918,14 @@ export default function JourneyReplay() {
                   </label>
                 </div>
 
-                <div className="lg:col-span-3 md:col-span-2 ">
-                  <label className="text-sm color-labelColor ">
+                <div className="lg:col-span-2 md:col-span-2 -ms-4">
+                  <label className="text-sm text-gray ">
                     <input
                       type="radio"
-                      className="w-5 h-4"
+                      className="w-5 "
                       name="period"
                       value="custom"
-                      style={{ accentColor: "green" }}
+                      style={{ accentColor: "green", height: "1.5vh" }}
                       checked={Ignitionreport.period === "custom"}
                       onChange={handleInputChange}
                       onClick={handleClick}
@@ -865,7 +971,10 @@ export default function JourneyReplay() {
                   onClick={() => handleDivClick(item.TripStart, item.TripEnd)}
                 >
                   {/* <h2 className="text-xl font-semibold">Trip {index + 1}</h2> */}
-                  <div className="py-5 hover:bg-tripBg px-5 cursor-pointer">
+                  <div
+                    className="py-5 hover:bg-tripBg px-5 cursor-pointer"
+                    onClick={() => handleGetItem(item)}
+                  >
                     <div className="grid grid-cols-12 gap-10">
                       <div className="col-span-1">
                         <svg
@@ -873,11 +982,11 @@ export default function JourneyReplay() {
                           width="24"
                           height="24"
                           viewBox="0 0 24 24"
-                          stroke-width="2"
+                          strokeWidth="2"
                           stroke="currentColor"
                           fill="none"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         >
                           {" "}
                           <path stroke="none" d="M0 0h24v24H0z" />{" "}
@@ -907,15 +1016,15 @@ export default function JourneyReplay() {
                           stroke="currentColor"
                         >
                           <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
                           />
                           <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
                             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                           />
                         </svg>
@@ -931,7 +1040,8 @@ export default function JourneyReplay() {
                         </p>
                         <p className=" text-gray text-start font-bold text-sm">
                           {" "}
-                          Trip Start: {item.TripStart}
+                          Trip Start: {item.TripStartDateLabel} &nbsp;
+                          {item.TripStartTimeLabel}
                         </p>
                       </div>
                     </div>
@@ -945,15 +1055,15 @@ export default function JourneyReplay() {
                           stroke="currentColor"
                         >
                           <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
                           />
                           <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
                             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                           />
                         </svg>
@@ -966,7 +1076,8 @@ export default function JourneyReplay() {
                         </p>
                         <p className=" text-gray text-start font-bold text-sm">
                           {" "}
-                          Trip End: {item.TripEnd}
+                          Trip End:{item.TripEndDateLabel} &nbsp;
+                          {item.TripEndTimeLabel}
                         </p>
                       </div>
                     </div>
@@ -1094,11 +1205,11 @@ export default function JourneyReplay() {
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        stroke-width="2"
+                        strokeWidth="2"
                         stroke="currentColor"
                         fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         onClick={handleShowDetails}
                       >
                         {" "}
@@ -1111,11 +1222,11 @@ export default function JourneyReplay() {
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        stroke-width="2"
+                        strokeWidth="2"
                         stroke="currentColor"
                         fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         onClick={handleShowDetails}
                       >
                         {" "}
@@ -1156,10 +1267,9 @@ export default function JourneyReplay() {
                   <div className="col-span-1  text-center ">
                     <input
                       type="checkbox"
-                      className=""
                       onChange={handleChangeChecked}
                       checked={getCheckedInput}
-                      style={{ accentColor: "green" }}
+                      // style={{ accentColor: "green" }}
                     />
                   </div>
                   <div className="lg:col-span-2 sm:col-span-2 col-span-4 lg:-ms-5">
@@ -1222,12 +1332,9 @@ export default function JourneyReplay() {
                 <div className="lg:col-span-1 md:col-span-3 col-span-3  ">
                   <div className="bg-bgPlatBtn rounded-md">
                     <p className="lg:text-xl text-white text-center font-extralight py-2 text-md mx-1">
-                      09:37 AM
+                      <BlinkingTime timezone={session?.timezone} />
                     </p>
-                    <p className="text-white text-xs text-center">
-                      {" "}
-                      Oct 5, 2023
-                    </p>
+
                     <div className=" border-t border-white my-1 lg:w-32 mx-2"></div>
                     <div className="mt-3 pb-3 ms-1">
                       <Tooltip content="Pause" className="bg-black">
@@ -1237,11 +1344,11 @@ export default function JourneyReplay() {
                             width="24"
                             height="24"
                             viewBox="0 0 24 24"
-                            stroke-width="2"
+                            strokeWidth="2"
                             stroke="currentColor"
                             fill="none"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           >
                             {" "}
                             <path stroke="none" d="M0 0h24v24H0z" />{" "}
@@ -1258,9 +1365,9 @@ export default function JourneyReplay() {
                             viewBox="0 0 24 24"
                             fill="white"
                             stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           >
                             {" "}
                             <polygon points="5 3 19 12 5 21 5 3" />
@@ -1274,11 +1381,11 @@ export default function JourneyReplay() {
                             width="24"
                             height="24"
                             viewBox="0 0 24 24"
-                            stroke-width="2"
+                            strokeWidth="2"
                             stroke="currentColor"
                             fill="white"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           >
                             {" "}
                             <path stroke="none" d="M0 0h24v24H0z" />{" "}
@@ -1303,13 +1410,17 @@ export default function JourneyReplay() {
                           }}
                         />
                       </Box>
-                      <div className="grid grid-cols-12 mt-2">
+
+                      <div className="grid grid-cols-12 mt-2 ">
                         <div className="col-span-11">
-                          <p className="text-sm color-labelColor"> 11:20pm</p>
+                          <p className="text-sm color-labelColor">
+                            {" "}
+                            {isDynamicTime.TripStartTimeLabel}
+                          </p>
                         </div>
                         <div className="col-span-1">
                           <p className="text-sm color-labelColor text-start">
-                            10:50pm
+                            {isDynamicTime.TripEndTimeLabel}
                           </p>
                         </div>
                       </div>

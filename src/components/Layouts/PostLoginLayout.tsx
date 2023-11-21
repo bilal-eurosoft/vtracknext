@@ -27,6 +27,13 @@ export default function RootLayout({
 }) {
   const router = useRouter();
   const [openPopover, setOpenPopover] = useState(false);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const obj = [
+    { herf: " /liveTracking", label: "Live-Tracing" },
+    { herf: "/journeyReplay", label: "journer-Replay" },
+    { herf: " /Zone", label: "Zone" },
+  ];
+
   const triggers = {
     onMouseEnter: () => setOpenPopover(true),
     // onMouseLeave: () => setOpenPopover(false),
@@ -38,10 +45,28 @@ export default function RootLayout({
     router.push("/login");
   }
 
+  const handleClick = (item: any) => {
+    setSelectedColor(item);
+  };
+
+  console.log("selectedColor", session);
   return (
     // <div className={inter.className}>
     <div>
       <div>
+        {/* {obj.map(({ herf, label }) => {
+          return (
+            <div>
+              <Link
+                onClick={() => handleClick(herf)}
+                style={{ color: selectedColor === herf ? "red" : "green" }}
+                href={herf}
+              >
+                {label}
+              </Link>{" "}
+            </div>
+          );
+        })} */}
         <div className="flex flex-row">
           <div className="basis-20 py-6 bg-[#29303b] h-screen hidden md:block sticky top-0">
             <Link href="/liveTracking">
@@ -225,11 +250,11 @@ export default function RootLayout({
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
-                    stroke-width="2"
+                    strokeWidth="2"
                     stroke="currentColor"
                     fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
                     {" "}
                     <path stroke="none" d="M0 0h24v24H0z" />{" "}
@@ -260,7 +285,7 @@ export default function RootLayout({
           </div>
           <hr></hr>
           <div className="basis-1/1 w-screen  ">
-            <nav className="flex items-center justify-between flex-wrap bg-bgLight p-4 shadow-md sticky top-0">
+            <nav className="flex items-center justify-between flex-wrap bg-bgLight p-4 shadow-md sticky top-0 z-10">
               <div className="flex items-center flex-shrink-0 text-white">
                 <Image src={logo} className="lg:h-9 lg:w-32 w-20 h-6" alt="" />
               </div>
@@ -313,9 +338,7 @@ export default function RootLayout({
                         color="gray"
                         className="font-normal "
                       >
-                        <p className=" mb-3 text-center">
-                          {session?.clientName}
-                        </p>
+                        <p className=" mb-3 text-center">{session?.FullName}</p>
                         <hr></hr>
                         <div className="flex justify-center">
                           <button

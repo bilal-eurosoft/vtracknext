@@ -390,23 +390,23 @@ export default function Reports() {
           )}
           <div className="text-white h-20 flex justify-center items-center">
             <button
-              className={`bg-green py-2 px-5 mb-5 ${
-                !Ignitionreport.reportType ||
-                !Ignitionreport.VehicleReg ||
-                !Ignitionreport.period ||
-                !Ignitionreport.fromDateTime ||
-                !Ignitionreport.toDateTime
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
+              className={`bg-green py-2 px-5 mb-5
+                        ${
+                          Ignitionreport.period === "today" ||
+                          Ignitionreport.period === "yesterday" ||
+                          Ignitionreport.period === "week" ||
+                          Ignitionreport.period === "custom"
+                            ? ""
+                            : "opacity-50 cursor-not-allowed"
+                        }`}
               type="submit"
-              disabled={
-                !Ignitionreport.reportType ||
-                !Ignitionreport.VehicleReg ||
-                !Ignitionreport.period ||
-                !Ignitionreport.fromDateTime ||
-                !Ignitionreport.toDateTime
-              }
+              // disabled={
+              //   !Ignitionreport.reportType ||
+              //   !Ignitionreport.VehicleReg ||
+              //   !Ignitionreport.period ||
+              //   !Ignitionreport.fromDateTime ||
+              //   !Ignitionreport.toDateTime
+              // }
             >
               Submits
             </button>

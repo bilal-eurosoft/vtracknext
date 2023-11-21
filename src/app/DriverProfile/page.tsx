@@ -8,14 +8,18 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import Button from "@mui/material/Button";
+import { Toaster, toast } from "react-hot-toast";
 
+import Button from "@mui/material/Button";
+import axios from "axios";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { postDriverDataByClientId } from "@/utils/API_CALLS";
+import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 interface Column {
   id: "name" | "code" | "population" | "size" | "density";
   label: string;
@@ -136,9 +140,12 @@ const style = {
 };
 
 export default function DriverProfile() {
+  const { data: session } = useSession();
+
   const [showCardNumber, setShowCardNumber] = useState(false);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [data, setData] = useState([]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -150,12 +157,95 @@ export default function DriverProfile() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
+  const [formData, setFormDate] = useState({
+    id: "",
+    clientId: "61e6d00fd9cc7102ac6464a3",
+    driverNo: "2",
+    driverfirstName: "",
+    driverMiddleName: "test",
+    driverLastName: "test",
+    driverContact: "1233434",
+    driverIdNo: "12",
+    driverAddress1: "test",
+    driverAddress2: "test",
+    driverRFIDCardNumber: "123444",
+    isAvailabl: "yes",
+  });
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  // useEffect(() => {
+  //   const func = async () => {
+  //     const dataPost = await axios.post(
+  //       "https://backend.vtracksolutions.com/v2/Driver"
+  //     );
+  //   };
+  //   func();
+  // }, []);
+
+  const handleChangeDriver = (key: any, e: any) => {
+    setFormDate({ ...formData, [key]: e.target.value });
+  };
+
+  const handleDriverSubmit = async (e: any) => {
+    e.preventDefault();
+
+    if (session) {
+      const newformdata: any = {
+        ...formData,
+        clientId: session?.clientId,
+      };
+
+      const response = await toast.promise(
+        postDriverDataByClientId({
+          token: session?.accessToken,
+          newformdata: newformdata,
+        }),
+
+        {
+          loading: "Saving data...",
+          success: "Data saved successfully!",
+          error: "Error saving data. Please try again.",
+        },
+        {
+          style: {
+            border: "1px solid #00B56C",
+            padding: "16px",
+            color: "#1A202C",
+          },
+          success: {
+            duration: 2000,
+            iconTheme: {
+              primary: "#00B56C",
+              secondary: "#FFFAEE",
+            },
+          },
+          error: {
+            duration: 2000,
+            iconTheme: {
+              primary: "#00B56C",
+              secondary: "#FFFAEE",
+            },
+          },
+        }
+      );
+      console.log("newdata", formData);
+    }
+    // const dataFetch = await axios.post(
+    //   "https://backend.vtracksolutions.com/v2/Driver",
+    //   formData
+    // );
+  };
+
   return (
     <div>
+      {data.map((item: any) => {
+        return (
+          <div>
+            <p>{item.driverfirstName}</p>
+          </div>
+        );
+      })}
       <Paper sx={{ width: "98%" }} className="bg-green ms-3 mr-3 mt-3">
         <div className="grid lg:grid-cols-12 md:grid-cols-2  sm:grid-cols-2  p-4  bg-bgLight">
           <div className=" lg:col-span-10 md:grid-col-span-1 sm:grid-col-span-1 lg:mb-0 flex lg: justify-center sm:justify-start mb-4 ">
@@ -175,11 +265,11 @@ export default function DriverProfile() {
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
-                  stroke-width="2"
+                  strokeWidth="2"
                   stroke="currentColor"
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
                   {" "}
                   <path stroke="none" d="M0 0h24v24H0z" />{" "}
@@ -200,11 +290,11 @@ export default function DriverProfile() {
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
-                  stroke-width="2"
+                  strokeWidth="2"
                   stroke="currentColor"
                   fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
                   {" "}
                   <path stroke="none" d="M0 0h24v24H0z" />{" "}
@@ -246,11 +336,11 @@ export default function DriverProfile() {
                       width="24"
                       height="24"
                       viewBox="0 0 24 24"
-                      stroke-width="2"
+                      strokeWidth="2"
                       stroke="currentColor"
                       fill="none"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
                       {" "}
                       <path stroke="none" d="M0 0h24v24H0z" />{" "}
@@ -260,122 +350,167 @@ export default function DriverProfile() {
                   </div>
                 </div>
               </Typography>
-              <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-                <div
-                  className="grid grid-cols-12 m-6 mt-8 gap-8 "
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <div className="lg:col-span-3 col-span-1 ">
-                    <label className="text-sm text-labelColor">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
-                    />
-                  </div>
-                  <div className="lg:col-span-3 col-span-1 ">
-                    <label className="text-sm text-labelColor">
-                      Middle Name
-                    </label>
-                    <input
-                      type="text"
-                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
-                    />
-                  </div>
-                  <div className="lg:col-span-3 col-span-1 ">
-                    <label className="text-sm text-labelColor">
-                      <span className="text-red">*</span> Last Name
-                    </label>
-                    <input
-                      type="text"
-                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
-                    />
-                  </div>
-                </div>
-
-                <div
-                  className="grid grid-cols-12 m-6 mt-8 gap-8 "
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <div className="lg:col-span-3 col-span-1 ">
-                    <label className="text-sm text-labelColor">
-                      Driver Number
-                    </label>
-                    <input
-                      type="text"
-                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
-                    />
-                  </div>
-                  <div className="lg:col-span-3 col-span-1 ">
-                    <label className="text-sm text-labelColor">
-                      Contact Number
-                    </label>
-                    <input
-                      type="text"
-                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
-                    />
-                  </div>
-                  <div className="lg:col-span-3 col-span-1 ">
-                    <label className="text-sm text-labelColor">ID Number</label>
-                    <input
-                      type="text"
-                      className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
-                    />
-                  </div>
-                </div>
-
-                <div
-                  className="grid grid-cols-12 m-6 mt-8 gap-8 "
-                  style={{ display: "flex", justifyContent: "start" }}
-                >
-                  <div className="lg:col-span-2 col-span-1 ">
-                    <label className="text-sm text-labelColor ">
-                      RFID
-                      <input
-                        type="checkbox"
-                        onClick={() => setShowCardNumber(!showCardNumber)}
-                        style={{ accentColor: "green" }}
-                        className="border border-green  outline-green  cursor-pointer ms-4  "
-                      />
-                    </label>
-                  </div>
-                  {showCardNumber ? (
+              <form onSubmit={handleDriverSubmit}>
+                <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+                  <div
+                    className="grid grid-cols-12 m-6 mt-8 gap-8 "
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
                     <div className="lg:col-span-3 col-span-1 ">
                       <label className="text-sm text-labelColor">
-                        Card Number
+                        First Name
                       </label>
-                      <br></br>
                       <input
                         type="text"
+                        value={formData.driverfirstName}
                         className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                        onChange={(e: any) =>
+                          handleChangeDriver("driverfirstName", e)
+                        }
                       />
                     </div>
-                  ) : (
-                    ""
-                  )}
-                </div>
+                    <div className="lg:col-span-3 col-span-1 ">
+                      <label className="text-sm text-labelColor">
+                        Middle Name
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.driverMiddleName}
+                        className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                        onChange={(e: any) =>
+                          handleChangeDriver("driverMiddleName", e)
+                        }
+                      />
+                    </div>
+                    <div className="lg:col-span-3 col-span-1 ">
+                      <label className="text-sm text-labelColor">
+                        <span className="text-red">*</span> Last Name
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.driverLastName}
+                        className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                        onChange={(e: any) =>
+                          handleChangeDriver("driverLastName", e)
+                        }
+                      />
+                    </div>
+                  </div>
 
-                <div className="grid grid-cols-12 m-6 mt-8 gap-8 ">
-                  <div className="col-span-6 col-span-1 ">
-                    <label className="text-sm text-labelColor">
-                      Driver Number
-                    </label>
-                    <br></br>
-                    <textarea className="w-full border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out h-20 "></textarea>
-                    <button className="bg-green text-white px-10 mt-8 py-2 rounded-sm">
-                      Submit
-                    </button>
+                  <div
+                    className="grid grid-cols-12 m-6 mt-8 gap-8 "
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    <div className="lg:col-span-3 col-span-1 ">
+                      <label className="text-sm text-labelColor">
+                        Driver Number
+                      </label>
+                      <input
+                        value={formData.driverNo}
+                        type="text"
+                        className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                        onChange={(e: any) => handleChangeDriver("driverNo", e)}
+                      />
+                    </div>
+                    <div className="lg:col-span-3 col-span-1 ">
+                      <label className="text-sm text-labelColor">
+                        Contact Number
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.driverContact}
+                        className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                        onChange={(e: any) =>
+                          handleChangeDriver("driverContact", e)
+                        }
+                      />
+                    </div>
+                    <div className="lg:col-span-3 col-span-1 ">
+                      <label className="text-sm text-labelColor">
+                        ID Number
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.driverIdNo}
+                        className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                        onChange={(e: any) =>
+                          handleChangeDriver("driverIdNo", e)
+                        }
+                      />
+                    </div>
                   </div>
-                  <div className="col-span-6 col-span-1 ">
-                    <label className="text-sm text-labelColor">
-                      Contact Number
-                    </label>
-                    <br></br>
-                    <textarea className="w-full border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out h-20 "></textarea>
+
+                  <div
+                    className="grid grid-cols-12 m-6 mt-8 gap-8 "
+                    style={{ display: "flex", justifyContent: "start" }}
+                  >
+                    <div className="lg:col-span-2 col-span-1 ">
+                      <label className="text-sm text-labelColor ">
+                        RFID
+                        <input
+                          type="checkbox"
+                          onClick={() => setShowCardNumber(!showCardNumber)}
+                          style={{ accentColor: "green" }}
+                          className="border border-green  outline-green  cursor-pointer ms-4  "
+                        />
+                      </label>
+                    </div>
+                    {showCardNumber ? (
+                      <div className="lg:col-span-3 col-span-1 ">
+                        <label className="text-sm text-labelColor">
+                          Card Number
+                        </label>
+                        <br></br>
+                        <input
+                          type="text"
+                          value={formData.driverRFIDCardNumber}
+                          className="border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out "
+                          onChange={(e: any) =>
+                            handleChangeDriver("driverRFIDCardNumber", e)
+                          }
+                        />
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
-                </div>
-              </Typography>
+
+                  <div className="grid grid-cols-12 m-6 mt-8 gap-8 ">
+                    <div className="col-span-6 col-span-1 ">
+                      <label className="text-sm text-labelColor">
+                        Address 1
+                      </label>
+                      <br></br>
+                      <textarea
+                        value={formData.driverAddress1}
+                        className="w-full border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out h-20 "
+                        onChange={(e: any) =>
+                          handleChangeDriver("driverAddress1", e)
+                        }
+                      ></textarea>
+                      <button
+                        className="bg-green text-white px-10 mt-8 py-2 rounded-sm"
+                        type="submit"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                    <div className="col-span-6 col-span-1 ">
+                      <label className="text-sm text-labelColor">
+                        Address 2
+                      </label>
+                      <br></br>
+                      <textarea
+                        value={formData.driverAddress2}
+                        className="w-full border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out h-20 "
+                        onChange={(e: any) =>
+                          handleChangeDriver("driverAddress2", e)
+                        }
+                      ></textarea>
+                    </div>
+                  </div>
+                </Typography>
+              </form>
             </Box>
           </Fade>
         </Modal>
