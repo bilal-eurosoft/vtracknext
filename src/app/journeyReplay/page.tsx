@@ -727,10 +727,10 @@ export default function JourneyReplay() {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const {name,value}=e.target
+    const { name, value } = e.target;
     setIgnitionreport((prevReport: any) => ({
       ...prevReport,
-      [name]:value,
+      [name]: value,
     }));
 
     if (name === "period" && value === "custom") {

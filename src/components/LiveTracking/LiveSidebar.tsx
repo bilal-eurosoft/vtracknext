@@ -176,7 +176,7 @@ const LiveSidebar = ({
             >
               <div
                 key={item?.IMEI}
-                className="grid lg:grid-cols-3 grid-cols-3 text-center py-5      "
+                className="grid lg:grid-cols-3 grid-cols-3 text-center py-2      "
               >
                 <div className="lg:col-span-1 col-span-1">
                   <div style={{ fontSize: "1.3em" }}>
@@ -227,7 +227,7 @@ const LiveSidebar = ({
                 </div>
               </div>
 
-              <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-1 pb-5 text-sm border-b-2 border-green text-green">
+              <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-1 pb-3 text-sm border-b-2 border-green text-green">
                 {item.timestamp}
 
                 <br></br>
