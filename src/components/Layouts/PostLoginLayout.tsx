@@ -7,6 +7,7 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import Loading from '@/app/loading';
 
 import {
   Popover,
@@ -19,7 +20,22 @@ import {
 
 import BlinkingTime from "../General/BlinkingTime";
 // const inter = Inter({ subsets: ["latin"] });
+import dynamic from 'next/dynamic';
+// Example import statement
 
+const JourneyReplay = dynamic(() => import('@/app/journeyReplay/page'), {
+  loading: () => <Loading />,
+});
+
+const LiveTracking = dynamic(() => import('@/app/liveTracking/page'), {
+  loading: () => <Loading />,
+});
+const Zone = dynamic(() => import('@/app/Zone/page'), {
+  loading: () => <Loading />,
+});
+const Reports = dynamic(() => import('@/app/Reports/page'), {
+  loading: () => <Loading />,
+});
 export default function RootLayout({
   children,
 }: {
