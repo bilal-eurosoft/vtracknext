@@ -57,14 +57,12 @@ export default function Zone() {
 
   const [filterZonepage, setFilterZonePage] = useState(1);
   const [filterZonePerPage, setfilterZonePerPage] = useState(10);
-  const [filteredDataIsNotAvaialable, setFilteredDataIsNotAvaialable] = useState<boolean>(true)
+  const [filteredDataIsNotAvaialable, setFilteredDataIsNotAvaialable] =
+    useState<boolean>(true);
   const lastIndexFilter = filterZonePerPage * filterZonepage;
   const firstIndexFilter = lastIndexFilter - filterZonePerPage;
-  let filterZoneResult; 
-  filterZoneResult = filteredZones.slice(
-    firstIndexFilter,
-    lastIndexFilter
-  );
+  let filterZoneResult;
+  filterZoneResult = filteredZones.slice(firstIndexFilter, lastIndexFilter);
   const totalPagesFilter = Math.ceil(filteredZones.length / filterZonePerPage);
 
   const handleClickPagination = () => {
@@ -79,7 +77,7 @@ export default function Zone() {
           clientId: session?.clientId,
         });
         setZoneList(allzoneList);
-        setInitialZoneList(allzoneList)
+        setInitialZoneList(allzoneList);
       }
     })();
   }, []);
@@ -88,55 +86,51 @@ export default function Zone() {
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   let displayedData;
-  displayedData = zoneList.slice(startIndex, endIndex)
-
-    
+  displayedData = zoneList.slice(startIndex, endIndex);
 
   function handleSearchClick(e: any) {
     e.preventDefault();
 
     const { zoneName, zoneShortName, GeoFenceType, zoneType } = searchCriteria;
-   
 
     if (zoneName || zoneShortName || GeoFenceType || zoneType) {
       const filteredZone = zoneList.filter((zone) => {
         return (
           (zoneName === "" ||
             zone.zoneName.toLowerCase().includes(zoneName.toLowerCase())) &&
-          ((zoneShortName === "") ||
-            (zone.zoneShortName && zone.zoneShortName.toLowerCase().includes(zoneShortName.toLowerCase()))) &&
+          (zoneShortName === "" ||
+            (zone.zoneShortName &&
+              zone.zoneShortName
+                .toLowerCase()
+                .includes(zoneShortName.toLowerCase()))) &&
           (GeoFenceType === "" ||
-            (zone.GeoFenceType !== undefined && zone.GeoFenceType.toLowerCase() === GeoFenceType.toLowerCase())) &&
+            (zone.GeoFenceType !== undefined &&
+              zone.GeoFenceType.toLowerCase() ===
+                GeoFenceType.toLowerCase())) &&
           (zoneType === "" ||
-          (zone.zoneType !== undefined && zone.zoneType.toLowerCase() === zoneType.toLowerCase()))
+            (zone.zoneType !== undefined &&
+              zone.zoneType.toLowerCase() === zoneType.toLowerCase()))
         );
       });
-     
-if (filteredZone.length > 0){
-  setFilteredDataIsNotAvaialable(true) 
-  setFilteredZones(filteredZone);
- 
-}
-else {
-  displayedData = []
-  setFilteredDataIsNotAvaialable(false) 
-  setFilteredZones([])
-  filterZoneResult = []
-}
-   
-  }
 
+      if (filteredZone.length > 0) {
+        setFilteredDataIsNotAvaialable(true);
+        setFilteredZones(filteredZone);
+      } else {
+        displayedData = [];
+        setFilteredDataIsNotAvaialable(false);
+        setFilteredZones([]);
+        filterZoneResult = [];
+      }
+    }
   }
 
   const handlePageChangeFiter = (event: any, newPage: any) => {
-  
     setFilterZonePage(newPage);
     setCurrentPage(newPage);
   };
 
   const handleClickPaginationFilter = (event: any) => {
-
-  
     setFilterZonePage(input);
   };
 
@@ -147,7 +141,7 @@ else {
   };
   const handlePageChange = (event: any, newPage: any) => {
     setCurrentPage(newPage);
-    setFilterZonePage(newPage)
+    setFilterZonePage(newPage);
   };
 
   const handleChangeRowsPerPage = (event: any) => {
@@ -155,50 +149,46 @@ else {
     setCurrentPage(1);
   };
 
- 
   const handleClick = () => {
     router.push("/AddZone");
   };
 
   const handleClickZoneType = (zoneTypecheck: string) => {
-  
-    if (zoneTypecheck === 'Circle') {
+    if (zoneTypecheck === "Circle") {
       setselectedZoneTypeCircle(true);
       setselectedZoneTypePolyGone(false);
       setSearchCriteria({
         ...searchCriteria,
-        zoneType: 'Circle',
-       
+        zoneType: "Circle",
       });
-    } else if (zoneTypecheck === 'Polygon') {
+    } else if (zoneTypecheck === "Polygon") {
       setselectedZoneTypeCircle(false);
       setselectedZoneTypePolyGone(true);
       setSearchCriteria({
         ...searchCriteria,
-        zoneType: 'Polygon',
-        
-      })
+        zoneType: "Polygon",
+      });
+    }
   };
-  }
 
-  const handleClear = (e: { preventDefault: () => void; }) => {
+  const handleClear = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setSearchCriteria({
       zoneName: "",
       zoneShortName: "",
       GeoFenceType: "",
       zoneType: "",
-     
     });
-    setFilteredDataIsNotAvaialable(true) 
+    setFilteredDataIsNotAvaialable(true);
     setselectedZoneTypeCircle(false);
-  setselectedZoneTypePolyGone(false);
-  setSelectedZones([]);
-  setInput("");
-  setFilterZonePage(1);
-  setRowsPerPage(10);
-  setFilteredZones(initialzoneList);
-  setCurrentPage(1);}
+    setselectedZoneTypePolyGone(false);
+    setSelectedZones([]);
+    setInput("");
+    setFilterZonePage(1);
+    setRowsPerPage(10);
+    setFilteredZones(initialzoneList);
+    setCurrentPage(1);
+  };
 
   function handleCheckboxChange(zone: zonelistType) {
     const isChecked = selectedZones.some(
@@ -318,13 +308,9 @@ else {
     }
   }
 
-
   return (
     <div className="mt-10 bg-bgLight mx-5">
-      <form
-
-        className="shadow-lg lg:w-full w-screen bg-bgLight lg:-ms-0 -ms-1"
-      >
+      <form className="shadow-lg lg:w-full w-screen bg-bgLight lg:-ms-0 -ms-1">
         <p className="bg-green px-4 py-1 text-black text-sm text-white font-bold">
           Zone Filtersss
         </p>
@@ -343,13 +329,13 @@ else {
               }
             >
               <option value=""> select Sort Name</option>
-              {[...zoneList] 
-    .sort((a, b) => a.zoneName.localeCompare(b.zoneName))
-    .map((item, index) => (
-      <option className="hover:bg-green" key={index}>
-        {item.zoneName}
-      </option>
-    ))}
+              {[...zoneList]
+                .sort((a, b) => a.zoneName.localeCompare(b.zoneName))
+                .map((item, index) => (
+                  <option className="hover:bg-green" key={index}>
+                    {item.zoneName}
+                  </option>
+                ))}
             </select>
           </div>
           <div className="lg:col-span-1 md:col-span-1 col-span-1">
@@ -402,32 +388,34 @@ else {
               </option>
             </select>
           </div>
-     
-         <div id="zoneType" className="lg:col-span-1 md:col-span-1 col-span-1 text-sm text-black text-labelColor">
+
+          <div
+            id="zoneType"
+            className="lg:col-span-1 md:col-span-1 col-span-1 text-sm text-black text-labelColor"
+          >
             <label className="">Zone Type</label>
             <br></br>
             <span
-  id="Circle"
-  className={`inline-flex items-center mt-3 border border-grayLight px-4 h-8 text-sm text-gray   ${
-    selectedZoneTypeCircle && "bg-green text-white"
-  } transition duration-300`}
-  onClick={() => handleClickZoneType('Circle')}
-  title="Click to select Circle"
->
-  Circle
-</span>
+              id="Circle"
+              className={`inline-flex items-center mt-3 border border-grayLight px-4 h-8 text-sm text-gray cursor-pointer   ${
+                selectedZoneTypeCircle && "bg-green text-white"
+              } transition duration-300`}
+              onClick={() => handleClickZoneType("Circle")}
+              title="Click to select Circle"
+            >
+              Circle
+            </span>
 
-<span
-  id="Polygon"
-  className={`inline-flex items-center mt-3 border border-grayLight px-4 h-8 text-sm text-gray   ${
-    selectedZoneTypPolyGone && "bg-green text-white"
-  } transition duration-300`}
-  onClick={() => handleClickZoneType('Polygon')}
-  title="Click to select Polygon"
->
-  Polygon
-</span>
-
+            <span
+              id="Polygon"
+              className={`inline-flex items-center mt-3 border border-grayLight px-4 h-8 text-sm text-gray cursor-pointer   ${
+                selectedZoneTypPolyGone && "bg-green text-white"
+              } transition duration-300`}
+              onClick={() => handleClickZoneType("Polygon")}
+              title="Click to select Polygon"
+            >
+              Polygon
+            </span>
           </div>
         </div>
 
@@ -487,9 +475,7 @@ else {
                   <button
                     className="text-labelColor text-sm  h-10 lg:-ms-2 -ms-6"
                     type="button"
-                    onClick={
-                      handleClear
-                    }
+                    onClick={handleClear}
                   >
                     Clear
                   </button>
@@ -647,7 +633,11 @@ else {
                     </TableRow>
                   ))}
                 </>
-              ) :  (filteredDataIsNotAvaialable === false) ? (<><p>No data found</p></>) : (
+              ) : filteredDataIsNotAvaialable === false ? (
+                <>
+                  <p>No data found</p>
+                </>
+              ) : (
                 <>
                   {displayedData.map((item: any) => (
                     <TableRow>
@@ -745,16 +735,15 @@ else {
               </div>
             </div>
             <div className="mt-2">
-             
               <TablePagination
-  component="div"
-  rowsPerPageOptions={[10, 20, 30, 40, 50, 100]}
-  count={filterZoneResult.length} // or zoneList.length depending on the context
-  rowsPerPage={filterZonePerPage} // or rowsPerPage depending on the context
-  page={filterZonepage} // or currentPage depending on the context
-  onRowsPerPageChange={handleChangeRowsPerPageFilter} // or handleChangeRowsPerPage depending on the context
-  onPageChange={handlePageChangeFiter} // or handlePageChange depending on the context
-/>
+                component="div"
+                rowsPerPageOptions={[10, 20, 30, 40, 50, 100]}
+                count={filterZoneResult.length} // or zoneList.length depending on the context
+                rowsPerPage={filterZonePerPage} // or rowsPerPage depending on the context
+                page={filterZonepage} // or currentPage depending on the context
+                onRowsPerPageChange={handleChangeRowsPerPageFilter} // or handleChangeRowsPerPage depending on the context
+                onPageChange={handlePageChangeFiter} // or handlePageChange depending on the context
+              />
             </div>
           </div>
         ) : (
@@ -787,7 +776,7 @@ else {
                 <span className="lg:inline-block hidden">Go To</span>
                 <input
                   type="text"
-                   value={input}
+                  value={input}
                   className="lg:w-10 w-5  border border-grayLight outline-green mx-2 px-2"
                   onChange={(e: any) => setInput(e.target.value)}
                 />
@@ -800,17 +789,15 @@ else {
               </div>
             </div>
             <div className="mt-2">
-           
               <TablePagination
-  component="div"
-  rowsPerPageOptions={[10, 20, 30, 40, 50, 100]}
-  count={zoneList.length}
-  rowsPerPage={rowsPerPage}
-  page={currentPage} // Add this prop
-  onPageChange={handlePageChange} // Add this prop
-  onRowsPerPageChange={handleChangeRowsPerPage}
-/>
-
+                component="div"
+                rowsPerPageOptions={[10, 20, 30, 40, 50, 100]}
+                count={zoneList.length}
+                rowsPerPage={rowsPerPage}
+                page={currentPage} // Add this prop
+                onPageChange={handlePageChange} // Add this prop
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
             </div>
           </div>
         )}

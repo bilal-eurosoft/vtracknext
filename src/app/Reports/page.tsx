@@ -392,10 +392,18 @@ export default function Reports() {
             <button
               className={`bg-green py-2 px-5 mb-5
                         ${
-                          Ignitionreport.period === "today" ||
-                          Ignitionreport.period === "yesterday" ||
-                          Ignitionreport.period === "week" ||
-                          Ignitionreport.period === "custom"
+                          (Ignitionreport.reportType &&
+                            Ignitionreport.VehicleReg &&
+                            Ignitionreport.period === "today") ||
+                          (Ignitionreport.reportType &&
+                            Ignitionreport.VehicleReg &&
+                            Ignitionreport.period === "yesterday") ||
+                          (Ignitionreport.reportType &&
+                            Ignitionreport.VehicleReg &&
+                            Ignitionreport.period === "week") ||
+                          (Ignitionreport.reportType &&
+                            Ignitionreport.VehicleReg &&
+                            Ignitionreport.period === "custom")
                             ? ""
                             : "opacity-50 cursor-not-allowed"
                         }`}
