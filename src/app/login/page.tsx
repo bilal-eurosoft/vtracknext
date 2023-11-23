@@ -99,7 +99,11 @@ export default function LoginPage() {
                 <div className="grid lg:grid-cols-12 grid-cols-12   rounded-md  py-1.5 text-gray shadow-sm border border-grayLight border hover:border-green  placeholder:text-gray-400 sm:text-sm sm:leading-6 outline-green  px-3">
                   <div className="col-span-11 ">
                     <input
+<<<<<<< HEAD
                       id="password"
+=======
+                      id="password"  
+>>>>>>> master
                       required
                       type={showPassword ? "text" : "password"}
                       placeholder="●●●●●●●●●●"

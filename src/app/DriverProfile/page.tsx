@@ -239,16 +239,16 @@ export default function DriverProfile() {
 
   return (
     <div>
-      {data.map((item: any) => {
+      {data.map((item: any, index) => {
         return (
-          <div>
+          <div key={index}>
             <p>{item.driverfirstName}</p>
           </div>
         );
       })}
       <Paper sx={{ width: "98%" }} className="bg-green ms-3 mr-3 mt-3">
         <div className="grid lg:grid-cols-12 md:grid-cols-2  sm:grid-cols-2  p-4  bg-bgLight">
-          <div className=" lg:col-span-10 md:grid-col-span-1 sm:grid-col-span-1 lg:mb-0 flex lg: justify-center sm:justify-start mb-4 ">
+          <div className="lg:col-span-10 md:grid-col-span-1 sm:grid-col-span-1 lg:mb-0 flex lg: justify-center sm:justify-start mb-4 ">
             <button
               onClick={handleOpen}
               className="bg-green px-4 py-1  text-white rounded-md"

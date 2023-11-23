@@ -65,11 +65,11 @@ const LiveSidebar = ({
   return (
     <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4">
       <div className="grid grid-cols-12 bg-green py-3 pe-1 gap-8 ">
-        <div className="lg:col-span-7 sticky top-0">
+        <div className="lg:col-span-7 md:col-span-5 sm:col-span-5 col-span-7 sticky top-0">
           <div className="grid grid-cols-12">
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 md:col-span-1 sm:col-span-1">
               <svg
-                className="h-5 w-5 ms-1 mt-1 text-white"
+                className="h-5 w-5 ms-1 mt-1 text-white "
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -82,11 +82,11 @@ const LiveSidebar = ({
               </svg>
             </div>
 
-            <div className="lg:col-span-11 col-span-5 ms-2">
+            <div className="lg:col-span-11 md:col-span-10 sm:col-span-10   col-span-10 ms-2">
               <input
                 type="text"
                 name="search"
-                className="text-sm bg-transparent text-white w-full px-1 py-1 placeholder-white border-b border-black outline-none"
+                className="text-sm bg-transparent text-white w-full px-1 py-1 placeholder-white border-b border-black outline-none w-full"
                 placeholder="Vehicle Reg."
                 required
                 onChange={handleInputChange}
@@ -94,7 +94,7 @@ const LiveSidebar = ({
             </div>
           </div>
         </div>
-        <div className="lg:col-span-5 col-span-1 w-full">
+        <div className="lg:col-span-5 md:col-span-6 sm:col-span-5 col-span-5 col-span-1 w-full">
           <button
             className="text-center text-sm font-bold text-white mt-1 "
             onClick={toggleLiveCars}
@@ -229,7 +229,6 @@ const LiveSidebar = ({
 
               <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-1 pb-3 text-sm border-b-2 border-green text-green">
                 {item.timestamp}
-
                 <br></br>
                 <span className="text-labelColor">
                   {item?.OSM?.address?.neighbourhood}

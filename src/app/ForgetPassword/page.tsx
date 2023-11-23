@@ -72,9 +72,9 @@ export default function ForgetPassword() {
               Welcome Back!
             </p>
 
-            <label className=" text-start lg:mx-0 mx-5 block text-sm font-seri leading-6 pt-2 text-gray">
-              Not to worry, we got you! let's get you a new password{" "}
-            </label>
+            {/* <label className=" text-start lg:mx-0 mx-5 block text-sm font-seri leading-6 pt-2 text-gray">
+              Not to worry, we got you! let's get you a new password
+            </label> */}
 
             <form className="space-y-6" action="#" method="POST">
               <div className="lg:mx-0 mx-5">

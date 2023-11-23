@@ -580,8 +580,8 @@ export default function Zone() {
               {filterZoneResult.length > 0 ? (
                 <>
                   {" "}
-                  {filterZoneResult.map((item: zonelistType) => (
-                    <TableRow>
+                  {filterZoneResult.map((item: zonelistType,index) => (
+                    <TableRow key={index}>
                       <TableCell
                         align="left"
                         className="w-4 h-4 border-r border-grayLight"
@@ -639,8 +639,8 @@ export default function Zone() {
                 </>
               ) : (
                 <>
-                  {displayedData.map((item: any) => (
-                    <TableRow>
+                  {displayedData.map((item: any,index) => (
+                    <TableRow key={index}>
                       <TableCell
                         align="left"
                         className="w-4 h-4 border-r border-grayLight"

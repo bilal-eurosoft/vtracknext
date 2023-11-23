@@ -39,7 +39,7 @@ import { StopAddressData } from "@/types/StopDetails";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import { Tooltip, Button } from "@material-tailwind/react";
-import Select, { ValueType, ActionMeta } from "react-select";
+import Select from "react-select";
 import "./index.css";
 interface Option {
   value: string;
@@ -707,10 +707,10 @@ export default function JourneyReplay() {
   });
 
   const [selectedOption, setSelectedOption] =
-    useState<ValueType<Option, false>>(null);
+    useState<any>(null);
 
   const handleSelectChange = (
-    newValue: ValueType<Option, false>,
+    newValue: any,
     actionMeta: any
   ) => {
     const name = "period";
