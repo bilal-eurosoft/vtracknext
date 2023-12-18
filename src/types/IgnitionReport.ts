@@ -12,9 +12,9 @@ export type IgnitionReport = {
 export type replayreport = {
   TimeZone: string;
   VehicleReg: string;
-  clientId: string;
+  cDateTime: string;
+  period:lientId: string;
   fromDateTime: string;
-  period: string;
   toDateTime: string;
   unit: string;
   date: any;

@@ -25,6 +25,19 @@ import {
 } from "@/utils/API_CALLS";
 import { zonelistType } from "@/types/zoneType";
 import "./zone.css";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 50,
+    },
+  },
+};
 
 export default function Zone() {
   const [filter, setFilter] = useState<any>("");
@@ -307,6 +320,10 @@ export default function Zone() {
       toast.error("An error occurred while deleting zones.");
     }
   }
+  const [checkBox, setcheckBox] = useState(false);
+  const handleCheck = () => {
+    setcheckBox(!checkBox);
+  };
 
   return (
     <div className="mt-10 bg-bgLight mx-5">
@@ -317,7 +334,7 @@ export default function Zone() {
         <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-6 pt-5 px-5  ">
           <div className="lg:col-span-1">
             <label className="text-sm text-labelColor">Zone Name</label>
-            <select
+            {/* <select
               className=" px-2 py-1 mt-2 w-full text-sm text-black bg-white-10  border border-grayLight px-3 outline-green text-gray"
               id="selectBox"
               value={searchCriteria.zoneName}
@@ -336,11 +353,39 @@ export default function Zone() {
                     {item.zoneName}
                   </option>
                 ))}
-            </select>
+            </select> */}
+            <Select
+              value={searchCriteria.zoneName}
+              onChange={(e) =>
+                setSearchCriteria({
+                  ...searchCriteria,
+                  zoneName: e.target.value,
+                })
+              }
+              MenuProps={MenuProps}
+              name="VehicleReg"
+              id="select_box_journey"
+              displayEmpty
+              className="h-8 text-sm text-gray  w-full  outline-green"
+            >
+              <MenuItem value="" disabled selected hidden className="text-sm">
+                Zone Name
+              </MenuItem>
+              {[...zoneList]
+                .sort((a, b) => a.zoneName.localeCompare(b.zoneName))
+                .map((item) => (
+                  <MenuItem
+                    value={item.zoneName}
+                    className="hover:bg-green hover:text-white"
+                  >
+                    {item.zoneName}
+                  </MenuItem>
+                ))}
+            </Select>
           </div>
           <div className="lg:col-span-1 md:col-span-1 col-span-1">
             <label className="text-sm text-labelColor">Zone Short Name</label>
-            <input
+            {/* <input
               type="text"
               name="zoneShortName"
               className="block py-1 mt-2 px-0 w-full text-sm text-black bg-white-10 border border-grayLight appearance-none px-3 text-gray dark:border-gray-600 dark:focus:border-blue-500 outline-green"
@@ -352,15 +397,45 @@ export default function Zone() {
                   zoneShortName: e.target.value,
                 })
               }
-            />
+            /> */}
+            <Select
+              value={searchCriteria.zoneShortName}
+              onChange={(e) =>
+                setSearchCriteria({
+                  ...searchCriteria,
+                  zoneShortName: e.target.value,
+                })
+              }
+              MenuProps={MenuProps}
+              name="VehicleReg"
+              id="select_box_journey"
+              displayEmpty
+              className="h-8 text-sm text-gray  w-full  outline-green"
+            >
+              <MenuItem value="" disabled selected hidden className="text-sm">
+                Zone Name
+              </MenuItem>
+              {[...zoneList]
+                .sort((a, b) =>
+                  a?.zoneShortName?.localeCompare(b?.zoneShortName)
+                )
+                .map((item) => (
+                  <MenuItem
+                    value={item.zoneShortName}
+                    className="hover:bg-green hover:text-white"
+                  >
+                    {item.zoneShortName}
+                  </MenuItem>
+                ))}
+            </Select>
           </div>
         </div>
-        <div className="grid lg:grid-cols-2 md:grid-cols-2   gap-6 pt-5 px-5 bg-green-50 ">
+        <div className="grid lg:grid-cols-2 md:grid-cols-2 mb-3   gap-6 pt-5 px-5 bg-green-50 ">
           <div className="lg:col-span-1">
             <label className="text-sm text-black text-labelColor">
               Geofence
             </label>
-            <select
+            {/* <select
               className="block mt-2 py-1 px-0 w-full text-sm text-gray bg-white-10 border border-grayLight px-3 dark:border-gray-600 dark:focus:border-blue-500 outline-green mb-5"
               name="GeoFenceType"
               onChange={(e) =>
@@ -386,7 +461,55 @@ export default function Zone() {
               <option value="Restricted-Area" className="text-sm">
                 Restricted-Area
               </option>
-            </select>
+            </select> */}
+            <Select
+              onChange={(e) =>
+                setSearchCriteria({
+                  ...searchCriteria,
+                  GeoFenceType: e.target.value,
+                })
+              }
+              value={searchCriteria.GeoFenceType}
+              MenuProps={MenuProps}
+              name="VehicleReg"
+              id="select_box_journey"
+              displayEmpty
+              className="h-8 text-sm text-gray  w-full  outline-green "
+            >
+              <MenuItem
+                className="hover:bg-green hover:text-white text-sm"
+                value=""
+                disabled
+                selected
+                hidden
+              >
+                Select Geofence Type
+              </MenuItem>
+              <MenuItem
+                className="hover:bg-green hover:text-white text-sm"
+                value="On-Site"
+              >
+                On-Site
+              </MenuItem>
+              <MenuItem
+                className="hover:bg-green hover:text-white text-sm"
+                value="Off-Site"
+              >
+                Off-Site
+              </MenuItem>
+              <MenuItem
+                className="hover:bg-green hover:text-white text-sm"
+                value="City-Area"
+              >
+                City-Area
+              </MenuItem>
+              <MenuItem
+                value="Restricted-Area"
+                className="hover:bg-green hover:text-white text-sm"
+              >
+                Restricted-Area
+              </MenuItem>
+            </Select>
           </div>
 
           <div
@@ -397,29 +520,29 @@ export default function Zone() {
             <br></br>
             <span
               id="Circle"
-              className={`inline-flex items-center mt-3 border border-grayLight px-4 h-8 text-sm text-gray cursor-pointer   ${
+              className={`inline-flex items-center -mt-1 border border-grayLight px-4 h-8 text-sm text-gray cursor-pointer   ${
                 selectedZoneTypeCircle && "bg-green text-white"
               } transition duration-300`}
               onClick={() => handleClickZoneType("Circle")}
-              title="Click to select Circle"
+              // title="Click to select Circle"
             >
               Circle
             </span>
 
             <span
               id="Polygon"
-              className={`inline-flex items-center mt-3 border border-grayLight px-4 h-8 text-sm text-gray cursor-pointer   ${
+              className={`inline-flex items-center mt-1 border border-grayLight px-4 h-8 text-sm text-gray cursor-pointer   ${
                 selectedZoneTypPolyGone && "bg-green text-white"
               } transition duration-300`}
               onClick={() => handleClickZoneType("Polygon")}
-              title="Click to select Polygon"
+              // title="Click to select Polygon"
             >
               Polygon
             </span>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 grid-cols-2 px-5 lg:mt-0 mt-5">
+        <div className="grid lg:grid-cols-2 md:grid-cols-2  sm:grid-cols-2 grid-cols-2 px-5 lg:mt-0 mt-5">
           <div className="lg:col-span-1 md:col-span-1 sm:col-span-1   col-span-2">
             <div className="grid lg:grid-cols-8 md:grid-cols-3 grid-cols-2">
               <div className="grid lg:grid-cols-3 md:grid-cols-4 grid-cols-5 bg-green shadow-md hover:shadow-gray transition duration-500 cursor-pointer">
@@ -559,6 +682,7 @@ export default function Zone() {
                     id="checkbox-all-search"
                     type="checkbox"
                     style={{ accentColor: "green", boxShadow: "none" }}
+                    onChange={handleCheck}
                     className="w-4 h-4 text-blue-600 border-r border-grayLight bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 border-r border-grayLight "
                   />
                 </TableCell>
@@ -580,7 +704,7 @@ export default function Zone() {
               {filterZoneResult.length > 0 ? (
                 <>
                   {" "}
-                  {filterZoneResult.map((item: zonelistType,index) => (
+                  {filterZoneResult.map((item: zonelistType, index) => (
                     <TableRow key={index}>
                       <TableCell
                         align="left"
@@ -591,9 +715,11 @@ export default function Zone() {
                           style={{ accentColor: "green", boxShadow: "none" }}
                           type="checkbox"
                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                          checked={selectedZones.some(
-                            (selectedZone) => selectedZone.id === item.id
-                          )}
+                          checked={
+                            selectedZones.some(
+                              (selectedZone) => selectedZone.id === item.id
+                            ) || checkBox
+                          }
                           onChange={() => handleCheckboxChange(item)}
                         />
                         <label className="sr-only  text-labelColor text-md font-normal">
@@ -639,7 +765,7 @@ export default function Zone() {
                 </>
               ) : (
                 <>
-                  {displayedData.map((item: any,index) => (
+                  {displayedData.map((item: any, index) => (
                     <TableRow key={index}>
                       <TableCell
                         align="left"
@@ -649,10 +775,12 @@ export default function Zone() {
                           id="checkbox-all-search"
                           type="checkbox"
                           style={{ accentColor: "green", boxShadow: "none" }}
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 border-r border-grayLight "
-                          checked={selectedZones.some(
-                            (selectedZone) => selectedZone.id === item.id
-                          )}
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 border-r border-grayLight cursor-pointer"
+                          checked={
+                            selectedZones.some(
+                              (selectedZone) => selectedZone.id === item.id
+                            ) || checkBox
+                          }
                           onChange={() => handleCheckboxChange(item)}
                         />
                       </TableCell>

@@ -17,3 +17,18 @@ input[type="checkbox"]:hover {
   outline: 1px auto #00b56c;
   cursor: pointer;
 }
+
+#scroll_side_bar {
+  height: 100vh;
+}
+#maps {
+  height: 100vh;
+}
+@media (max-width: 450px) {
+  #scroll_side_bar {
+    height: 20vh;
+  }
+  #maps {
+    height: 50vh;
+  }
+}

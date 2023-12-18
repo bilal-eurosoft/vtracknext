@@ -459,7 +459,7 @@ export default function DualCam() {
                       (item: pictureVideoDataOfVehicleT, index) => {
                         if (item.fileType === 2) {
                           return (
-                            <div>
+                            <div key={index}>
                               <div className="grid grid-cols-6 text-center pt-5">
                                 <div className="col-span-1 mt-2">
                                   <p>{index + 1}</p>
@@ -686,7 +686,7 @@ export default function DualCam() {
                       (item: pictureVideoDataOfVehicleT, index) => {
                         if (item.fileType === 2) {
                           return (
-                            <div>
+                            <div key={index}>
                               <div className="grid grid-cols-6 text-center pt-5">
                                 <div className="col-span-1 mt-2">
                                   <p>{index + 1}</p>
@@ -939,7 +939,7 @@ export default function DualCam() {
                       (item: pictureVideoDataOfVehicleT, index) => {
                         if (item.fileType === 2) {
                           return (
-                            <div>
+                            <div key={index}>
                               <div className="grid grid-cols-5 text-center pt-5">
                                 <div className="col-span-1 mt-2">
                                   <p>{index + 1}</p>

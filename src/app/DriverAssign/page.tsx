@@ -9,13 +9,21 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Button from "@mui/material/Button";
+import { toast } from "react-hot-toast";
 
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Typography from "@mui/material/Typography";
-
+import {
+  GetDriverDataByClientId,
+  GetDriverDataAssignByClientId,
+  postDriverDataAssignByClientId,
+} from "@/utils/API_CALLS";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { vehicleListByClientId } from "@/utils/API_CALLS";
 interface Column {
   id: "name" | "code" | "population" | "size" | "density";
   label: string;
@@ -136,6 +144,7 @@ const style = {
 };
 
 export default function DriverProfile() {
+  const { data: session } = useSession();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -153,6 +162,118 @@ export default function DriverProfile() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [DriverList, setDriverList] = useState([]);
+  const [vehicleNum, setvehicleNum] = useState([]);
+  const [getAllAsignData, setgetAllAsignData] = useState<any>([]);
+  const [selectedDriver, setSelectedDriver] = useState<any>({});
+  const [selectVehicleNum, setSelectVehicleNum] = useState<any>({});
+  useEffect(() => {
+    const vehicleName = async () => {
+      try {
+        // setLaoding(true);
+        if (session) {
+          const response = await GetDriverDataByClientId({
+            token: session?.accessToken,
+            clientId: session?.clientId,
+          });
+          setDriverList(response);
+        }
+        // setLaoding(false);
+      } catch (error) {
+        console.error("Error fetching zone data:", error);
+      }
+    };
+    vehicleName();
+  }, [session]);
+
+  console.log("data", getAllAsignData);
+  useEffect(() => {
+    const AllAsignData = async () => {
+      try {
+        // setLaoding(true);
+        if (session) {
+          const response = await GetDriverDataAssignByClientId({
+            token: session?.accessToken,
+            clientId: session?.clientId,
+          });
+          setgetAllAsignData(response);
+        }
+        // setLaoding(false);
+      } catch (error) {
+        console.error("Error fetching zone data:", error);
+      }
+    };
+    AllAsignData();
+  }, [session]);
+
+  useEffect(() => {
+    const vehicleNum = async () => {
+      try {
+        // setLaoding(true);
+        if (session) {
+          const response = await vehicleListByClientId({
+            token: session?.accessToken,
+            clientId: session?.clientId,
+          });
+          setvehicleNum(response);
+        }
+        // setLaoding(false);
+      } catch (error) {
+        console.error("Error fetching zone data:", error);
+      }
+    };
+    vehicleNum();
+  }, [session]);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    console.log("select Driver", selectedDriver);
+    console.log("select Car Number", selectVehicleNum);
+
+    if (session) {
+      const newformdata: any = {
+        selectedDriver,
+        selectVehicleNum,
+        clientId: session?.clientId,
+      };
+
+      const response = await toast.promise(
+        postDriverDataAssignByClientId({
+          token: session?.accessToken,
+          newformdata: newformdata,
+        }),
+
+        {
+          loading: "Saving data...",
+          success: "Data saved successfully!",
+          error: "Error saving data. Please try again.",
+          
+        },
+        {
+          style: {
+            border: "1px solid #00B56C",
+            padding: "16px",
+            color: "#1A202C",
+          },
+          success: {
+            duration: 2000,
+            iconTheme: {
+              primary: "#00B56C",
+              secondary: "#FFFAEE",
+            },
+          },
+          error: {
+            duration: 2000,
+            iconTheme: {
+              primary: "#00B56C",
+              secondary: "#FFFAEE",
+            },
+          },
+        }
+      );
+    }
+  };
   return (
     <div>
       <Paper sx={{ width: "98%" }} className="bg-green-50 ms-3 mr-3 mt-3">
@@ -192,32 +313,68 @@ export default function DriverProfile() {
                 </p>
               </Typography>
               <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-                <div className="grid grid-cols-3 m-6 mt-8">
-                  <div className="lg:col-span-2 col-span-1 ">
-                    <label className="text-gray-700 ">
-                      <i className="text-red-500 mt-5">*</i> Drives:
-                      <select className="h-8 w-10/12 border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-outoutline-none">
-                        <option>Uk</option>
-                        <option>Uk</option>
-                      </select>
-                    </label>
-                  </div>
+                <form onSubmit={handleSubmit}>
+                  l
+                  <div className="grid grid-cols-3 m-6 mt-8">
+                    <div className="lg:col-span-2 col-span-1 ">
+                      <label className="text-gray-700 ">
+                        <i className="text-red-500 mt-5">*</i> Drives:
+                        <select
+                          onChange={(e: any) => {
+                            setSelectedDriver(
+                              DriverList.find((item: any) => {
+                                return item.id == e.target.value;
+                              })
+                            );
+                          }}
+                          className="h-8 w-10/12 border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-outoutline-none color-gray"
+                        >
+                          {DriverList &&
+                            DriverList.map((item: any, i: any) => {
+                              return (
+                                <option value={item.id}>
+                                  {item.driverfirstName}
+                                </option>
+                              );
+                            })}
+                        </select>
+                      </label>
+                    </div>
 
-                  <div className="lg:col-span-1 col-span-1 ">
-                    <label>
-                      {" "}
-                      <i className="text-red-500 mt-5">*</i> Vehicles:
-                      <select className="h-8 w-7/12 border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out">
-                        <option>Uk</option>
-                        <option>Uk</option>
-                      </select>
-                    </label>
-                    <br></br>
-                    <p className="bg-[#00B56C]    px-4 py-1 mx-12 mt-10  text-center text-white rounded-md ">
-                      Submit
-                    </p>
+                    <div className="lg:col-span-1 col-span-1 ">
+                      <label>
+                        {" "}
+                        <i className="text-red-500 mt-5">*</i> Vehicles:
+                        <select
+                          onChange={(e: any) => {
+                            setSelectVehicleNum(
+                              vehicleNum.find((item: any) => {
+                                return item.id == e.target.value;
+                              })
+                            );
+                          }}
+                          className="h-8 w-7/12 border border-grayLight  outline-green hover:border-green transition duration-700 ease-in-out"
+                        >
+                          {vehicleNum &&
+                            vehicleNum.map((item: any) => {
+                              return (
+                                <option value={item.id}>
+                                  {item.vehicleReg}
+                                </option>
+                              );
+                            })}
+                        </select>
+                      </label>
+                      <br></br>
+                      <button
+                        type="submit"
+                        className="bg-[#00B56C]    px-4 py-1 mx-12 mt-10  text-center text-white rounded-md "
+                      >
+                        Submit
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </form>
               </Typography>
             </Box>
           </Fade>
@@ -226,45 +383,68 @@ export default function DriverProfile() {
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
+                <TableCell align="center" colSpan={2}>
+                  Driver Number
+                </TableCell>
+                <TableCell align="center" colSpan={2}>
+                  First Name
+                </TableCell>
+                <TableCell align="center" colSpan={2}>
+                  Middle Name
+                </TableCell>
+                <TableCell align="center" colSpan={2}>
+                  Last Name
+                </TableCell>
+                <TableCell align="center" colSpan={2}>
+                  Driver ID
+                </TableCell>
+                <TableCell align="center" colSpan={2}>
+                  Driver Contact
+                </TableCell>
+                <TableCell align="center" colSpan={2}>
+                  Driver Address 1
+                </TableCell>
+                <TableCell align="center" colSpan={2}>
+                  Driver Address 2
+                </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => {
-                  return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.code}
-                    >
-                      {columns.map((column) => {
-                        const value = row[column.id];
-                        return (
-                          <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === "number"
-                              ? column.format(value)
-                              : value}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })}
+            <TableBody className="bg-bgLight cursor-pointer  ">
+              {getAllAsignData?.data?.map((row: any) => (
+                <TableRow className="hover:bg-bgHoverTabel w-full">
+                  <TableCell align="center" colSpan={2}>
+                    {row.DriverDetails.driverNo}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {" "}
+                    {row.DriverDetails.driverfirstName}
+                  </TableCell>
+
+                  <TableCell align="center" colSpan={2}>
+                    {row.DriverDetails.driverMiddleName}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.DriverDetails.driverLastName}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.DriverDetails.driverIdNo}
+                  </TableCell>
+                  <TableCell>{row.DriverDetails.driverIdNo}</TableCell>
+                  <TableCell align="center">
+                    {row.DriverDetails.driverContact}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.DriverDetails.driverAddress1}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.DriverDetails.driverAddress2}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
+        {/* <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
           count={rows.length}
@@ -272,7 +452,7 @@ export default function DriverProfile() {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+        /> */}
       </Paper>
     </div>
   );

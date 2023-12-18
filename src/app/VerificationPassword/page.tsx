@@ -1,19 +1,26 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "../../../public/Images/logo.png";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { forgetEmailByClientId } from "@/utils/API_CALLS";
+import {
+  forgetPasswordByClientId,
+  forgetPasswordUpdateLinkClientId,
+} from "@/utils/API_CALLS";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
+import queryString from "query-string";
+const { base64decode } = require("nodejs-base64");
 
-export default function ForgetPassword() {
+export default function ForgetPassword(props: any) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const [formData, setFormData] = useState({
-    email: "",
+    newPassword: "",
+    confirmPassword: "",
+    link: "",
   });
 
   const handleInputChange = (key: any, e: any) => {
@@ -22,94 +29,107 @@ export default function ForgetPassword() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
-      const newformdata = {
-        ...formData,
-        clientId: session?.clientId,
-      };
-
-      const response = await toast.promise(
-        forgetEmailByClientId({
-          token: session?.accessToken,
-          newformdata: newformdata,
-        }),
-        {
-          loading: "Saving data...",
-          success: "Data saved successfully!",
-          error: "Error saving data. Please try again.",
-        },
-        {
-          style: {
-            border: "1px solid #00B56C",
-            padding: "16px",
-            color: "#1A202C",
-          },
-          success: {
-            duration: 2000,
-            iconTheme: {
-              primary: "#00B56C",
-              secondary: "#FFFAEE",
-            },
-          },
-          error: {
-            duration: 2000,
-            iconTheme: {
-              primary: "#00B56C",
-              secondary: "#FFFAEE",
-            },
-          },
-        }
-      );
-
-
-    // if (session) {
-    //   const newformdata: any = {
-    //     ...formData,
-    //     clientId: session?.clientId,
-    //   };
-
-    //   const response = await toast.promise(
-    //     forgetEmailByClientId({
-    //       token: session?.accessToken,
-    //       newformdata: newformdata,
-    //     }),
-
-    //     {
-    //       loading: "Saving data...",
-    //       success: "Data saved successfully!",
-    //       error: "Error saving data. Please try again.",
-    //     },
-    //     {
-    //       style: {
-    //         border: "1px solid #00B56C",
-    //         padding: "16px",
-    //         color: "#1A202C",
-    //       },
-    //       success: {
-    //         duration: 2000,
-    //         iconTheme: {
-    //           primary: "#00B56C",
-    //           secondary: "#FFFAEE",
-    //         },
-    //       },
-    //       error: {
-    //         duration: 2000,
-    //         iconTheme: {
-    //           primary: "#00B56C",
-    //           secondary: "#FFFAEE",
-    //         },
-    //       },
-    //     }
-    //   );
+    // const value = queryString.parse(props.location.search);
+    // let encoded = base64decode(value.q);
+    // console.log(encoded);
+    // if (
+    //   encoded ===
+    //   "?q=NjFlNmQwMGZkOWNjNzEwMmFjNjQ2NGEzNjU2ZjAzZTVkZDgwNDQyMTA5NWI4ZTJhMTcwMTc3OTkyOTExNA=="
+    // ) {
+    //   router.push("/VerificationPassword");
     // }
+    // Redirect based on decoded value
+
+    // const newformdata: any = {
+    //   ...formData,
+    //   clientId: session?.clientId,
+    // };
+    // console.log(props);
+    // console.log(props.location);
+
+    // console.log(props.location.search);
+
+    // const response = await toast.promise(
+    //   forgetPasswordUpdateLinkClientId({
+    //     token: session?.accessToken,
+    //     newformdata: newformdata,
+    //     link: encoded,
+    //   }),
+
+    //   {
+    //     loading: "Saving data...",
+    //     success: "Data saved successfully!",
+    //     error: "Error saving data. Please try again.",
+    //   },
+    //   {
+    //     style: {
+    //       border: "1px solid #00B56C",
+    //       padding: "16px",
+    //       color: "#1A202C",
+    //     },
+    //     success: {
+    //       duration: 2000,
+    //       iconTheme: {
+    //         primary: "#00B56C",
+    //         secondary: "#FFFAEE",
+    //       },
+    //     },
+    //     error: {
+    //       duration: 2000,
+    //       iconTheme: {
+    //         primary: "#00B56C",
+    //         secondary: "#FFFAEE",
+    //       },
+    //     },
+    //   }
+    // );
   };
+  useEffect(() => {
+    console.log(props.searchParams.q);
+    const newformdata: any = {
+      clientId: session?.clientId,
+    };
+    const response = toast.promise(
+      forgetPasswordUpdateLinkClientId({
+        token: session?.accessToken,
+        newformdata: newformdata,
+        link: props.searchParams.q,
+      }),
+
+      {
+        loading: "Saving data...",
+        success: "Data saved successfully!",
+        error: "Error saving data. Please try again.",
+      },
+      {
+        style: {
+          border: "1px solid #00B56C",
+          padding: "16px",
+          color: "#1A202C",
+        },
+        success: {
+          duration: 2000,
+          iconTheme: {
+            primary: "#00B56C",
+            secondary: "#FFFAEE",
+          },
+        },
+        error: {
+          duration: 2000,
+          iconTheme: {
+            primary: "#00B56C",
+            secondary: "#FFFAEE",
+          },
+        },
+      }
+    );
+  }, []);
 
   return (
     <div
       className="w-100 h-screen bg-no-repeat bg-cover bg-center"
       style={{ backgroundImage: "url(Images/bgiamge.jpg)" }}
     >
-
       {loading ? (
         <div role="status">
           <svg
@@ -139,7 +159,7 @@ export default function ForgetPassword() {
               alt="Your Company"
             />
             <p className="mt-5 text-start lg:mx-0 mx-5 font-serif text-2xl  leading-9 tracking-tight text-gray-900">
-              Welcome Back!
+              Enter New Password
             </p>
 
             {/* <label className=" text-start lg:mx-0 mx-5 block text-sm font-seri leading-6 pt-2 text-gray">
@@ -152,11 +172,25 @@ export default function ForgetPassword() {
                   <div className="col-span-12 ">
                     <input
                       required
-                      placeholder="Please Input Your Email Address"
+                      placeholder="Please Input Your New Password"
                       className="outline-none w-full"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e: any) => handleInputChange("email", e)}
+                      type="password"
+                      value={formData.newPassword}
+                      onChange={(e: any) => handleInputChange("newPassword", e)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-12 block mt-5 w-full rounded-md  py-1.5 text-gray shadow-sm border border-grayLight border hover:border-green  placeholder:text-gray-400 sm:text-sm sm:leading-6 outline-green  px-3">
+                  <div className="col-span-12 ">
+                    <input
+                      required
+                      placeholder="Please Input Your Confirm Password"
+                      className="outline-none w-full"
+                      type="password"
+                      value={formData.confirmPassword}
+                      onChange={(e: any) =>
+                        handleInputChange("confirmPassword", e)
+                      }
                     />
                   </div>
                 </div>
@@ -168,16 +202,9 @@ export default function ForgetPassword() {
                   className="flex w-full  justify-center rounded-md bg-green px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mb-8"
                   // onClick={handleClick}
                 >
-                  Reset My Password
+                  Save
                 </button>
               </div>
-              <p
-                className="text-green text-sm lg:mx-0 mx-5 cursor-pointer hover:text-red pb-0"
-                onClick={() => router.push("http://localhost:3010/login")}
-              >
-                Back To Sign In
-              </p>
-              <br></br>
             </form>
           </div>
         </div>

@@ -36,7 +36,7 @@ const EditControl = dynamic(
   { ssr: false }
 );
 
-const EditZonePage: React.FC = () => {
+export default function EditZone() {
   const isBrowser = typeof window !== "undefined";
   const { data: session } = useSession();
   const searchParams = useSearchParams();
@@ -298,7 +298,7 @@ const EditZonePage: React.FC = () => {
 
         if (response.id !== null) {
           setTimeout(() => {
-            router.push("/Zone");
+            router.push("http://localhost:3010/Zone");
           }, 2000);
         }
       }
@@ -392,7 +392,6 @@ const EditZonePage: React.FC = () => {
                 onChange={handleChange}
                 value={Form?.GeoFenceType}
                 className="text-black  block py-2 px-0 w-full text-sm text-labelColor bg-white-10 border border-grayLight appearance-none px-3 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-green mb-5"
-                placeholder="geofence"
                 required
                 name="GeoFenceType"
               >
@@ -579,6 +578,4 @@ const EditZonePage: React.FC = () => {
       </div>
     </>
   );
-};
-
-export default EditZonePage;
+}

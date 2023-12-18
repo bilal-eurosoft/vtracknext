@@ -1,15 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import DateFnsMomemtUtils from "@date-io/moment";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import { DatePicker } from "@material-ui/pickers";
+// import { KeyboardDatePicker } from "@material-ui/pickers";
 import BlinkingTime from "@/components/General/BlinkingTime";
+import axios from "axios";
 import dayjs from "dayjs";
 // import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 // import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 // import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 // import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import ReactSpeedometer from "react-d3-speedometer";
 import dynamic from "next/dynamic";
+import moment from "moment";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import {
@@ -39,7 +42,27 @@ import { StopAddressData } from "@/types/StopDetails";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import { Tooltip, Button } from "@material-tailwind/react";
-import Select from "react-select";
+// import Select from "react-select";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
+
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 50,
+    },
+  },
+};
+
 import "./index.css";
 interface Option {
   value: string;
@@ -70,16 +93,29 @@ function filterWeekends(date: any) {
   // Return false if Saturday or Sunday
   return date.value === 0 || date === 6;
 }
+import { makeStyles } from "@mui/styles";
+import Slider from "@mui/material/Slider";
 
-export default function JourneyReplay() {
+// Define custom styles using makeStyles
+const useStyles = makeStyles((theme) => ({
+  select: {
+    "&:before": {
+      borderColor: "green", // Change this to the desired border color
+    },
+    "&:after": {
+      borderColor: "green", // Change this to the desired border color
+    },
+  },
+}));
+export default function journeyReplay() {
   const { data: session } = useSession();
   const [vehicleList, setVehicleList] = useState<DeviceAttach[]>([]);
   const [zoneList, setZoneList] = useState<zonelistType[]>([]);
   const [clientsetting, setClientsetting] = useState<ClientSettings[] | null>(
     null
   );
-  const [dataresponse, setDataResponse] = useState<TripsByBucket[]>();
-  console.log("data", dataresponse);
+  const [stops, setstops] = useState<any>([]);
+  const [dataresponse, setDataResponse] = useState<any>();
   const [TravelHistoryresponse, setTravelHistoryresponse] = useState<
     TravelHistoryData[]
   >([]);
@@ -91,14 +127,13 @@ export default function JourneyReplay() {
   const [zoomToFly, setzoomToFly] = useState(10);
   const [zoom, setzoom] = useState(10);
   const [polylinedata, setPolylinedata] = useState<[number, number][]>([]);
-  const [Ignitionreport, setIgnitionreport] = useState<replayreport>({
-    date: new Date(),
+  const [Ignitionreport, setIgnitionreport] = useState<any>({
     TimeZone: session?.timezone || "",
     VehicleReg: "",
     clientId: session?.clientId || "",
-    fromDateTime: "",
+    fromDateTime: new Date(),
     period: "",
-    toDateTime: "",
+    toDateTime: new Date(),
     unit: session?.unit || "",
   });
   const [isPlaying, setIsPlaying] = useState(false);
@@ -107,12 +142,12 @@ export default function JourneyReplay() {
   const [carMovementInterval, setCarMovementInterval] = useState<
     NodeJS.Timeout | undefined
   >(undefined);
-  const [speedFactor, setSpeedFactor] = useState(1);
+  const [speedFactor, setSpeedFactor] = useState<any>(1);
   const [showZones, setShowZones] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [TripAddressData, setTripAddressData] = useState("");
   const [stopDetails, setStopDetails] = useState<StopAddressData[]>([]);
-  const [progressWidth, setProgressWidth] = useState(0);
+  const [progressWidth, setProgressWidth] = useState<any>(0);
   const [getShowRadioButton, setShowRadioButton] = useState(false);
   const [getShowdetails, setShowDetails] = useState(false);
   const [getShowICon, setShowIcon] = useState(false);
@@ -122,6 +157,9 @@ export default function JourneyReplay() {
   const [currentDateDefault, setCurrentDateDefaul] = useState(false);
   const [currentToDateDefault, setCurrentToDateDefaul] = useState(false);
   const [isDynamicTime, setIsDynamicTime] = useState<any>([]);
+  const [stopVehicle, setStopVehicle] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const SetViewOnClick = ({ coords }: { coords: any }) => {
     if (isPaused) {
       setMapcenterToFly(null);
@@ -149,7 +187,7 @@ export default function JourneyReplay() {
 
   const SetViewfly = ({ coords, zoom }: { coords: any; zoom: number }) => {
     const map = useMap();
-    if (coords) {
+    if (coords && !Number.isNaN(coords[0]) && coords[0] != null) {
       map.flyTo(coords, zoom);
     }
 
@@ -171,6 +209,8 @@ export default function JourneyReplay() {
   const stopTick = () => {
     setIsPlaying(false);
     setIsPaused(false);
+    // setStopVehicle(true);
+    // setStopVehicle(true)
 
     // if (carMovementInterval) {
     //   clearInterval(carMovementInterval);
@@ -198,7 +238,6 @@ export default function JourneyReplay() {
       setTripAddressData(Dataresponse);
     }
   };
-
   useEffect(() => {
     if (isPlaying && !isPaused) {
       const totalSteps = TravelHistoryresponse.length - 1;
@@ -284,6 +323,7 @@ export default function JourneyReplay() {
     isPaused,
     TravelHistoryresponse,
     speedFactor,
+    stopVehicle,
   ]);
 
   useEffect(() => {
@@ -387,6 +427,8 @@ export default function JourneyReplay() {
     .toISOString()
     .slice(0, 10)}TO${timeOnly}`;
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
+
     e.preventDefault();
     setClearMapData(true);
     if (session) {
@@ -482,8 +524,23 @@ export default function JourneyReplay() {
         }
       }
     }
+    setLoading(false);
   };
 
+  // var stopPoints = [];
+  // const result = TravelHistoryresponse.map((item) => {
+  //   if (item.speed === "0 Kph") return item;
+  // });
+  // console.log(result);
+  // if (TravelHistoryresponse.speed == "KM") {
+  //   stopPoints = res.data
+  //     .filter((x: any) => x.speed == "0 Kph")
+  //     .sort((x) => x.date);
+  // } else {
+  //   stopPoints = res.data
+  //     .filter((x: any) => x.speed == "0 Mph")
+  //     .sort((x) => x.date);
+  // }
   const handleClickClear = () => {
     setPolylinedata([]);
     setCarPosition(null);
@@ -503,6 +560,8 @@ export default function JourneyReplay() {
     TripStart: TripsByBucket["TripStart"],
     TripEnd: TripsByBucket["TripEnd"]
   ) => {
+    setlat(null);
+    setlng(null);
     try {
       setIsPlaying(false);
       if (session) {
@@ -545,7 +604,51 @@ export default function JourneyReplay() {
             },
           }
         );
-
+        // if (session?.unit == "Mile") {
+        //   unit = "Mph";
+        // } else {
+        //   unit = "Kph";
+        // }
+        var stopPoints = [];
+        if (session?.unit == "KM") {
+          stopPoints = TravelHistoryresponseapi.data
+            .filter((x: any) => x.speed == "0 Kph")
+            .sort((x: any) => x.date);
+        } else {
+          stopPoints = TravelHistoryresponseapi.data
+            .filter((x: any) => x.speed == "0 Mph")
+            .sort((x: any) => x.date);
+        }
+        var addresses: any = [];
+        stopPoints.map(async function (singlePoint: any) {
+          var completeAddress = await axios
+            .get(
+              `https://eurosofttechosm.com/nominatim/reverse.php?lat=${singlePoint.lat}&lon=${singlePoint.lng}&zoom=19&format=jsonv2`
+            )
+            .then(async (response: any) => {
+              return response.data;
+            });
+          var record: any = {};
+          record["_id"] = singlePoint._id;
+          record["lat"] = singlePoint.lat;
+          record["lng"] = singlePoint.lng;
+          record["date"] = singlePoint.date;
+          record["speed"] = singlePoint.speed;
+          record["TimeStamp"] = singlePoint.TimeStamp;
+          record["address"] = completeAddress.display_name;
+          if (
+            addresses.filter(
+              (x: any) => x.lat == record.lat && x.lng == record.lng
+            ).length == 0
+          ) {
+            addresses.push(record);
+          }
+        });
+        setstops(
+          addresses.sort((a: any, b: any) => {
+            return moment(a.date).diff(b.date);
+          })
+        );
         setTravelHistoryresponse(TravelHistoryresponseapi.data);
       }
     } catch (error) {
@@ -657,32 +760,20 @@ export default function JourneyReplay() {
     setCheckedInput(!getCheckedInput);
   };
 
-  const handleCustomDateChange = (fieldName: string, date: any) => {
-    console.log("datess", Ignitionreport.fromDateTime);
-    setCurrentDateDefaul(true);
-    // setIgnitionreport((prevReport: any) => ({
-    //   ...prevReport,
-    //   [fieldName]: date,
-    // }));
-    const selectedaDate: any = date;
-    if (new Date(selectedaDate) > new Date()) {
-      return;
-    }
-    setIgnitionreport({
-      ...Ignitionreport,
-      [fieldName]: selectedaDate,
-    });
-  };
-  // const [selectedDate, handleDateChange] = useState<any>(new Date());
-  const [selectedDates, setSelectedDates] = useState(new Date());
+  // const handleCustomDateChange = (fieldName: string, date: any) => {
+  //   setCurrentDateDefaul(true);
+  //   setIgnitionreport((prevReport: any) => ({
+  //     ...prevReport,
+  //     [fieldName]: date,
+  //   }));
+  // };
 
-  const handleDateChange = (date: any) => {
-    setIgnitionreport({
-      ...Ignitionreport,
-      date,
-    });
-    console.log(date);
-    setSelectedDates(date);
+  const handleDateChange = (fieldName: string, newDate: any) => {
+    setCurrentDateDefaul(true);
+    setIgnitionreport((prevReport: any) => ({
+      ...prevReport,
+      [fieldName]: newDate?.toISOString().split("T")[0],
+    }));
   };
 
   const currenTDates = new Date();
@@ -706,27 +797,15 @@ export default function JourneyReplay() {
     return { value: item.vehicleReg, label: item.vehicleReg };
   });
 
-  const [selectedOption, setSelectedOption] =
-    useState<any>(null);
+  const [selectedOption, setSelectedOption] = useState<any>(null);
 
-  const handleSelectChange = (
-    newValue: any,
-    actionMeta: any
-  ) => {
+  const handleSelectChange = (newValue: any, actionMeta: any) => {
     const name = "period";
     const value = "yesterday";
     setSelectedOption(newValue);
-    // Handle select change...
-    if (actionMeta.action === "select-option" && newValue) {
-      console.log(`Selected value: ${newValue.value}`);
-    }
   };
 
-  console.log("selectedOption", selectedOption);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleInputChange: any = (e: any) => {
     const { name, value } = e.target;
     setIgnitionreport((prevReport: any) => ({
       ...prevReport,
@@ -740,13 +819,37 @@ export default function JourneyReplay() {
     }
   };
 
+  const [lat, setlat] = useState<any>("");
+  const [lng, setlng] = useState<any>("");
+
+  const handleClickStopCar = (item: any) => {
+    if (item?.lat === lat) {
+      setlat(null);
+    } else {
+      setlat(item?.lat);
+    }
+
+    if (item?.lng === lat) {
+      setlng(null);
+    } else {
+      setlng(item?.lng);
+    }
+  };
+
+  const handleChangeValueSlider = (value: any) => {
+    // if (TravelHistoryresponse.length > 100) {
+    //   setCurrentPositionIndex(value.target.value + currentPositionIndex);
+    // } else {
+    setCurrentPositionIndex(value.target.value);
+  };
+
   return (
     <>
       <div style={{ height: "90vh" }}>
         <p className="bg-[#00B56C] px-4 py-1 text-white">JourneyReplay</p>
         <div className="grid lg:grid-cols-10  md:grid-cols-4  gap-5 px-4 text-start pt-4 bg-bgLight">
-          <div className="lg:col-span-1 md:col-span-3 mt-2 hover:border:green">
-            <select
+          <div className="lg:col-span-1 md:col-span-3 mt-2 ">
+            {/* <select
               id="select_box"
               className="   h-8 text-gray  w-full  outline-green border border-grayLight px-1 hover:border-green"
               onChange={handleInputChange}
@@ -757,13 +860,12 @@ export default function JourneyReplay() {
                 Select Vehicle
               </option>
               {vehicleList.map((item: DeviceAttach) => (
-                <option key={item.id} value={item.vehicleReg}>
-                  {item.vehicleReg}
-                </option>
+                <option key={item.id}>{item.vehicleReg}</option>
               ))}
-            </select>
-            <Select
-              onChange={handleSelectChange}
+            </select> */}
+
+            {/* <Select
+              onChange={handleInputChange}
               name="VehicleReg"
               className="Select_box"
               options={selectOption}
@@ -779,83 +881,59 @@ export default function JourneyReplay() {
                   primary: "gray",
                 },
               })}
-            />
-
-            <p>
-              Selected option:{" "}
-              {selectedOption ? (selectedOption as Option).label : "None"}
-            </p>
+            /> */}
+            {/* <FormControl sx={{ m: 1, minWidth: 120 }}> */}
+            <Select
+              value={Ignitionreport.VehicleReg}
+              onChange={handleInputChange}
+              MenuProps={MenuProps}
+              disabled={loading}
+              name="VehicleReg"
+              id="select_box_journey"
+              displayEmpty
+              className="h-8 text-gray w-full outline-green px-1"
+            >
+              <MenuItem value="" disabled selected hidden className="text-sm">
+                Select Vechile
+              </MenuItem>
+              {vehicleList?.map((item: DeviceAttach) => (
+                <MenuItem key={item.id} value={item.vehicleReg}>
+                  {item.vehicleReg}
+                </MenuItem>
+              ))}
+            </Select>
           </div>
+
           <div className="lg:col-span-3 md:col-span-3  pt-2">
             {getShowRadioButton ? (
               <div className="grid lg:grid-cols-12 md:grid-cols-2 sm:grid-cols-2  -mt-5  grid-cols-2  px-10 gap-5 flex justify-center ">
                 <div className="lg:col-span-5 md:col-span-1 sm:col-span-1 col-span-2 lg:mt-0 md:mt-0 sm:mt-0  ">
-                  <label className="text-green">
-                    From
-                    <input
-                      type="date"
-                      className="ms-1  w-full  text-labelColor  outline-green border-b border-gray px-1"
-                      name="fromDateTime"
-                      placeholder="Select Date"
-                      autoComplete="off"
-                      // value={Ignitionreport.toDateTime}
-                      // disabled={currentDate <= Ignitionreport.fromDateTime}
-                      // defaultValue={currentDate}
-                      value={
-                        currentDateDefault
-                          ? Ignitionreport.fromDateTime
-                          : currentDate
-                      }
-                      onChange={(e) =>
-                        handleCustomDateChange("fromDateTime", e.target.value)
-                      }
-                    />
-                  </label>
-
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["MobileDatePicker"]}>
-                      <DemoItem label="Responsive variant">
-                        <DatePicker defaultValue={dayjs("2022-04-17")} />
-                      </DemoItem>
-                    </DemoContainer>
-                  </LocalizationProvider> */}
-                  <label className="text-green">Form</label>
+                  <label className="text-green">From</label>
                   <MuiPickersUtilsProvider utils={DateFnsMomemtUtils}>
                     <KeyboardDatePicker
                       format="MM/DD/yyyy"
-                      value={Ignitionreport.date}
-                      onChange={handleDateChange}
+                      value={Ignitionreport.fromDateTime}
+                      onChange={(newDate: any) =>
+                        handleDateChange("fromDateTime", newDate)
+                      }
                       variant="inline"
                       maxDate={currenTDates}
                     />
                   </MuiPickersUtilsProvider>
                 </div>
                 <div className="lg:col-span-5 md:col-span-1 sm:col-span-1 col-span-2  ">
-                  <label className="text-green">
-                    To
-                    <br></br>
-                    <input
-                      type="date"
-                      className=" w-full  text-labelColor  outline-green border-b border-gray px-1"
-                      name="toDateTime"
-                      value={
-                        currentToDateDefault
-                          ? Ignitionreport.toDateTime
-                          : currentDate
-                      }
-                      onChange={(e) =>
-                        handleCustomDateChange("toDateTime", e.target.value)
-                      }
-                    />
-                  </label>
                   <label className="text-green">To</label>
                   <MuiPickersUtilsProvider utils={DateFnsMomemtUtils}>
                     <KeyboardDatePicker
                       format="MM/DD/yyyy"
-                      value={Ignitionreport.date}
-                      onChange={handleDateChange}
+                      value={Ignitionreport.toDateTime}
+                      onChange={(newDate: any) =>
+                        handleDateChange("toDateTime", newDate)
+                      }
                       variant="inline"
-                      shouldDisableDate={(date) => !isCurrentDate(date)}
+                      maxDate={currenTDates}
+                      // maxDate={currenTDates}
+                      // shouldDisableDate={(date) => !isCurrentDate(date)}
                     />
                   </MuiPickersUtilsProvider>
                 </div>
@@ -880,6 +958,7 @@ export default function JourneyReplay() {
                       className="w-5  form-radio  "
                       style={{ accentColor: "green", height: "1.5vh" }}
                       name="period"
+                      disabled={loading}
                       value="today"
                       checked={Ignitionreport.period === "today"}
                       onChange={handleInputChange}
@@ -894,6 +973,7 @@ export default function JourneyReplay() {
                       type="radio"
                       className="w-5  form-radio text-green"
                       name="period"
+                      disabled={loading}
                       value="yesterday"
                       style={{ accentColor: "green", height: "1.5vh" }}
                       checked={Ignitionreport.period === "yesterday"}
@@ -909,6 +989,7 @@ export default function JourneyReplay() {
                       type="radio"
                       className="w-5 "
                       name="period"
+                      disabled={loading}
                       value="week"
                       style={{ accentColor: "green", height: "1.5vh" }}
                       checked={Ignitionreport.period === "week"}
@@ -923,6 +1004,7 @@ export default function JourneyReplay() {
                     <input
                       type="radio"
                       className="w-5 "
+                      disabled={loading}
                       name="period"
                       value="custom"
                       style={{ accentColor: "green", height: "1.5vh" }}
@@ -936,6 +1018,7 @@ export default function JourneyReplay() {
               </div>
             )}
           </div>
+
           <div className=" col-span-1 text-white h-16 flex justify-center items-center">
             {clearMapData ? (
               <button
@@ -968,7 +1051,9 @@ export default function JourneyReplay() {
                 <button
                   key={index}
                   className=" my-2 "
-                  onClick={() => handleDivClick(item.TripStart, item.TripEnd)}
+                  onClick={() =>
+                    handleDivClick(item.fromDateTime, item.toDateTime)
+                  }
                 >
                   {/* <h2 className="text-xl font-semibold">Trip {index + 1}</h2> */}
                   <div
@@ -1139,6 +1224,20 @@ export default function JourneyReplay() {
                       icon={createMarkerIcon(getCurrentAngle())}
                     ></Marker>
                   )}
+
+                  {lat && lng && (
+                    <Marker
+                      position={[lat, lng]}
+                      icon={
+                        new L.Icon({
+                          iconUrl:
+                            "https://img.icons8.com/fluency/48/000000/stop-sign.png",
+                          iconAnchor: [22, 47],
+                          popupAnchor: [1, -34],
+                        })
+                      }
+                    ></Marker>
+                  )}
                   {TravelHistoryresponse.length > 0 && (
                     <div>
                       <Marker
@@ -1180,22 +1279,12 @@ export default function JourneyReplay() {
               )}
             </div>
 
-            <div
-              className="absolute lg:top-4 lg:left-20 lg:right-5 top-4 left-2 right-2 grid lg:grid-cols-10 md:grid-cols-10 sm:grid-cols-10 grid-cols-10 lg:mt-0  mt-20 "
-              // style={{
-              //   position: "absolute",
-              //   top: "2%",
-              //   left: "5%",
-              //   right: "2%",
-              // }}
-
-              // className="absolute lg:left-56 lg:right-20 lg:bottom-0 bottom-2  left-1 right-3"
-            >
+            <div className="absolute lg:top-4 lg:left-20 lg:right-5 top-4 left-2 right-2 grid lg:grid-cols-10 md:grid-cols-10 sm:grid-cols-10 grid-cols-10 lg:mt-0  mt-20 ">
               <div className="lg:col-span-2 md:col-span-4 sm:col-span-3 col-span-5  ">
                 <div className="grid lg:grid-cols-12 md:grid-cols-12 sm:grid-cols-12 grid-cols-12 bg-green py-2 shadow-lg">
                   <div className="lg:col-span-10  md:col-span-10 sm:col-span-10 col-span-10">
                     <p className="text-white px-3 text-lg">
-                      Stop Details ({stopDetails.length})
+                      Stop Details ({stops.length})
                     </p>
                   </div>
                   <div className="col-span-1 mt-1">
@@ -1243,14 +1332,37 @@ export default function JourneyReplay() {
 
                 {getShowdetails ? (
                   <div className="bg-white h-60 overflow-y-scroll">
-                    {stopDetails.map((item: StopAddressData) => (
-                      <div key={item.place_id}>
+                    {stops?.map((item: any) => {
+                      return (
+                        <div
+                          onClick={() => handleClickStopCar(item)}
+                          className="cursor-pointer"
+                        >
+                          <p className="text-gray px-3 py-3 text-sm">
+                            {item?.address}
+                          </p>
+
+                          <div className="grid grid-cols-12">
+                            <div className="col-span-7"></div>
+                            <div className="col-span-5 text-center text-red text-bold px-1 w-24   text-sm border-2 border-red">
+                              {moment(new Date(item?.date)).format("h:mm:ss a")}
+                            </div>
+                          </div>
+                          <br></br>
+                          <hr className="text-gray"></hr>
+                        </div>
+                      );
+                    })}
+                    {/* {stops.map((item: any) => (
+                      <div key={item}>
                         <p className="text-gray px-3 py-3 text-sm">
-                          {item.display_name}
+                          {item.address}
+                          <br></br>
+                          {item.date}
                         </p>
                         <hr className="text-gray"></hr>
                       </div>
-                    ))}
+                    ))} */}
                   </div>
                 ) : (
                   ""
@@ -1281,29 +1393,41 @@ export default function JourneyReplay() {
                     </button>
                   </div>
                 </div>
-                <div
+                {/* <div
                   className="grid grid-cols-11 mt-3"
                   style={{ justifyContent: "center", display: "flex" }}
                 >
                   <div className="col-span-9 bg-bgPlatBtn w-20 h-10 rounded-tr-full rounded-tl-full"></div>
-                </div>
+                </div> */}
               </div>
             </div>
             <div
               className="grid lg:grid-cols-10 grid-cols-10"
               style={{
                 position: "absolute",
-                top: "15%",
+                top: "10%",
                 left: "5%",
                 right: "2%",
                 display: "flex",
                 justifyContent: "end",
               }}
             >
-              <div className="col-span-2  lg:w-48 md:w-44 sm:w-44 w-36 rounded-md lg:mt-3 mt-28">
+              <div className="col-span-2  lg:w-42 md:w-44 sm:w-44 w-36 rounded-md ">
                 {isPlaying || isPaused ? (
                   <div>
-                    <p className="text-white px-2 py-3 mt-3 bg-bgPlatBtn rounded-md">
+                    <ReactSpeedometer
+                      width={120}
+                      height={90}
+                      maxValue={180}
+                      value={getSpeedAndDistance()?.speed.replace("Mph", "")}
+                      needleColor="#00b56c"
+                      startColor="green"
+                      segments={1}
+                      endColor="blue"
+                      needleTransitionDuration={100}
+                      segmentColors={["#3a4848"]}
+                    />
+                    <p className="text-white text-sm px-2 py-1 mt-3 bg-bgPlatBtn rounded-md">
                       Speed: {getSpeedAndDistance()?.speed}
                       <br></br> Distance:{" "}
                       {getSpeedAndDistance()?.distanceCovered}
@@ -1340,7 +1464,10 @@ export default function JourneyReplay() {
                       <Tooltip content="Pause" className="bg-black">
                         <button onClick={stopTick}>
                           <svg
-                            className="h-5 w-5 text-white lg:mx-2 lg:ms-5  md:mx-3 sm:mx-3 md:ms-4 sm:ms-6  mx-1 "
+                            className="h-5 w-5 lg:mx-2 lg:ms-5 md:mx-3 sm:mx-3 md:ms-4 sm:ms-6  mx-1 "
+                            style={{
+                              color: stopVehicle === true ? "gray" : "white",
+                            }}
                             width="24"
                             height="24"
                             viewBox="0 0 24 24"
@@ -1361,9 +1488,10 @@ export default function JourneyReplay() {
                       <Tooltip content="Play" className="bg-black">
                         <button onClick={tick}>
                           <svg
-                            className="h-5 w-5 text-white lg:mx-2  md:mx-3 sm:mx-3 mx-1"
+                            className="h-5 w-5  lg:mx-2  md:mx-3 sm:mx-3 mx-1"
                             viewBox="0 0 24 24"
-                            fill="white"
+                            style={{ color: isPlaying ? "green" : "white" }}
+                            fill={isPlaying ? "green" : "white"}
                             stroke="currentColor"
                             strokeWidth="2"
                             strokeLinecap="round"
@@ -1377,13 +1505,14 @@ export default function JourneyReplay() {
                       <Tooltip content="Stop" className="bg-black">
                         <button onClick={pauseTick}>
                           <svg
-                            className="h-4   w-4 text-white lg:mx-2 md:mx-3 sm:mx-3 mx-1"
+                            className="h-4   w-4  lg:mx-2 md:mx-3 sm:mx-3 mx-1"
                             width="24"
+                            style={{ color: isPaused ? "green" : "white" }}
+                            fill={isPaused ? "green" : "white"}
                             height="24"
                             viewBox="0 0 24 24"
                             strokeWidth="2"
                             stroke="currentColor"
-                            fill="white"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           >
@@ -1398,20 +1527,34 @@ export default function JourneyReplay() {
                 </div>
                 <div className="lg:col-span-4 col-span-9   ">
                   <div className="grid lg:grid-cols-12 grid-cols-12 gap-1 lg:py-5 py-2 mt-6 pt-4 lg:pt-8 rounded-md  mx-2 px-5 bg-white">
-                    <div className="lg:col-span-11 col-span-10">
-                      <Box sx={{ width: "100%", color: "red!important" }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={progressWidth}
-                          style={{
-                            backgroundColor: "lightgreen",
-                            color: "red !important",
-                            height: "0.6vh",
-                          }}
-                        />
-                      </Box>
+                    <div
+                      className="lg:col-span-11 col-span-10"
+                      style={{ height: "4vh" }}
+                    >
+                      <Slider
+                        value={progressWidth}
+                        // defaultValue={progressWidth}
+                        // max={maxSliderValue}
+                        // min={minSliderValue}
+                        onChange={handleChangeValueSlider}
+                        color="secondary"
+                        style={{
+                          color: "#00B56C",
+                          paddingBottom: "2%",
+                        }}
+                        // style={{
+                        //   backgroundColor: "lightgreen",
+                        //   color: "red !important",
+                        //   height: "0.6vh",
+                        // }}
+                        // min={progressminvalue}
+                        // onChange={changeProgressOnClick}
+                        // max={progressmaxvalue}
+                        // value={progressVal || cursor}
+                        // className="replay-slider-inner"
+                      />
 
-                      <div className="grid grid-cols-12 mt-2 ">
+                      <div className="grid grid-cols-12 ">
                         <div className="col-span-11">
                           <p className="text-sm color-labelColor">
                             {" "}
@@ -1425,7 +1568,7 @@ export default function JourneyReplay() {
                         </div>
                       </div>
                     </div>
-                    <div className="lg:col-span-1 col-span-1 -my-2">
+                    <div className="lg:col-span-1 col-span-1 -my-1">
                       {isPlaying && (
                         <select
                           className="text-labelColo outline-green border border-grayLight px-1"
@@ -1452,77 +1595,3 @@ export default function JourneyReplay() {
     </>
   );
 }
-
-/*  useEffect(() => {
-    if (isPlaying && !isPaused) {
-      const totalSteps = TravelHistoryresponse.length - 1;
-      let step = currentPositionIndex;
-
-      const currentData = TravelHistoryresponse[step];
-      const nextData = TravelHistoryresponse[step + 1];
-
-      if (currentData && nextData) {
-        const currentLatLng = new L.LatLng(currentData.lat, currentData.lng);
-        const nextLatLng = new L.LatLng(nextData.lat, nextData.lng);
-
-        const totalObjects = TravelHistoryresponse.length;
-        const numSteps = 100;
-        const stepSize = (1 / numSteps) * speedFactor * 4;
-        let progress: number = 0;
-        let animationId: number;
-
-        const updatePosition = () => {
-          if (progress < 1) {
-            const interpolatedLatLng = new L.LatLng(
-              currentLatLng.lat +
-                (nextLatLng.lat - currentLatLng.lat) * progress,
-              currentLatLng.lng +
-                (nextLatLng.lng - currentLatLng.lng) * progress
-            );
-
-            setMapcenter([interpolatedLatLng.lat, interpolatedLatLng.lng]);
-            progress += stepSize ;
-            setProgressWidth(Number(progress.toFixed(2)));
-            animationId = requestAnimationFrame(updatePosition);
-            setCarPosition(interpolatedLatLng);
-            const newProgress = Math.round(
-              ((currentPositionIndex + 1.8) / totalObjects) * 100
-            );
-            setProgressWidth(newProgress);
-          } else {
-            step++;
-            setCurrentPositionIndex(step);
-
-            if (step < totalSteps) {
-              progress = 0;
-            } else {
-              setIsPlaying(false);
-              const { zoomlevel, centerLat, centerLng } = calculateZoomCenter(
-                TravelHistoryresponse
-              );
-
-              setMapcenterToFly([centerLat, centerLng]);
-              setzoomToFly(zoomlevel);
-              setzoom(zoomlevel);
-            }
-          }
-        };
-
-        animationId = requestAnimationFrame(updatePosition);
-        return () => {
-          cancelAnimationFrame(animationId);
-        };
-      }
-    } else if (isPaused) {
-      pauseTick();
-    } else {
-      stopTick();
-    }
-  }, [
-    isPlaying,
-    currentPositionIndex,
-    isPaused,
-    TravelHistoryresponse,
-    speedFactor,
-  ]);
- */

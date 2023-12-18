@@ -12,6 +12,7 @@ module.exports = {
       yellow: "#eec40f",
       grayLight: "#D3D3D3",
       bgLight: "rgb(248,255,253)",
+      bgHoverTabel:'#e1f5ef',
       labelColor: "#000000D9",
       zonebtnColor: "#F5F5F5",
       zoneTabelBg: "#FAFAFA",

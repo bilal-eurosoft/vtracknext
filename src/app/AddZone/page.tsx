@@ -33,7 +33,7 @@ const EditControl = dynamic(
   { ssr: false }
 );
 
-const ZonePage: React.FC = () => {
+export default function AddZone() {
   const { data: session } = useSession();
   const [polygondataById, setPolygondataById] = useState<[number, number][]>(
     []
@@ -237,7 +237,7 @@ const ZonePage: React.FC = () => {
         if (response.id !== null) {
           // Delay the redirection by 4 seconds
           setTimeout(() => {
-            router.push("/Zone");
+            router.push("http://localhost:3010/Zone");
           }, 2000);
         }
       }
@@ -378,7 +378,7 @@ const ZonePage: React.FC = () => {
                 <div className="col-span-2 ">
                   <button
                     className="ms-14   h-10 bg-white text-labelColor shadow-md px-6"
-                    onClick={() => router.push("/Zone")}
+                    onClick={() => router.push("http://localhost:3010/Zone")}
                   >
                     Cancel
                   </button>
@@ -521,6 +521,4 @@ const ZonePage: React.FC = () => {
       <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
-};
-
-export default ZonePage;
+}

@@ -63,6 +63,7 @@ export type VehicleData = {
   driverName: string;
   vehicleEventList: any[]; // You can replace this with a more specific type if needed
   zoneName: String;
+  zone: String;
 };
 
 export type CarMapList = {

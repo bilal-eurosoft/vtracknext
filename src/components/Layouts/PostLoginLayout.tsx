@@ -121,7 +121,7 @@ export default function RootLayout({
   const { data: session } = useSession();
 
   if (!session) {
-    router.push("/login");
+    router.push("http://localhost:3010/login");
   }
 
   const handleClick = (item: any) => {
@@ -269,7 +269,7 @@ export default function RootLayout({
                 <br></br>
                 <span
                   className=" w-full text-white"
-                  onClick={() => router.push("/DualCam")}
+                  onClick={() => router.push("http://localhost:3010/DualCam")}
                 >
                   View Image And Video
                 </span>
@@ -355,7 +355,9 @@ export default function RootLayout({
               <PopoverContent className="border-none  cursor-pointer bg-green">
                 <span
                   className=" w-full text-white"
-                  onClick={() => router.push("/DriverProfile")}
+                  onClick={() =>
+                    router.push("http://localhost:3010/DriverProfile")
+                  }
                 >
                   Driver Profile
                 </span>
@@ -363,7 +365,9 @@ export default function RootLayout({
                 <br></br>
                 <span
                   className=" w-full text-white"
-                  onClick={() => router.push("/DriverAssign")}
+                  onClick={() =>
+                    router.push("http://localhost:3010/DriverAssign")
+                  }
                 >
                   Assign Driver
                 </span>
@@ -538,7 +542,9 @@ export default function RootLayout({
                           <br></br>
                           <span
                             className=" w-full text-white"
-                            onClick={() => router.push("/DualCam")}
+                            onClick={() =>
+                              router.push("http://localhost:3010/DualCam")
+                            }
                           >
                             View Image And Video
                           </span>
@@ -597,7 +603,9 @@ export default function RootLayout({
                         <PopoverContent className="border-none  cursor-pointer bg-green">
                           <span
                             className=" w-full text-white"
-                            onClick={() => router.push("/DriverProfile")}
+                            onClick={() =>
+                              router.push("http://localhost:3010/DriverProfile")
+                            }
                           >
                             Driver Profile
                           </span>
@@ -605,7 +613,9 @@ export default function RootLayout({
                           <br></br>
                           <span
                             className=" w-full text-white"
-                            onClick={() => router.push("/DriverAssign")}
+                            onClick={() =>
+                              router.push("http://localhost:3010/DriverAssign")
+                            }
                           >
                             Assign Driver
                           </span>

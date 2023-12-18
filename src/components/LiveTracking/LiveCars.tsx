@@ -6,7 +6,6 @@ import { VehicleData } from "@/types/vehicle";
 import L from "leaflet";
 import { ClientSettings } from "@/types/clientSettings";
 
-
 const LiveCars = ({
   carData,
   clientSettings,
@@ -18,24 +17,22 @@ const LiveCars = ({
 }) => {
   const map = useMap();
   const selectedVehicleCurrentData = useRef<VehicleData | null>(null);
-  const clientMapSettings = clientSettings
-  .filter((el) => el?.PropertDesc === "Map")[0]
-  ?.PropertyValue; 
-  
+  const clientMapSettings = clientSettings.filter(
+    (el) => el?.PropertDesc === "Map"
+  )[0]?.PropertyValue;
+
   const clientZoomSettings = clientSettings?.filter(
     (el) => el?.PropertDesc === "Zoom"
   )[0]?.PropertyValue;
 
-
   useEffect(() => {
-   
     let newmapCoordinates: [number, number] = [0, 0];
     if (map) {
       if (selectedVehicle) {
         selectedVehicleCurrentData.current = carData.filter(
           (el) => el.IMEI === selectedVehicle?.IMEI
         )[0];
-   
+
         map.flyTo(
           [
             selectedVehicleCurrentData.current.gps.latitude,
@@ -44,18 +41,15 @@ const LiveCars = ({
           18
         );
       } else {
-
         const regex1 = /lat:([^,]+),lng:([^}]+)/;
         const match1 = clientMapSettings.match(regex1);
-        
+
         if (match1) {
           const lat = parseFloat(match1[1]);
           const lng = parseFloat(match1[2]);
           newmapCoordinates = [lat, lng];
         }
-       
-   
-     
+
         map.flyTo(newmapCoordinates, Number(clientZoomSettings));
       }
     }

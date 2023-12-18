@@ -14,7 +14,6 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Typography from "@mui/material/Typography";
-import { useRouter } from "next/navigation";
 import { pictureVideoDataOfVehicleT } from "@/types/videoType";
 import {
   postDriverDataByClientId,
@@ -22,7 +21,7 @@ import {
 } from "@/utils/API_CALLS";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-
+import { useRouter } from "next/navigation";
 const style = {
   position: "absolute" as "absolute",
   top: "70%",
@@ -38,16 +37,16 @@ export default function DriverProfile() {
   const [DriverData, setDriverData] = useState<pictureVideoDataOfVehicleT[]>(
     []
   );
-  const router = useRouter();
   const [showCardNumber, setShowCardNumber] = useState(false);
   const [page, setPage] = React.useState(0);
   const [rowsPerPages, setRowsPerPages] = React.useState(10);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [inputs, setInputs] = useState("");
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [isColor, setIsColor] = useState<any>(false);
   const [formData, setFormDate] = useState({
     id: "",
     clientId: "61e6d00fd9cc7102ac6464a3",
@@ -62,28 +61,25 @@ export default function DriverProfile() {
     driverRFIDCardNumber: "",
     isAvailabl: "",
   });
-
-  // const lastIndex = rowsPerPages * currentPage;
-  // const firstIndex = currentPage * rowsPerPages + rowsPerPages;
-  const result = DriverData.slice(
-    rowsPerPages * currentPage,
-    currentPage * rowsPerPages + rowsPerPages
-  );
+  const router = useRouter();
+  const lastIndex = rowsPerPages * currentPage;
+  const firstIndex = lastIndex - rowsPerPages;
+  const result = DriverData.slice(firstIndex, lastIndex);
   const totalCount = DriverData.length / currentPage;
-  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+
   const handleChangePage = (event: unknown, newPage: number) => {
-    setCurrentPage(newPage);
+    setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPages(+event.target.value);
-    setCurrentPage(0);
+    setRowsPerPages(event.target.value);
+    setCurrentPage(1);
   };
 
   const handleChangeDriver = (key: any, e: any) => {
     setFormDate({ ...formData, [key]: e.target.value });
   };
-
+  console.log("data", DriverData);
   const handleDriverSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -156,10 +152,11 @@ export default function DriverProfile() {
     setInputs("");
   };
 
-  const handleDelete = (id: any) => {
-    // router.push("http://localhost:3010/ActiveDriver");
+  const handleChangeCheckbox = (e: any) => {
+    // const filterData = DriverData.filter((items) => items.id == item);
+    setIsColor(e.target.value);
   };
-  const test = 20;
+  console.log("color", isColor);
   return (
     <div>
       {data.map((item: any, index) => {
@@ -172,23 +169,20 @@ export default function DriverProfile() {
       <Paper sx={{ width: "98%" }} className="  ms-3 mr-3 mt-3">
         <div className="grid lg:grid-cols-12 md:grid-cols-2  sm:grid-cols-2  p-4  bg-bgLight">
           <div className="lg:col-span-10 md:grid-col-span-1 sm:grid-col-span-1 lg:mb-0 flex lg: justify-center sm:justify-start mb-4 ">
-            <button
-              onClick={handleOpen}
-              className="bg-green px-4 py-1  text-white rounded-md"
-            >
-              Add New Driver
+            <button className="bg-green px-4 py-1  text-white rounded-md">
+              Active Driver
             </button>
 
             <button
-              onClick={() => router.push("http://localhost:3010/ActiveDriver")}
               className="bg-red px-4 py-1 mx-3  text-white rounded-md"
+              onClick={() => router.push("DriverProfile")}
             >
-              InActive Driver List
+              Cancel
             </button>
           </div>
 
-          <div
-            className="lg:col-span-2 md:grid-col-span-1 sm:grid-col-span-1 border-b border-grayLight  text-center"
+          {/* <div
+            className="lg:col-span-2 md:grid-col-span-1 sm:grid-col-span-1 border-b border-grayLight  text-center "
             id="hover_bg"
           >
             <div className="grid grid-cols-12">
@@ -241,7 +235,7 @@ export default function DriverProfile() {
                 </svg>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <Modal
           aria-labelledby="transition-modal-title"
@@ -457,6 +451,16 @@ export default function DriverProfile() {
             <TableHead>
               <TableRow>
                 <TableCell align="center" colSpan={2}>
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 "
+                    // style={{ accentColor: "green" }}
+                    checked={isColor}
+                    // style={{ backgroundColor: isColor === "on" ? "gray" : "" }}
+                    onChange={handleChangeCheckbox}
+                  />
+                </TableCell>
+                <TableCell align="center" colSpan={2}>
                   Driver Number
                 </TableCell>
                 <TableCell align="center" colSpan={2}>
@@ -492,80 +496,102 @@ export default function DriverProfile() {
               </TableRow>
             </TableHead>
             <TableBody className="bg-bgLight cursor-pointer ">
-              {result
-                .filter((item: any) => {
-                  if (item == "") {
-                    return item;
-                  } else if (
-                    item.driverfirstName
-                      .toLowerCase()
-                      .includes(inputs.toLowerCase())
-                  ) {
-                    return item;
-                  }
-                })
-                .map((row: any) => (
-                  <TableRow className="hover:bg-bgHoverTabel">
-                    <TableCell align="center" colSpan={2}>
-                      {row.driverNo}
-                    </TableCell>
+              {result.map((row: any) => (
+                <TableRow
+                  className="hover:bg-bgHoverTabel"
+                  // style={{ backgroundColor: isColor == "on" ? "gray" : "" }}
+                >
+                  <TableCell align="center" colSpan={2}>
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 "
+                      style={{ accentColor: "green" }}
+                      checked={isColor}
+                      // onClick={handleChangeCheckbox}
+                    />
+                  </TableCell>
 
-                    <TableCell align="center" colSpan={2}>
-                      {row.driverfirstName}
-                    </TableCell>
-                    <TableCell align="center" colSpan={2}>
-                      {row.driverMiddleName}
-                    </TableCell>
-                    <TableCell align="center" colSpan={2}>
-                      {row.driverLastName}
-                    </TableCell>
-                    <TableCell align="center" colSpan={2}>
-                      {row.driverIdNo}
-                    </TableCell>
-                    <TableCell align="center" colSpan={2}>
-                      {row.driverContact}
-                    </TableCell>
-                    <TableCell align="center" colSpan={2}>
-                      {row.driverRFIDCardNumber}
-                    </TableCell>
-                    <TableCell align="center" colSpan={2}>
-                      {row.driverAddress1}
-                    </TableCell>
-                    <TableCell align="center" colSpan={2}>
-                      {row.driverAddress2}
-                    </TableCell>
-                    <TableCell align="center" colSpan={2}>
-                      {row.isAvailable === true ? "Available" : "Not Available"}
-                    </TableCell>
-                    <TableCell align="center" colSpan={2}>
-                      <button className="text-green hover:border-green border-b border-bgLight">
-                        Edit
-                      </button>{" "}
-                      &nbsp;&nbsp;{" "}
-                      <button
+                  {/* <TableCell align="center" colSpan={2}>
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 "
+                      style={{ accentColor: "green" }}
+                      checked={isColor}
+                      onClick={handleChangeCheckbox}
+                    />
+                  </TableCell> */}
+                  <TableCell align="center" colSpan={2}>
+                    {row.driverNo}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.driverfirstName}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.driverMiddleName}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.driverLastName}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.driverIdNo}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.driverContact}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.driverRFIDCardNumber}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.driverAddress1}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.driverAddress2}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    {row.isAvailable === true ? "Available" : "Not Available"}
+                  </TableCell>
+                  <TableCell align="center" colSpan={2}>
+                    <button className="text-green hover:border-green border-b border-bgLight">
+                      Edit
+                    </button>{" "}
+                    &nbsp;&nbsp;{" "}
+                    {/* <button
                         onClick={() => handleDelete(row.id)}
-                        className="text-red  text-sm px-2 hover:border-red border-b border-bgLight"
+                        className="bg-red text-white text-sm px-2 py-1 shadow-lg"
                       >
-                        InActive
-                      </button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                        Active
+                      </button> */}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
+      {/* <div
+        className="grid grid-cols-12"
+        style={{
+          display: "flex",
+
+          justifyContent: "end",
+          alignItems: "end",
+        }}
+      >
+        <div className="col-span-2 mx-6 my-2 text-white ">
+          <button className="bg-green p-2 px-4 shadow-lg">Active</button>
+        </div>
+      </div> */}
       <TablePagination
         rowsPerPageOptions={[5, 10, 20]}
-        // style={{
-        //   display: "flex",
-        //   justifyContent: "end",
-        //   alignItems: "end",
-        // }}
+        style={{
+          display: "flex",
+          justifyContent: "end",
+          alignItems: "end",
+        }}
         component="div"
-        count={DriverData.length}
+        count={totalCount}
         rowsPerPage={rowsPerPages}
-        page={currentPage}
+        page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         className="bg-bgLight"

@@ -3,14 +3,12 @@ import { zonelistType } from "@/types/zoneType";
 
 export async function getVehicleDataByClientId(clientId: string) {
   try {
-    const response = await fetch("https://live.vtracksolutions.com/graphql", {
-      headers: {
-        accept: "*/*",
-        "content-type": "application/json",
-      },
-      body: `{"query":"\\n          query {\\n            Currentlocation(id:\\"${clientId}\\"){\\n            id,\\n            Value\\n          }\\n        }"}`,
-      method: "POST",
-    });
+    const response = await fetch(
+      `https://socketio.vtracksolutions.com:1102/${clientId}`,
+      {
+        method: "GET",
+      }
+    );
     if (!response.ok) {
       throw new Error("Failed to fetch data from the API");
     }
@@ -294,6 +292,7 @@ export async function videoList({
       throw new Error("Failed to fetch data from the API");
     }
     const data = await response.json();
+    console.log("data", data);
     return data;
   } catch (error) {
     console.log("Error fetching data");
@@ -355,9 +354,199 @@ export async function postDriverDataByClientId({
       throw new Error("Failed to fetch data from the API");
     }
     const data = await response.json();
+
     return data;
   } catch (error) {
     console.log("Error fetching data", error);
+    return [];
+  }
+}
+
+export async function forgetEmailByClientId({
+  token,
+  newformdata,
+}: {
+  token: any;
+  newformdata: any;
+}) {
+  try {
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/forgotpassword/forgotpassword",
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(newformdata),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching data", error);
+    return [];
+  }
+}
+
+export async function forgetPasswordByClientId({
+  token,
+  newformdata,
+}: {
+  token: any;
+  newformdata: zonelistType;
+  link: any;
+}) {
+  try {
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/forgotpassword/GetByLink",
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(newformdata),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching data", error);
+    return [];
+  }
+}
+
+export async function forgetPasswordUpdateLinkClientId({
+  token,
+  newformdata,
+}: {
+  token: any;
+  newformdata: any;
+  link: any;
+}) {
+  try {
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/forgotpassword/UpdateLink",
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(newformdata),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching data", error);
+    return [];
+  }
+}
+
+export async function postDriverDataAssignByClientId({
+  token,
+  newformdata,
+}: {
+  token: string;
+  newformdata: zonelistType;
+}) {
+  try {
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/v2/DriverAssign",
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(newformdata),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log("Error fetching data", error);
+    return [];
+  }
+}
+
+export async function GetDriverDataByClientId({
+  token,
+  clientId,
+}: {
+  token: string;
+  clientId: string;
+}) {
+  try {
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/v2/AllDrivers",
+      {
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: `{\"clientId\":\"${clientId}\"}`,
+        method: "POST",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching data");
+    return [];
+  }
+}
+
+export async function GetDriverDataAssignByClientId({
+  token,
+  clientId,
+}: {
+  token: string;
+  clientId: string;
+}) {
+  try {
+    const response = await fetch(
+      "https://backend.vtracksolutions.com/v2/driverAssignList",
+      {
+        headers: {
+          accept: "application/json, text/plain, */*",
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: `{\"clientId\":\"${clientId}\"}`,
+        method: "POST",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch data from the API");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching data");
     return [];
   }
 }

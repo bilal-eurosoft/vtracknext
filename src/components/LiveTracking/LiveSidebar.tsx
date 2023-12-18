@@ -1,10 +1,10 @@
 import { VehicleData } from "@/types/vehicle";
-import { getCurrentAddressOSM } from "@/utils/getCurrentAddressOSM";
 import { useEffect, useState } from "react";
 import { ActiveStatus } from "../General/ActiveStatus";
 import { useSession } from "next-auth/react";
 import { zonelistType } from "../../types/zoneType";
 import { getZoneListByClientId } from "../../utils/API_CALLS";
+import "./index.css";
 const LiveSidebar = ({
   carData,
   countMoving,
@@ -41,29 +41,79 @@ const LiveSidebar = ({
         setZoneList(allzoneList);
       }
     })();
-  }, []);
+  }, [session]);
 
+  function isPointInPolygon(point: any, polygon: any) {
+    let intersections = 0;
+    for (let i = 0; i < polygon.length; i++) {
+      const edge = [polygon[i], polygon[(i + 1) % polygon.length]];
+      if (rayIntersectsSegment(point, edge)) {
+        intersections++;
+      }
+    }
+    return intersections % 2 === 1;
+  }
+  function rayIntersectsSegment(point: any, segment: any) {
+    const [p1, p2] = segment;
+    const p = point;
+    const dx = p2[0] - p1[0];
+    const dy = p2[1] - p1[1];
+    const t = ((p[0] - p1[0]) * dy - (p[1] - p1[1]) * dx) / (dx * dy);
+    return t >= 0 && t <= 1;
+  }
   useEffect(() => {
-    const filtered = carData.filter((data) =>
-      data.vehicleReg.toLowerCase().startsWith(searchData.search.toLowerCase())
-    );
+    const zoneLatlog = zoneList.map((item: any) => {
+      if (item.zoneType == "Polygon") {
+        return [...JSON.parse(item.latlngCordinates)]?.map((item2: any) => {
+          return [item2.lat, item2.lng];
+        });
+      } else {
+        return undefined;
+      }
+    });
+    console.log(zoneLatlog);
+
+    const filtered = carData
+      .filter((data) =>
+        data.vehicleReg
+          .toLowerCase()
+          .startsWith(searchData.search.toLowerCase())
+      )
+      .map((item: any) => {
+        const i = zoneLatlog.findIndex((zone: any) => {
+          if (zone != undefined) {
+            return isPointInPolygon(
+              [item.gps.latitude, item.gps.longitude],
+              zone
+            );
+          }
+        });
+
+        if (i != -1) {
+          item.zone = zoneList[i].zoneName;
+        }
+        return item;
+      });
+
     setFilteredData(filtered);
   }, [searchData.search, carData]);
   const toggleLiveCars = () => {
     setSelectedVehicle(null);
+    setIsActiveColor(0);
   };
-  const hanldeClick = (index: any) => {
-    const data = filteredData.filter(
-      (item: any) => item.gps.speed === 0 && item.ignition === 0
-    );
-    console.log("data", data);
+
+  const [activeColor, setIsActiveColor] = useState<any>("");
+  const handleClickVehicle = (item: any) => {
+    setSelectedVehicle(item);
+    setIsActiveColor(item.vehicleId);
   };
-  const filterZone = zoneList.filter(
-    (item) => item.zoneName === filteredData.vehicleReg
-  );
+
   console.log(zoneList);
   return (
-    <div className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4">
+    <div
+      className="lg:col-span-1 md:col-span-2 sm:col-span-4  col-span-4"
+      // style={{ height: "50em" }}
+    >
       <div className="grid grid-cols-12 bg-green py-3 pe-1 gap-8 ">
         <div className="lg:col-span-7 md:col-span-5 sm:col-span-5 col-span-7 sticky top-0">
           <div className="grid grid-cols-12">
@@ -126,7 +176,6 @@ const LiveSidebar = ({
             </div>
 
             <div className="lg:col-span-1">{`${countMoving}`}</div>
-
             <div className="lg:col-span-1"></div>
 
             <div className="lg:col-span-1">
@@ -164,19 +213,21 @@ const LiveSidebar = ({
           </div>
         </div>
       </div>
-      <div className="overflow-y-scroll " style={{ height: "88vh" }}>
+      <div className="overflow-y-scroll" id="scroll_side_bar">
         {filteredData?.map((item: VehicleData, index: any) => {
           return (
             <div
               className="hover:bg-bgLight cursor-pointer pt-2"
-              onClick={() => {
-                setSelectedVehicle(item);
-              }}
+              onClick={() => handleClickVehicle(item)}
               key={index}
+              style={{
+                backgroundColor:
+                  activeColor == item.vehicleId ? "rgb(239, 239, 239)" : "",
+              }}
             >
               <div
                 key={item?.IMEI}
-                className="grid lg:grid-cols-3 grid-cols-3 text-center py-2      "
+                className="grid lg:grid-cols-3 grid-cols-3 text-center py-2"
               >
                 <div className="lg:col-span-1 col-span-1">
                   <div style={{ fontSize: "1.3em" }}>
@@ -189,7 +240,6 @@ const LiveSidebar = ({
                     )}
                   </div>
                 </div>
-
                 <div className="lg:col-span-1 col-span-1">
                   {item.gps.speed === 0 && item.ignition === 0 ? (
                     <>
@@ -207,12 +257,12 @@ const LiveSidebar = ({
                     </button>
                   )}
                 </div>
-
                 <div className="lg:col-span-1 col-span-1">
                   <div className="grid grid-cols-4">
                     <div className="lg:col-span-2 col-span-2">
                       {item.gps.speed} Mph
                     </div>
+
                     {session?.timezone !== undefined ? (
                       <ActiveStatus
                         currentTime={new Date().toLocaleString("en-US", {
@@ -230,6 +280,8 @@ const LiveSidebar = ({
               <p className="lg:text-start md:text-start sm:text-start text-center px-4  mt-1 pb-3 text-sm border-b-2 border-green text-green">
                 {item.timestamp}
                 <br></br>
+                Zone Name: {item.zone}
+                <br></br>
                 <span className="text-labelColor">
                   {item?.OSM?.address?.neighbourhood}
 
@@ -241,6 +293,9 @@ const LiveSidebar = ({
             </div>
           );
         })}
+        {/* {zoneList.map((item) => {
+          return <h2>{item.zoneName}</h2>;
+        })} */}
       </div>
     </div>
   );
