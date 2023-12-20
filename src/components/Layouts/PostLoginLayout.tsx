@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 // import { Inter } from "next/font/google";
 import logo from "@/../public/Images/logo.png";
@@ -86,19 +85,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
   justifyContent: "flex-end",
 }));
-const JourneyReplay = dynamic(() => import("@/app/journeyReplay/page"), {
-  loading: () => <Loading />,
-});
 
-const LiveTracking = dynamic(() => import("@/app/liveTracking/page"), {
-  loading: () => <Loading />,
-});
-const Zone = dynamic(() => import("@/app/Zone/page"), {
-  loading: () => <Loading />,
-});
-const Reports = dynamic(() => import("@/app/Reports/page"), {
-  loading: () => <Loading />,
-});
 export default function RootLayout({
   children,
 }: {
@@ -107,11 +94,11 @@ export default function RootLayout({
   const router = useRouter();
   const [openPopover, setOpenPopover] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
-  const obj = [
+/*   const obj = [
     { herf: " /liveTracking", label: "Live-Tracing" },
     { herf: "/journeyReplay", label: "journer-Replay" },
     { herf: " /Zone", label: "Zone" },
-  ];
+  ]; */
 
   const triggers = {
     onMouseEnter: () => setOpenPopover(true),

@@ -1,8 +1,7 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: false,
-  },
+  experimental: {},
   images: {
     domains: ["vtracksolutions.s3.eu-west-2.amazonaws.com"],
   },
@@ -11,7 +10,7 @@ const nextConfig = {
   },
   typescript: {
     ignoreBuildErrors: true,
-  },  
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
