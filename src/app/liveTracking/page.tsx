@@ -16,15 +16,18 @@ import { socket } from "@/utils/socket";
 import countCars from "@/utils/countCars";
 import LiveSidebar from "@/components/LiveTracking/LiveSidebar";
 import Image from "next/image";
-import logo from "../../../public/Images/logo.png";
+import logo from "../../../public/gif2.gif";
 const LiveMap = dynamic(() => import("@/components/LiveTracking/LiveMap"), {
   loading: () => (
     <div>
-      <div className="inline fixed top-0 right-0 bottom-0 left-0 m-auto w-56 h-10  text-green dark:text-green fill-black">
-        <Image src={logo} alt="" style={{ height: "4vh", width: "40%" }} />
+      <div
+        className="inline fixed top-0 right-0 bottom-0 left-0 m-auto  text-green dark:text-green fill-black"
+        style={{ height: "20vh", width: "15%" }}
+      >
+        <Image src={logo} alt="" />
         <br></br>
       </div>{" "}
-      <div role="status">
+      {/* <div role="status">
         {" "}
         <svg
           aria-hidden="true"
@@ -43,7 +46,7 @@ const LiveMap = dynamic(() => import("@/components/LiveTracking/LiveMap"), {
           />
         </svg>
         <span className="sr-only text-3xl"></span>
-      </div>
+      </div> */}
     </div>
   ),
   ssr: false,
@@ -78,12 +81,11 @@ const LiveTracking = () => {
     if (typeof window !== "undefined") {
       window.addEventListener("online", onlineHandler);
       window.addEventListener("offline", offlineHandler);
-  
+
       return () => {
         window.removeEventListener("online", onlineHandler);
         window.removeEventListener("offline", offlineHandler);
       };
-    
     }
   }, []);
 

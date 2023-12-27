@@ -296,11 +296,11 @@ export default function EditZoneComp() {
           }
         );
 
-        if (response.id !== null) {
-          setTimeout(() => {
-            router.push("http://localhost:3010/Zone");
-          }, 2000);
-        }
+        // if (response.id !== null) {
+        //   setTimeout(() => {
+        //     router.push("http://localhost:3010/Zone");
+        //   }, 2000);
+        // }
       }
     } catch (error) {
       console.error("Error fetching zone data:", error);

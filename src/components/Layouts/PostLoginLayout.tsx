@@ -94,7 +94,7 @@ export default function RootLayout({
   const router = useRouter();
   const [openPopover, setOpenPopover] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
-/*   const obj = [
+  /*   const obj = [
     { herf: " /liveTracking", label: "Live-Tracing" },
     { herf: "/journeyReplay", label: "journer-Replay" },
     { herf: " /Zone", label: "Zone" },
@@ -251,7 +251,14 @@ export default function RootLayout({
                 </PopoverHandler>
               </Tooltip>
               <PopoverContent className="border-none  cursor-pointer bg-green">
-                <span className=" w-full text-white">Get Image And Video</span>
+                <span
+                  className=" w-full text-white"
+                  onClick={() =>
+                    router.push("http://localhost:3010/GetImageAndVideo")
+                  }
+                >
+                  Get Image And Video
+                </span>
                 <br></br>
                 <br></br>
                 <span
@@ -522,7 +529,14 @@ export default function RootLayout({
                           </PopoverHandler>
                         </Tooltip>
                         <PopoverContent className="border-none  cursor-pointer bg-green">
-                          <span className=" w-full text-white">
+                          <span
+                            className=" w-full text-white"
+                            onClick={() =>
+                              router.push(
+                                "http://localhost:3010/GetImageAndVideo"
+                              )
+                            }
+                          >
                             Get Image And Video
                           </span>
                           <br></br>

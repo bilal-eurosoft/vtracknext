@@ -1,5 +1,5 @@
 import Image from "next/image";
-import logo from "../../public/Images/logo.png";
+import logo from "../../public/gif2.gif";
 const Loading = () => {
   return (
     <div>
@@ -11,7 +11,7 @@ const Loading = () => {
           alignItems: "center",
         }}
       >
-        <Image src={logo} alt="" style={{ height: "4vh", width: "7%" }} />
+        <Image src={logo} alt="" style={{ height: "20vh", width: "15%" }} />
         <br></br>
       </div>
       <div role="status">
