@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "exports",
+  output: "export",
   experimental: {},
   images: {
     domains: ["vtracksolutions.s3.eu-west-2.amazonaws.com"],
